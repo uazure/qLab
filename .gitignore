@@ -1,0 +1,4 @@
+doc/
+install/
+*.pro.user
+moc_*
