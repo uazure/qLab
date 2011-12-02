@@ -12,13 +12,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    qabstractdevice.cpp
+    qabstractdevice.cpp \
+    qgpibdevice.cpp
 
 HEADERS  += mainwindow.h \
     ../lib/gpib-32.h \
-    qabstractdevice.h
+    qabstractdevice.h \
+    qgpibdevice.h
 
+INCLUDEPATH += ../lib/ \
+
+LIBS += -L../lib/ -lgpib-32.obj
 
 FORMS    += mainwindow.ui
+
+
 
 
