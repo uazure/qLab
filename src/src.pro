@@ -16,13 +16,13 @@ SOURCES += main.cpp\
     qgpibdevice.cpp
 
 HEADERS  += mainwindow.h \
-    ../lib/gpib-32.h \
+    gpib-32.h \
     qabstractdevice.h \
     qgpibdevice.h
 
 INCLUDEPATH += ../lib/ \
 
-LIBS += -L../lib/ -lgpib-32.obj
+win32:LIBS += -L../lib/ -lgpib-32.obj
 
 FORMS    += mainwindow.ui
 

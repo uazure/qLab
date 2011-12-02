@@ -1,5 +1,6 @@
 #include "qabstractdevice.h"
 
+
 QAbstractDevice::QAbstractDevice(deviceBusType type, QObject *parent) :
     QObject(parent)
 {

@@ -19,9 +19,6 @@ public:
     ~QAbstractDevice();
 
 
-
-
-
     /** The MAIN function of the deivce :)
       */
     virtual bool readValue(int channel, QByteArray *returnValue)=0;
