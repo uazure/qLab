@@ -29,3 +29,7 @@ int QAbstractDevice::deviceCount() {
 deviceBusType QAbstractDevice::busType() const {
     return busType();
 }
+
+const char *QAbstractDevice::shortName() const {
+    return shortname.data();
+}

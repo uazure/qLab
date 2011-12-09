@@ -38,6 +38,9 @@ public:
     /// Bus type of the device. GPIB or some other hw bus
     deviceBusType busType(void) const;
 
+    /// Shortcut for the device. It's used in .ini file to set up device properties
+    const char *shortName(void) const;
+
 private:
     /// Number of the instances of this class
     static int numdevices;
@@ -65,6 +68,7 @@ private:
 signals:
     void rx(int);
     void tx(int);
+    void errorMessage (QString);
 
 public slots:
 
