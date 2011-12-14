@@ -4,17 +4,33 @@ QGpibDevice::QGpibDevice(short gpib_id, QObject *parent) :
     QAbstractDevice (Gpib, parent)
 
 {
-    id=gpib_id;
+    // initialising gpib external variables;
+    ibsta=0x11;
+    iberr=0x22;
+    ibcnt=0x33;
+    ibcntl=0x44;
 
+    id=gpib_id;
+    handle=ibdev(0,id,NO_SAD,T300ms,1,0);
+    if (ibsta&ERR)
+    {
+        qDebug()<<"Gpib error: ibdev failed on device"<<shortName()<<"with id"<<Id();
+        emit errorMessage("Gpib error: ibdev failed");
+    }
+
+    if (isOnline()) {
+        this->getIdn();
+    }
 
 }
 
 /// Get identification string from the device
 bool QGpibDevice::getIdn() {
-
-    QByteArray query("IDN?");
+    QByteArray query("*IDN?");
     QByteArray response;
     if (ask (query,&response)) {
+        idn=response.trimmed();
+        qDebug()<<"Gpib device"<<Id()<<"handle"<<Handle()<<"ident"<<idn;
         return true;
     } else {
         return false;
@@ -33,7 +49,7 @@ int QGpibDevice::Handle() const {
 
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
 bool QGpibDevice::set(QByteArray command) {
-    ibwrt(this->handle,command.data(),command.size()+1);
+    ibwrt(this->handle,command.data(),command.size());
     if (ibsta&ERR) {
         qDebug()<<"Gpib error: ibwrt failed on device" <<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibwrt failed");
@@ -65,4 +81,36 @@ bool QGpibDevice::ask(QByteArray command, QByteArray *reply) {
         return false;
     }
     return true;
+}
+
+/// Implementation of QAbstractDevice virtual primary method for gpib deivce
+/** FIXME: This requres to read configuration for each device to know
+which commands to issue to the device. */
+bool QGpibDevice::readValue(int channel, QByteArray *returnValue) {
+    if (ask("DATA?",returnValue)) {
+        *returnValue=returnValue->trimmed();
+        qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<*returnValue;
+        return true;
+    }
+    return false;
+}
+
+/// This function checks if device is online. Returns true on success.
+bool QGpibDevice::isOnline() {
+    short listen;
+    ibln(handle,id,NO_SAD,&listen);
+    if (1==listen) {
+        qDebug()<<"Device"<<Id()<<"handle"<<Handle()<<"is ONLINE";
+        return true;
+    }
+    qWarning()<<"Device"<<Id()<<"handle"<<Handle()<<"is OFFLINE";
+    return false;
+}
+
+void QGpibDevice::resetDevice() {
+    QByteArray query("*RST");
+    if (! set (query)) {
+        qWarning()<<"Gpib device"<<Id()<<"handle"<<Handle()<<"Failed to ibwrt *RST command";
+    }
+    qDebug()<<"Gpib device"<<Id()<<"handle"<<Handle()<<"was RESET";
 }

@@ -14,7 +14,10 @@ HEADERS += mainwindow.h \
     qabstractdevice.h \
     qgpibdevice.h
 INCLUDEPATH += ../lib/
-win32:LIBS += -L../lib/ \
-    -lgpib-32.obj
+win32:LIBS += -L../lib/
+win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
+
 FORMS += mainwindow.ui
-OTHER_FILES += ../README.txt
+OTHER_FILES += ../README.txt \
+../lib/gpib-32.dll \
+../lib/gpib-32.obj

@@ -13,16 +13,30 @@ public:
     explicit QGpibDevice(short int gpib_id, QObject *parent = 0);
     int Id(void) const;
     int Handle(void) const;
+    bool readValue(int channel, QByteArray *returnValue);
+
+    bool isOnline(void);
+    void resetDevice();
 
 private:
 
+    /// gpib external variables allocation
+    int ibsta,iberr,ibcnt;
+    long int ibcntl;
+
+    /// gpib id
     short int id;
+
+    /// current gpib channel
     int channel;
+
+    /// handle of the device
     int handle;
-    bool getIdn(void);
+
     bool set (QByteArray command);
     bool get (QByteArray *reply);
     bool ask (QByteArray command, QByteArray *reply);
+    bool getIdn(void);
 
 
 signals:

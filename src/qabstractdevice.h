@@ -23,11 +23,14 @@ public:
       */
     virtual bool readValue(int channel, QByteArray *returnValue)=0;
 
+    /// Second main function :)
+    virtual void resetDevice(void)=0;
+
     /// Amount of received data from physical device/driver
-    virtual long int rx(void)=0;
+    //virtual long int rx(void)=0;
 
     /// Amount of data transmitted to physical device/driver
-    virtual long int tx(void)=0;
+    //virtual long int tx(void)=0;
 
     /// Number of all devices (instances of this class)
     static int deviceCount(void);
@@ -50,6 +53,7 @@ private:
     */
     int numdevice;
 
+protected:
     /// Device bus type
     int bus;
 

@@ -33,3 +33,4 @@ deviceBusType QAbstractDevice::busType() const {
 const char *QAbstractDevice::shortName() const {
     return shortname.data();
 }
+
