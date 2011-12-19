@@ -1,6 +1,6 @@
 #include "qgpibdevice.h"
 
-QGpibDevice::QGpibDevice(short gpib_id, QObject *parent) :
+QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     QAbstractDevice (Gpib, parent)
 
 {
@@ -10,7 +10,13 @@ QGpibDevice::QGpibDevice(short gpib_id, QObject *parent) :
     ibcnt=0x33;
     ibcntl=0x44;
 
-    id=gpib_id;
+    shortname=DeviceShortName;
+    QSettings settings;
+    id=settings.value(shortname.append("/id"),0).toInt();
+    if (!id) {
+        qWarning()<<"Device:"<<shortname<<"id read from config file is"<<id;
+    }
+
     handle=ibdev(0,id,NO_SAD,T300ms,1,0);
     if (ibsta&ERR)
     {
@@ -59,7 +65,7 @@ bool QGpibDevice::set(QByteArray command) {
 }
 
 /// Read data from the gpib device. Returns true on success or false on failure.
-bool QGpibDevice::get(QByteArray *reply) {
+bool QGpibDevice::get(QByteArray &reply) {
     char tmp[255];
     ibrd(Handle(),tmp,255);
     if (ibsta&ERR) {
@@ -67,12 +73,12 @@ bool QGpibDevice::get(QByteArray *reply) {
         emit errorMessage("Gpib error: ibrd failed");
         return false;
     }
-    reply->append(tmp);
+    reply.append(tmp);
     return true;
 }
 
 /// Handful method for asking gpib device for value. Returns true on success or false on failure.
-bool QGpibDevice::ask(QByteArray command, QByteArray *reply) {
+bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
     if (!set(command)) {
         return false;
     }
@@ -86,10 +92,10 @@ bool QGpibDevice::ask(QByteArray command, QByteArray *reply) {
 /// Implementation of QAbstractDevice virtual primary method for gpib deivce
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
-bool QGpibDevice::readValue(int channel, QByteArray *returnValue) {
+bool QGpibDevice::readValue(int channel, QByteArray &returnValue) {
     if (ask("DATA?",returnValue)) {
-        *returnValue=returnValue->trimmed();
-        qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<*returnValue;
+        returnValue=returnValue.trimmed();
+        qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
     }
     return false;

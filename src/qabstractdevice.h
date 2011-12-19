@@ -21,7 +21,7 @@ public:
 
     /** The MAIN function of the deivce :)
       */
-    virtual bool readValue(int channel, QByteArray *returnValue)=0;
+    virtual bool readValue(int channel, QByteArray &returnValue)=0;
 
     /// Second main function :)
     virtual void resetDevice(void)=0;
@@ -52,6 +52,18 @@ private:
       Each device then can know that it is n'th of total m devices
     */
     int numdevice;
+
+    /// Factor - is the coefficient that us ysed for
+    double factor;
+    double min_value;
+    double max_value;
+    double scale_hint;
+    QString unit;
+    QString label;
+
+
+
+
 
 protected:
     /// Device bus type

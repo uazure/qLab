@@ -5,15 +5,16 @@
 #include "qabstractdevice.h"
 #include <QDebug>
 #include <QByteArray>
+#include <QSettings>
 
 class QGpibDevice : public QAbstractDevice
 {
     Q_OBJECT
 public:
-    explicit QGpibDevice(short int gpib_id, QObject *parent = 0);
+    explicit QGpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
     int Id(void) const;
     int Handle(void) const;
-    bool readValue(int channel, QByteArray *returnValue);
+    bool readValue(int channel, QByteArray &returnValue);
 
     bool isOnline(void);
     void resetDevice();
