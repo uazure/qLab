@@ -35,8 +35,8 @@ private:
     int handle;
 
     bool set (QByteArray command);
-    bool get (QByteArray *reply);
-    bool ask (QByteArray command, QByteArray *reply);
+    bool get (QByteArray &reply);
+    bool ask (QByteArray command, QByteArray &reply);
     bool getIdn(void);
 
 

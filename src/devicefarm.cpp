@@ -5,7 +5,7 @@ DeviceFarm::DeviceFarm()
 
 }
 
-static DeviceFarm::getDeviceObject(char *DeviceShortName) {
+static QAbstractDevice * DeviceFarm::getDeviceObject(char *DeviceShortName) {
     QByteArray shortname=DeviceShortName;
     QSettings settings;
     QString request=shortname;
