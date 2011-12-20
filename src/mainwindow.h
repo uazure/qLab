@@ -18,6 +18,11 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void setFullscreen(bool isFullscreen);
+    void showAboutQt(void);
+
 };
 
 #endif // MAINWINDOW_H

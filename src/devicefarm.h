@@ -27,9 +27,6 @@ public:
       */
 
     static QAbstractDevice * getDeviceObject(QByteArray &DeviceShortName);
-
-    //QAbstractDevice *device=DeviceFarm::getDeviceObject("gpib");
-
 };
 
 #endif // DEVICEFARM_H

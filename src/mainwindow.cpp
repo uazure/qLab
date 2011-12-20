@@ -11,16 +11,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
+    connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
+    connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
 
-
-
-//    QSystemTrayIcon *systemTrayIcon=new QSystemTrayIcon(QIcon::QIcon(":/global/qt-logo.png"),this);
-//
-//    QMenu trayMenu;
-//    QAction exitAct=trayMenu.addAction("Exit");
-//
-//    trayIcon->setContextMenu(&trayMenu);
-//    trayIcon->show();
 
     QByteArray shortname="k2000";
 
@@ -29,11 +23,20 @@ MainWindow::MainWindow(QWidget *parent) :
     dev->readValue(arr);
     ui->label->setText(arr);
     delete dev;
-
-
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setFullscreen(bool a) {
+    if (a)
+     this->setWindowState(Qt::WindowFullScreen);
+    else
+     this->setWindowState(Qt::WindowNoState);
+}
+
+void MainWindow::showAboutQt(void) {
+    QApplication::aboutQt();
 }
