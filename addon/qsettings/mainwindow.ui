@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QLineEdit" name="OrganizationName">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>113</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Organisation Name</string>
+    </property>
+    <property name="text">
+     <string>qLab</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="AppName">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>20</y>
+      <width>113</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>App Name</string>
+    </property>
+    <property name="text">
+     <string>devices</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="Key">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>181</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Key</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ReadSettings">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>111</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(112, 170, 35);</string>
+    </property>
+    <property name="text">
+     <string>Read Settings</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="WriteSettings">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>230</y>
+      <width>111</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(134, 29, 29);</string>
+    </property>
+    <property name="text">
+     <string>Write Settings</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ScopeSelector">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>151</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>User Scope</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>System Scope</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPlainTextEdit" name="Value">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>130</y>
+      <width>301</width>
+      <height>84</height>
+     </rect>
+    </property>
+    <property name="tabChangesFocus">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>OrganizationName</tabstop>
+  <tabstop>AppName</tabstop>
+  <tabstop>ScopeSelector</tabstop>
+  <tabstop>Key</tabstop>
+  <tabstop>Value</tabstop>
+  <tabstop>ReadSettings</tabstop>
+  <tabstop>WriteSettings</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

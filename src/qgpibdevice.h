@@ -5,7 +5,9 @@
 #include "qabstractdevice.h"
 #include <QDebug>
 #include <QByteArray>
+#include <QStringList>
 #include <QSettings>
+#include <QApplication>
 
 class QGpibDevice : public QAbstractDevice
 {
@@ -14,9 +16,16 @@ public:
     explicit QGpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
     int Id(void) const;
     int Handle(void) const;
-    bool readValue(int channel, QByteArray &returnValue);
+    /** Implementation of QAbstractDevice method. Reads value from specified
+      channel. If channel is not specified or if channel==0 then default
+    or last used channel is used.
+    */
+    bool readValue(QByteArray &returnValue,int channel=0);
 
+    /** Checks if device is online */
     bool isOnline(void);
+
+    /** Resets the device. It should be used if some errors occur with device */
     void resetDevice();
 
 private:
@@ -34,11 +43,13 @@ private:
     /// handle of the device
     int handle;
 
+    /// settings object
+    QSettings * settings;
+
     bool set (QByteArray command);
     bool get (QByteArray &reply);
     bool ask (QByteArray command, QByteArray &reply);
     bool getIdn(void);
-
 
 signals:
 

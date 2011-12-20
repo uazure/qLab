@@ -23,9 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
 //    trayIcon->show();
 
     QByteArray shortname="k2000";
-    QGpibDevice *dev = new QGpibDevice(shortname,this);
+
+    QAbstractDevice *dev = DeviceFarm::getDeviceObject(shortname);
     QByteArray arr;
-    dev->readValue(0,arr);
+    dev->readValue(arr);
     ui->label->setText(arr);
     delete dev;
 

@@ -11,14 +11,26 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     ibcntl=0x44;
 
     shortname=DeviceShortName;
-    QSettings settings;
-    id=settings.value(shortname.append("/id"),0).toInt();
+    settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
+        QApplication::organizationName(),"devices");
+
+    id=settings->value(shortname.append("/id"),0).toInt();
     if (!id) {
         qWarning()<<"Device:"<<shortname<<"id read from config file is"<<id;
     }
 
+    QStringList initStringList=settings->value(shortname.append("/command/init")).toStringList();
+    for (int i=0;i<initStringList.size()-1;i++) {
+        if (! set (initStringList.at(i).toLocal8Bit())) {
+            qWarning()<<"Device"<<shortname<<"init with"<<initStringList.at(i)<<"failed";
+        } else {
+            qDebug()<<"Device"<<shortname<<"init with"<<initStringList.at(1)<<"OK";
+        }
+    }
+
+// define handle to speak to device using ibwrt/ibrd functions
     handle=ibdev(0,id,NO_SAD,T300ms,1,0);
-    if (ibsta&ERR)
+        if (ibsta&ERR)
     {
         qDebug()<<"Gpib error: ibdev failed on device"<<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibdev failed");
@@ -34,7 +46,7 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
 bool QGpibDevice::getIdn() {
     QByteArray query("*IDN?");
     QByteArray response;
-    if (ask (query,&response)) {
+    if (ask (query,response)) {
         idn=response.trimmed();
         qDebug()<<"Gpib device"<<Id()<<"handle"<<Handle()<<"ident"<<idn;
         return true;
@@ -92,7 +104,7 @@ bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
 /// Implementation of QAbstractDevice virtual primary method for gpib deivce
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
-bool QGpibDevice::readValue(int channel, QByteArray &returnValue) {
+bool QGpibDevice::readValue(QByteArray &returnValue,int channel) {
     if (ask("DATA?",returnValue)) {
         returnValue=returnValue.trimmed();
         qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;

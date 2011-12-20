@@ -5,20 +5,24 @@ DeviceFarm::DeviceFarm()
 
 }
 
-static QAbstractDevice * DeviceFarm::getDeviceObject(char *DeviceShortName) {
+ QAbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName) {
     QByteArray shortname=DeviceShortName;
-    QSettings settings;
+    QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");
     QString request=shortname;
-    QByteArray bus=settings.value(request.append("/bus"));
+    QByteArray bus=settings->value(request.append("/bus")).toByteArray();
+    delete settings;
     qDebug()<<"Device:"<<shortname<<"bus:"<<bus;
 
     if (bus=="gpib") {
         QGpibDevice *device=new QGpibDevice(shortname);
+
+
         return device;
     }
 
     // if no device was created - return null pointer
-    return null;
+    qWarning()<<"Failed to create object for device"<<shortname<<"bus"<<bus;
+    return NULL;
 }
 
 

@@ -26,7 +26,9 @@ public:
       This method returns pointer to object on success or null on fail.
       */
 
-    static QAbstractDevice *getDeviceObject(char *DeviceShortName);
+    static QAbstractDevice * getDeviceObject(QByteArray &DeviceShortName);
+
+    //QAbstractDevice *device=DeviceFarm::getDeviceObject("gpib");
 
 };
 
