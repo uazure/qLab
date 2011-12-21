@@ -48,7 +48,7 @@ public:
     deviceBusType busType(void) const;
 
     /// Shortcut for the device. It's used in .ini file to set up device properties
-    const char *shortName(void) const;
+    const QString shortName(void) const;
 
     const double getFactor(void) const;
     void setFactor(double factor);

@@ -94,7 +94,7 @@ int QGpibDevice::Handle() const {
 }
 
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
-bool QGpibDevice::set(QByteArray command) {
+bool QGpibDevice::set(QString command) {
 #ifdef WIN32
     ibwrt(this->handle,command.data(),command.size());
     if (ibsta&ERR) {
@@ -122,7 +122,7 @@ bool QGpibDevice::get(QByteArray &reply) {
 }
 
 /// Handful method for asking gpib device for value. Returns true on success or false on failure.
-bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
+bool QGpibDevice::ask(QString command, QByteArray &reply) {
     if (!set(command)) {
         return false;
     }
@@ -137,7 +137,7 @@ bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
 bool QGpibDevice::readValue(QByteArray &returnValue,int channel) {
-    if (ask("DATA?",returnValue)) {
+    if (ask(readCommand,returnValue)) {
         returnValue=returnValue.trimmed();
         qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;

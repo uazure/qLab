@@ -27,4 +27,5 @@ void ExperimentConfigurationSelectDialog::changeEvent(QEvent *e)
 
 void ExperimentConfigurationSelectDialog::setExperimentList(QStringList &list) {
     ui->listWidget->insertItems(0,list);
+    ui->listWidget->setCurrentRow(0);
 }

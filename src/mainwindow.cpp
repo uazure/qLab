@@ -12,21 +12,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
 
-    QStringList experimentList=experimentSettings->childGroups();
-    qDebug()<<experimentList;
+
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
 
-
     /* We need to read all available sections from QSettings object for
     experiment types
        */
-
+    QStringList experimentList=experimentSettings->childGroups();
     ExperimentConfigurationSelectDialog *dialog=new ExperimentConfigurationSelectDialog(this);
     dialog->setExperimentList(experimentList);
+
     dialog->show();
+
 
 
     QByteArray shortname="k2000";
@@ -46,9 +46,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::setFullscreen(bool a) {
     if (a)
-     this->setWindowState(Qt::WindowFullScreen);
+     setWindowState(Qt::WindowFullScreen);
     else
-     this->setWindowState(Qt::WindowNoState);
+     setWindowState(windowState() ^ Qt::WindowFullScreen);
 }
 
 void MainWindow::showAboutQt(void) {
