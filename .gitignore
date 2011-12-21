@@ -3,3 +3,5 @@ doc/
 install/
 *.pro.user
 moc_*
+ui_*.h
+*.o

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QDebug>
 
 /// Bus type enumertion. Gpib bus or some other.
 enum deviceBusType {

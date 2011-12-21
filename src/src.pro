@@ -17,6 +17,7 @@ HEADERS += mainwindow.h \
     devicefarm.h
 INCLUDEPATH += ../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
+win32:DEFINES += WIN32
 FORMS += mainwindow.ui
 OTHER_FILES += ../README.txt \
     ../lib/gpib-32.dll \

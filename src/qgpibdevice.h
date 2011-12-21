@@ -1,7 +1,10 @@
 #ifndef QGPIBDEVICE_H
 #define QGPIBDEVICE_H
 
+#ifdef WIN32
 #include "gpib-32.h"
+#endif
+
 #include "qabstractdevice.h"
 #include <QDebug>
 #include <QByteArray>
@@ -14,6 +17,7 @@ class QGpibDevice : public QAbstractDevice
     Q_OBJECT
 public:
     explicit QGpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
+    ~QGpibDevice();
     int Id(void) const;
     int Handle(void) const;
     /** Implementation of QAbstractDevice method. Reads value from specified
@@ -43,8 +47,10 @@ private:
     /// handle of the device
     int handle;
 
-    /// settings object
-    QSettings * settings;
+    /// device-specific settings object
+    QSettings *settings;
+    /// experiment specific settings object
+    QSettings *experimentSettings;
 
     bool set (QByteArray command);
     bool get (QByteArray &reply);

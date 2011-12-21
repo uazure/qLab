@@ -13,6 +13,8 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     shortname=DeviceShortName;
     settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
         QApplication::organizationName(),"devices");
+    experimentSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
+                                     QApplication::organizationName(),"qlab-experiment");
 
     id=settings->value(shortname.append("/id"),0).toInt();
     if (!id) {
@@ -29,7 +31,9 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     }
 
 // define handle to speak to device using ibwrt/ibrd functions
+#ifdef WIN32
     handle=ibdev(0,id,NO_SAD,T300ms,1,0);
+
         if (ibsta&ERR)
     {
         qDebug()<<"Gpib error: ibdev failed on device"<<shortName()<<"with id"<<Id();
@@ -39,7 +43,13 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     if (isOnline()) {
         this->getIdn();
     }
+#endif
 
+}
+
+QGpibDevice::~QGpibDevice() {
+    delete settings;
+    delete experimentSettings;
 }
 
 /// Get identification string from the device
@@ -67,17 +77,20 @@ int QGpibDevice::Handle() const {
 
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
 bool QGpibDevice::set(QByteArray command) {
+#ifdef WIN32
     ibwrt(this->handle,command.data(),command.size());
     if (ibsta&ERR) {
         qDebug()<<"Gpib error: ibwrt failed on device" <<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibwrt failed");
         return false;
     }
+#endif
     return true;
 }
 
 /// Read data from the gpib device. Returns true on success or false on failure.
 bool QGpibDevice::get(QByteArray &reply) {
+#ifdef WIN32
     char tmp[255];
     ibrd(Handle(),tmp,255);
     if (ibsta&ERR) {
@@ -86,6 +99,7 @@ bool QGpibDevice::get(QByteArray &reply) {
         return false;
     }
     reply.append(tmp);
+#endif
     return true;
 }
 
@@ -115,6 +129,7 @@ bool QGpibDevice::readValue(QByteArray &returnValue,int channel) {
 
 /// This function checks if device is online. Returns true on success.
 bool QGpibDevice::isOnline() {
+#ifdef WIN32
     short listen;
     ibln(handle,id,NO_SAD,&listen);
     if (1==listen) {
@@ -123,6 +138,8 @@ bool QGpibDevice::isOnline() {
     }
     qWarning()<<"Device"<<Id()<<"handle"<<Handle()<<"is OFFLINE";
     return false;
+#endif
+    return true;
 }
 
 void QGpibDevice::resetDevice() {

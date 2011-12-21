@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
 
 
+
     QByteArray shortname="k2000";
 
     QAbstractDevice *dev = DeviceFarm::getDeviceObject(shortname);
