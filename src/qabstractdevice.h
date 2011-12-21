@@ -50,6 +50,25 @@ public:
     /// Shortcut for the device. It's used in .ini file to set up device properties
     const char *shortName(void) const;
 
+    const double getFactor(void) const;
+    void setFactor(double factor);
+
+    const double getMinValue(void) const;
+    void setMinValue(double min_value);
+
+    const double getMaxValue(void) const;
+    void setMaxValue(double max_value);
+
+    const double getScaleHint(void) const;
+    void setScaleHint(double scale_hint);
+
+    const QString getUnit(void) const;
+    void setUnit(QString unit);
+
+    const QString getLabel(void) const;
+    void setLabel(QString label);
+
+
 private:
     /// Number of the instances of this class
     static int numdevices;

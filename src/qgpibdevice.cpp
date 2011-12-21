@@ -1,7 +1,7 @@
 #include "qgpibdevice.h"
 
 QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
-    QAbstractDevice (Gpib, parent)
+        QAbstractDevice (Gpib, parent)
 
 {
     // initialising gpib external variables;
@@ -11,30 +11,22 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     ibcntl=0x44;
 
     shortname=DeviceShortName;
-    settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
-        QApplication::organizationName(),"devices");
+    deviceSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
+                                 QApplication::organizationName(),"devices");
     experimentSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,
-                                     QApplication::organizationName(),"qlab-experiment");
+                                     QApplication::organizationName(),"experiment");
 
-    id=settings->value(shortname.append("/id"),0).toInt();
+    /// Read id from settings object (ini file)
+    id=deviceSettings->value(shortname+"/id",0).toInt();
     if (!id) {
         qWarning()<<"Device:"<<shortname<<"id read from config file is"<<id;
     }
 
-    QStringList initStringList=settings->value(shortname.append("/command/init")).toStringList();
-    for (int i=0;i<initStringList.size()-1;i++) {
-        if (! set (initStringList.at(i).toLocal8Bit())) {
-            qWarning()<<"Device"<<shortname<<"init with"<<initStringList.at(i)<<"failed";
-        } else {
-            qDebug()<<"Device"<<shortname<<"init with"<<initStringList.at(1)<<"OK";
-        }
-    }
-
-// define handle to speak to device using ibwrt/ibrd functions
+    // define handle to speak to device using ibwrt/ibrd functions
 #ifdef WIN32
     handle=ibdev(0,id,NO_SAD,T300ms,1,0);
 
-        if (ibsta&ERR)
+    if (ibsta&ERR)
     {
         qDebug()<<"Gpib error: ibdev failed on device"<<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibdev failed");
@@ -45,10 +37,36 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     }
 #endif
 
+    // Read init string for the device from settings object
+    QString tmpstring=deviceSettings->value (shortname+"/command/init").toString();
+    QStringList initStringList = tmpstring.split("\n",QString::SkipEmptyParts,Qt::CaseSensitive);
+    qDebug()<<initStringList;
+
+    //go thru init strings and execute each string as gpib command
+    for (int i=0;i<initStringList.size();i++) {
+        if (! set (initStringList.at(i).toLocal8Bit())) {
+            qWarning()<<"Device"<<shortname<<"init with"<<initStringList.at(i)<<"failed";
+        } else {
+            qDebug()<<"Device"<<shortname<<"init with"<<initStringList.at(i)<<"OK";
+        }
+    }
+
+    //next step is to identify read and channel commands
+    readCommand=deviceSettings->value(shortname+"/command/read").toString();
+    if (readCommand.isEmpty()) {
+        qWarning()<<"Device"<<shortname<<"read command is empty";
+    } else {
+        qDebug()<<"Device"<<shortname<<"read command is"<<readCommand;
+    }
+
+    channelCommand=deviceSettings->value(shortname+"/command/channel").toString();
+    qDebug()<<"Device"<<shortname<<"channel command is"<<channelCommand;
+
+
 }
 
 QGpibDevice::~QGpibDevice() {
-    delete settings;
+    delete deviceSettings;
     delete experimentSettings;
 }
 

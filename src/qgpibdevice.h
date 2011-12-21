@@ -48,9 +48,21 @@ private:
     int handle;
 
     /// device-specific settings object
-    QSettings *settings;
+    QSettings *deviceSettings;
     /// experiment specific settings object
     QSettings *experimentSettings;
+
+    /** Command that will cause gpib device to read channel
+      This string can contain %n that will be replaced with channel number (integer),
+      so it's possible to specify one string to read data from many channels
+      */
+    QString readCommand;
+
+    /** Some devices (k2700 for example) needs separate command to switch to channel.
+      If channelCommand is not empty than it will be triggered on device init and on every request for data from non-last channel
+      */
+    QString channelCommand;
+
 
     bool set (QByteArray command);
     bool get (QByteArray &reply);
