@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "devicefarm.h"
+#include "experimentconfigurationselectdialog.h"
+#include <QSettings>
 
 namespace Ui {
     class MainWindow;
@@ -18,6 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QSettings *experimentSettings;
 
 private slots:
     void setFullscreen(bool isFullscreen);

@@ -9,16 +9,19 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     qabstractdevice.cpp \
     qgpibdevice.cpp \
-    devicefarm.cpp
+    devicefarm.cpp \
+    experimentconfigurationselectdialog.cpp
 HEADERS += mainwindow.h \
     gpib-32.h \
     qabstractdevice.h \
     qgpibdevice.h \
-    devicefarm.h
+    devicefarm.h \
+    experimentconfigurationselectdialog.h
 INCLUDEPATH += ../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+    experimentconfigurationselectdialog.ui
 OTHER_FILES += ../README.txt \
     ../lib/gpib-32.dll \
     ../lib/gpib-32.obj
