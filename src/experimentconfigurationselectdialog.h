@@ -14,12 +14,18 @@ public:
     ~ExperimentConfigurationSelectDialog();
 
     void setExperimentList(QStringList &list);
+    void accept();
+    void reject();
 
 protected:
     void changeEvent(QEvent *e);
 
 private:
     Ui::ExperimentConfigurationSelectDialog *ui;
+
+signals:
+    void experimentSelected(QString experiment);
+
 };
 
 #endif // EXPERIMENTCONFIGURATIONSELECTDIALOG_H

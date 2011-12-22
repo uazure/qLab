@@ -23,6 +23,7 @@ public:
     /** The MAIN function of the deivce :)
       */
     virtual bool readValue(QByteArray &returnValue,int channel=0)=0;
+    virtual bool readValue(QByteArray &returnValue,QByteArray a="",QByteArray b="")=0;
 
     /// Second main function :)
     virtual void resetDevice(void)=0;

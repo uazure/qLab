@@ -6,10 +6,12 @@ ExperimentConfigurationSelectDialog::ExperimentConfigurationSelectDialog(QWidget
     ui(new Ui::ExperimentConfigurationSelectDialog)
 {
     ui->setupUi(this);
+    qDebug("ExperimentConfigurationSelectDialog created");
 }
 
 ExperimentConfigurationSelectDialog::~ExperimentConfigurationSelectDialog()
 {
+    qDebug("ExperimentConfigurationSelectDialog deleted");
     delete ui;
 }
 
@@ -28,4 +30,19 @@ void ExperimentConfigurationSelectDialog::changeEvent(QEvent *e)
 void ExperimentConfigurationSelectDialog::setExperimentList(QStringList &list) {
     ui->listWidget->insertItems(0,list);
     ui->listWidget->setCurrentRow(0);
+}
+
+void ExperimentConfigurationSelectDialog::accept() {
+    QString value=ui->listWidget->currentIndex().data(Qt::DisplayRole).toString();
+    emit experimentSelected(value);
+    hide();
+    close();
+    delete this;
+}
+
+void ExperimentConfigurationSelectDialog::reject() {
+    emit rejected();
+    hide();
+    close();
+    delete this;
 }

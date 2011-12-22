@@ -5,6 +5,7 @@
 #include "devicefarm.h"
 #include "experimentconfigurationselectdialog.h"
 #include <QSettings>
+#include <QLabel>
 
 namespace Ui {
     class MainWindow;
@@ -21,10 +22,19 @@ public:
 private:
     Ui::MainWindow *ui;
     QSettings *experimentSettings;
+    QLabel experimentLabel;
+    QString experiment;
+    QStringList devices;
+    QList <QStringList> parameters;
+    //QList <QAbstractDevice> *deviceList;
 
 private slots:
     void setFullscreen(bool isFullscreen);
+    void getExperiment();
     void showAboutQt(void);
+
+public slots:
+    void setExperiment(QString experiment);
 
 };
 

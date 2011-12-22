@@ -145,6 +145,11 @@ bool QGpibDevice::readValue(QByteArray &returnValue,int channel) {
     return false;
 }
 
+bool QGpibDevice::readValue(QByteArray &returnValue, QByteArray a, QByteArray b) {
+    returnValue="readValue not implemented in class QGpibDevice";
+    return true;
+}
+
 /// This function checks if device is online. Returns true on success.
 bool QGpibDevice::isOnline() {
 #ifdef WIN32

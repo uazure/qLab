@@ -25,6 +25,7 @@ public:
     or last used channel is used.
     */
     bool readValue(QByteArray &returnValue,int channel=0);
+    bool readValue(QByteArray &returnValue,QByteArray a="",QByteArray b="");
 
     /** Checks if device is online */
     bool isOnline(void);
