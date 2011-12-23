@@ -7,6 +7,8 @@
 
 /// Bus type enumertion. Gpib bus or some other.
 enum deviceBusType {
+    Time,
+    Utime,
     Gpib,
     Multi
 };
@@ -49,7 +51,8 @@ public:
     deviceBusType busType(void) const;
 
     /// Shortcut for the device. It's used in .ini file to set up device properties
-    const QString shortName(void) const;
+    //const QString shortName(void) const;
+    const QByteArray shortName(void) const;
 
     double getFactor(void) const;
     void setFactor(double factor);

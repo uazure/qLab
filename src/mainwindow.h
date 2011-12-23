@@ -26,7 +26,8 @@ private:
     QString experiment;
     QStringList devices;
     QList <QStringList> parameters;
-    //QList <QAbstractDevice> *deviceList;
+    void initDevices();
+    QList <QAbstractDevice *> deviceList;
 
 private slots:
     void setFullscreen(bool isFullscreen);

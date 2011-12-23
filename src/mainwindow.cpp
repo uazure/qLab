@@ -78,7 +78,6 @@ void MainWindow::setExperiment(QString  experiment) {
     QString out=experimentSettings->value(experiment+"/out").toString();
     qDebug()<<"Output read from"<<experiment<<"config:"<<out;
     QStringList outList=out.split(",",QString::SkipEmptyParts);
-    qDebug()<<outList;
     QString tmp;
     // clear device list
     devices.clear();
@@ -102,4 +101,22 @@ void MainWindow::setExperiment(QString  experiment) {
         }
     }
     qDebug()<<"Config read:\nDevices:"<<devices<<"\nParameters:"<<parameters;
+    initDevices();
+}
+
+void MainWindow::initDevices() {
+    deviceList.clear();
+    for (int i=0;i<devices.size();i++) {
+        QByteArray deviceName=devices.at(i).toAscii();
+        deviceList.append(DeviceFarm::getDeviceObject(deviceName));
+        qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
+        deviceList[i]->setFactor(experimentSettings->value(experiment+"/"+deviceName+"/factor",0).toDouble());
+        deviceList[i]->setMinValue(experimentSettings->value(experiment+"/"+deviceName+"/min_value",0).toDouble());
+        deviceList[i]->setMaxValue(experimentSettings->value(experiment+"/"+deviceName+"/max_value",100).toDouble());
+        deviceList[i]->setScaleHint(experimentSettings->value(experiment+"/"+deviceName+"/scale_hint",5).toDouble());
+        deviceList[i]->setUnit(experimentSettings->value(experiment+"/"+deviceName+"/unit","Unit").toString());
+        deviceList[i]->setLabel(experimentSettings->value(experiment+"/"+deviceName+"/label","").toString());
+
+    }
+
 }

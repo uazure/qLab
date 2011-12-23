@@ -37,13 +37,18 @@ deviceBusType QAbstractDevice::busType() const {
     return busType();
 }
 
-//const char *QAbstractDevice::shortName() const {
+//const char * QAbstractDevice::shortName() const {
 //    return shortname.data();
 //}
 
-const QString QAbstractDevice::shortName(void) const {
-    return QString(shortname);
+const QByteArray QAbstractDevice::shortName() const {
+    return shortname;
 }
+
+//const QString QAbstractDevice::shortName(void) const {
+//    return QString(shortname);
+//}
+
 double QAbstractDevice::getFactor() const {
     return factor;
 }
