@@ -82,13 +82,24 @@ void MainWindow::setExperiment(QString  experiment) {
     QString tmp;
     // clear device list
     devices.clear();
-    for (int i=0, tmpint=0;i<outList.size();i++) {
+    parameters.clear();
+    for (int i=0;i<outList.size();i++) {
         tmp=outList.at(i);
-        // append string section before '(' as device
-        // String is expected in format device(channel1;[channel2;])
-        devices.append(tmp.left(tmp.indexOf('(')));
+        tmp=tmp.trimmed();
+        if (tmp.indexOf('(')==-1) {
+            devices.append(tmp);
+            parameters.append(QStringList());
 
-        // extract arguments specified in brackets
-        tmp=tmp.mid(tmp.indexOf('(')+1,tmp.indexOf(')')-tmp.indexOf('(')-1);
+        } else {
+            devices.append(tmp.left(tmp.indexOf('(')).trimmed());
+            // extract arguments specified in brackets separated with ';'
+            tmp=tmp.mid(tmp.indexOf('(')+1,tmp.indexOf(')')-tmp.indexOf('(')-1).trimmed();
+            QStringList tmpstringlist=tmp.split(';');
+            for (int j=0;j<tmpstringlist.size();j++) {
+                tmpstringlist[j]=tmpstringlist[j].trimmed();
+            }
+            parameters.append(tmpstringlist);
+        }
     }
+    qDebug()<<"Config read:\nDevices:"<<devices<<"\nParameters:"<<parameters;
 }

@@ -44,7 +44,7 @@ deviceBusType QAbstractDevice::busType() const {
 const QString QAbstractDevice::shortName(void) const {
     return QString(shortname);
 }
-const double QAbstractDevice::getFactor() const {
+double QAbstractDevice::getFactor() const {
     return factor;
 }
 
@@ -52,7 +52,7 @@ void QAbstractDevice::setFactor(double factor) {
     this->factor=factor;
 }
 
-const double QAbstractDevice::getMinValue() const {
+double QAbstractDevice::getMinValue() const {
     return min_value;
 }
 
@@ -60,7 +60,7 @@ void QAbstractDevice::setMinValue(double min_value) {
     this->min_value=min_value;
 }
 
-const double QAbstractDevice::getMaxValue() const {
+double QAbstractDevice::getMaxValue() const {
     return max_value;
 }
 
@@ -68,7 +68,7 @@ void QAbstractDevice::setMaxValue(double max_value) {
     this->max_value=max_value;
 }
 
-const double QAbstractDevice::getScaleHint() const {
+double QAbstractDevice::getScaleHint() const {
     return scale_hint;
 }
 
