@@ -2,6 +2,7 @@
 #define DEVICEFARM_H
 #include "qabstractdevice.h"
 #include "qgpibdevice.h"
+#include "qtimedevice.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QApplication>

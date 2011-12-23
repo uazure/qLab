@@ -136,18 +136,13 @@ bool QGpibDevice::ask(QString command, QByteArray &reply) {
 /// Implementation of QAbstractDevice virtual primary method for gpib deivce
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
-bool QGpibDevice::readValue(QByteArray &returnValue,int channel) {
+bool QGpibDevice::readValue(QByteArray &returnValue, QStringList &) {
     if (ask(readCommand,returnValue)) {
         returnValue=returnValue.trimmed();
         qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
     }
     return false;
-}
-
-bool QGpibDevice::readValue(QByteArray &returnValue, QByteArray a, QByteArray b) {
-    returnValue="readValue not implemented in class QGpibDevice";
-    return true;
 }
 
 /// This function checks if device is online. Returns true on success.

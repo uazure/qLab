@@ -24,11 +24,11 @@ public:
 
     /** The MAIN function of the deivce :)
       */
-    virtual bool readValue(QByteArray &returnValue,int channel=0)=0;
-    virtual bool readValue(QByteArray &returnValue,QByteArray a="",QByteArray b="")=0;
+    //virtual bool readValue(QByteArray &returnValue,int channel=0)=0;
+    virtual bool readValue(QByteArray &returnValue, QStringList &parameters)=0;
 
     /// Second main function :)
-    virtual void resetDevice(void)=0;
+    virtual void resetDevice(void);
 
     /** Function that initializes device before use. Default is to do nothing.
       This function normally should be overwritten by child classes if

@@ -96,3 +96,7 @@ void QAbstractDevice::setUnit(QString unit) {
 const QString QAbstractDevice::getUnit() const {
     return unit;
 }
+
+void QAbstractDevice::resetDevice() {
+    return;
+}

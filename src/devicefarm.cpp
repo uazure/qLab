@@ -7,6 +7,15 @@ DeviceFarm::DeviceFarm()
 
  QAbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName) {
     QByteArray shortname=DeviceShortName;
+    if (shortname=="time") {
+        return new QTimeDevice();
+    }
+
+    if (shortname=="utime") {
+        qWarning()<<"utime device not implemented yet";
+        return NULL;
+    }
+
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");
     QString request=shortname;
     QByteArray bus=settings->value(request.append("/bus")).toByteArray();
