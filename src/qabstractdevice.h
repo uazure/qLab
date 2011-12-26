@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QDebug>
+#include <QStringList>
 
 /// Bus type enumertion. Gpib bus or some other.
 enum deviceBusType {
@@ -26,7 +27,7 @@ public:
     /** The MAIN function of the deivce :)
       */
     //virtual bool readValue(QByteArray &returnValue,int channel=0)=0;
-    virtual bool readValue(QByteArray &returnValue, QStringList &parameters)=0;
+    virtual bool readValue(QByteArray &returnValue, QStringList parameters=QStringList())=0;
 
     /// Second main function :)
     virtual void resetDevice(void);

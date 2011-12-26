@@ -10,7 +10,7 @@ class QTimeDevice : public QAbstractDevice
 Q_OBJECT
 public:
     explicit QTimeDevice(QObject *parent = 0);
-    bool readValue(QByteArray &returnValue, QStringList &parameters);
+    bool readValue(QByteArray &returnValue, QStringList parameters);
 
 signals:
 

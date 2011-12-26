@@ -37,7 +37,6 @@ private slots:
 
 public slots:
     void setExperiment(QString experiment);
-
 };
 
 #endif // MAINWINDOW_H

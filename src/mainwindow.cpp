@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
     connect(ui->actionNew_experiment,SIGNAL(triggered()),this,SLOT(getExperiment()));
     connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
+    connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
 
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");

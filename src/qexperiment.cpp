@@ -5,10 +5,14 @@ QExperiment::QExperiment(QString name, QObject *parent) :
 {
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
+    timer=new QTimer(this);
+    timer->setInterval(2000);
+    timer->connect (timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
 }
 
 QExperiment::~QExperiment() {
     delete settings;
+    delete timer;
 }
 
 void QExperiment::setExperiment(QString experiment) {
@@ -40,6 +44,7 @@ void QExperiment::setExperiment(QString experiment) {
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
     initDevices();
+    timer->start();
 }
 
 void QExperiment::initDevices() {
@@ -71,4 +76,15 @@ void QExperiment::setName(QString name) {
 
 QString QExperiment::getName() const {
     return name;
+}
+
+void QExperiment::doMeasure() {
+    qDebug("MEASURE STARTED");
+    QByteArray tmp, output;
+    for (int i=0;i<deviceList.size() && i<parametersList.size();i++) {
+        deviceList.at(i)->readValue(tmp,parametersList.at(i));
+        qDebug()<<tmp;
+        output.append(tmp).append("\t");
+    }
+    emit measured(output.trimmed());
 }

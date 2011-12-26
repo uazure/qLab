@@ -7,6 +7,7 @@ QUtimeDevice::QUtimeDevice(QObject *parent) :
     bus=Utime;
 }
 
-bool QUtimeDevice::readValue(QByteArray &returnValue, QStringList &parameters) {
-    returnValue=QByteArray::number(QDateTime().toTime_t());
+bool QUtimeDevice::readValue(QByteArray &returnValue, QStringList parameters) {
+    returnValue=QByteArray::number(QDateTime::currentDateTime().toTime_t())+"."+QTime::currentTime().toString("zzz").toAscii();
+    return true;
 }

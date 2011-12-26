@@ -7,7 +7,7 @@ QTimeDevice::QTimeDevice(QObject *parent) :
     bus=Time;
 }
 
-bool QTimeDevice::readValue(QByteArray &returnValue, QStringList &parameters) {
+bool QTimeDevice::readValue(QByteArray &returnValue, QStringList parameters=QStringList()) {
     //QTime time=QTime::currentTime();
     returnValue=QTime::currentTime().toString("H:mm:ss").toAscii();
 }
