@@ -6,25 +6,33 @@
 #include <QString>
 #include <QList>
 #include <QStringList>
+#include <QSettings>
+#include <QApplication>
+#include "devicefarm.h"
 
-class qExperiment : public QObject
+class QExperiment : public QObject
 {
 Q_OBJECT
 
 public:
-    explicit qExperiment(QString name,QObject *parent = 0);
+    explicit QExperiment(QString name="",QObject *parent = 0);
+    ~QExperiment();
+
+    void initDevices();
 
 
     private:
     QString name;
+    QStringList deviceStringList;
     QList <QAbstractDevice *> deviceList;
-    QList <QStringList> parameters;
-    void initDevices();
+    QList <QStringList> parametersList;
+    QSettings *settings;
+
 
 signals:
 
 public slots:
-
+    void setExperiment(QString experiment);
 };
 
 #endif // QEXPERIMENT_H
