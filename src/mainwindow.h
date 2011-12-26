@@ -33,7 +33,7 @@ private:
 private slots:
     void setFullscreen(bool isFullscreen);
     void getExperiment();
-    void showAboutQt(void);
+    void showAboutQt();
 
 public slots:
     void setExperiment(QString experiment);

@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
     connect(ui->actionNew_experiment,SIGNAL(triggered()),this,SLOT(getExperiment()));
+    connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
 
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");
@@ -53,7 +54,7 @@ void MainWindow::getExperiment() {
     QStringList experimentList=experimentSettings->childGroups();
     ExperimentConfigurationSelectDialog *dialog=new ExperimentConfigurationSelectDialog(this);
     dialog->setExperimentList(experimentList);
-    dialog->connect (dialog,SIGNAL(experimentSelected(QString)),this,SLOT(setExperiment(QString)));
+    dialog->connect (dialog,SIGNAL(experimentSelected(QString)),experiment,SLOT(setExperiment(QString)));
     dialog->show();
 }
 
@@ -62,11 +63,5 @@ void MainWindow::setExperiment(QString  experimentName) {
     qDebug()<<"Experiment set to"<<experimentName;
     experimentLabel.setText(experimentName);
     this->statusBar()->showMessage("Experiment configuration: "+experimentName);
-
-    // read configuration
-    experiment->setExperiment(experimentName);
 }
 
-void MainWindow::initDevices() {
-    experiment->initDevices();
-}

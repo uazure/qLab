@@ -23,6 +23,9 @@ public:
 
     private:
     QString name;
+    void setName(QString name);
+    QString getName(void) const;
+
     QStringList deviceStringList;
     QList <QAbstractDevice *> deviceList;
     QList <QStringList> parametersList;
@@ -30,6 +33,7 @@ public:
 
 
 signals:
+    void experimentChanged(QString experimentName);
 
 public slots:
     void setExperiment(QString experiment);

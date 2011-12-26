@@ -12,7 +12,7 @@ QExperiment::~QExperiment() {
 }
 
 void QExperiment::setExperiment(QString experiment) {
-    name=experiment;
+    setName(experiment);
     QString out=settings->value(experiment+"/out").toString();
     qDebug()<<"Output read from"<<experiment<<"config:"<<out;
     QStringList outList=out.split(",",QString::SkipEmptyParts);
@@ -62,4 +62,13 @@ void QExperiment::initDevices() {
         deviceList[i]->setUnit(settings->value(name+"/"+deviceName+"/unit","Unit").toString());
         deviceList[i]->setLabel(settings->value(name+"/"+deviceName+"/label","").toString());
     }
+}
+
+void QExperiment::setName(QString name) {
+    this->name=name;
+    emit experimentChanged(name);
+}
+
+QString QExperiment::getName() const {
+    return name;
 }
