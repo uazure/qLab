@@ -3,6 +3,7 @@
 #include "qabstractdevice.h"
 #include "qgpibdevice.h"
 #include "qtimedevice.h"
+#include "qutimedevice.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QApplication>

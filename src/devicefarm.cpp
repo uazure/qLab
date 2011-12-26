@@ -12,8 +12,7 @@ DeviceFarm::DeviceFarm()
     }
 
     if (shortname=="utime") {
-        qWarning()<<"utime device not implemented yet";
-        return NULL;
+        return new QUtimeDevice();
     }
 
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");

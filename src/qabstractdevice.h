@@ -7,6 +7,7 @@
 
 /// Bus type enumertion. Gpib bus or some other.
 enum deviceBusType {
+    NoBus,
     Time,
     Utime,
     Gpib,
@@ -18,7 +19,7 @@ class QAbstractDevice : public QObject
     Q_OBJECT
 public:
     //
-    explicit QAbstractDevice(enum deviceBusType busType=Gpib, QObject *parent = 0);
+    explicit QAbstractDevice(QObject *parent = 0);
     ~QAbstractDevice();
 
 

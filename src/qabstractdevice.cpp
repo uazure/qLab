@@ -1,15 +1,13 @@
 #include "qabstractdevice.h"
 
 
-QAbstractDevice::QAbstractDevice(deviceBusType type, QObject *parent) :
+QAbstractDevice::QAbstractDevice(QObject *parent) :
         QObject(parent)
 {
-    qDebug()<<"new QAbstractDevice created with bus type"<<type;
+    bus=NoBus;
     numdevices++;
     numdevice=numdevices;
-
-    bus=type;
-
+    qDebug()<<"new QAbstractDevice created. Device count"<<numdevices;
     factor=0;
     min_value=0;
     max_value=100;
@@ -19,7 +17,7 @@ QAbstractDevice::QAbstractDevice(deviceBusType type, QObject *parent) :
 
 QAbstractDevice::~QAbstractDevice() {
     numdevices--;
-    qDebug()<<"QAbstractDevice deleted";
+    qDebug()<<"QAbstractDevice"<<numdevice<<"deleted. Device count"<<numdevices;
 }
 
 

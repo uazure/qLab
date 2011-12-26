@@ -105,7 +105,14 @@ void MainWindow::setExperiment(QString  experiment) {
 }
 
 void MainWindow::initDevices() {
+    // delete existing QAbstractDevice child objects from list:
+    for (int i=0;i<deviceList.size();i++) {
+        delete deviceList.at(i);
+    }
+    // clear the device list
     deviceList.clear();
+
+    // go thru all devices we need to init and init them!
     for (int i=0;i<devices.size();i++) {
         QByteArray deviceName=devices.at(i).toAscii();
         deviceList.append(DeviceFarm::getDeviceObject(deviceName));
@@ -116,7 +123,5 @@ void MainWindow::initDevices() {
         deviceList[i]->setScaleHint(experimentSettings->value(experiment+"/"+deviceName+"/scale_hint",5).toDouble());
         deviceList[i]->setUnit(experimentSettings->value(experiment+"/"+deviceName+"/unit","Unit").toString());
         deviceList[i]->setLabel(experimentSettings->value(experiment+"/"+deviceName+"/label","").toString());
-
     }
-
 }

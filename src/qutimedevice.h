@@ -1,15 +1,16 @@
-#ifndef QTIMEDEVICE_H
-#define QTIMEDEVICE_H
+#ifndef QUTIMEDEVICE_H
+#define QUTIMEDEVICE_H
 
 #include "qabstractdevice.h"
 #include <QTime>
+#include <QDateTime>
 #include <QByteArray>
 
-class QTimeDevice : public QAbstractDevice
+class QUtimeDevice : public QAbstractDevice
 {
 Q_OBJECT
 public:
-    explicit QTimeDevice(QObject *parent = 0);
+    explicit QUtimeDevice(QObject *parent = 0);
     bool readValue(QByteArray &returnValue, QStringList &parameters);
 
 signals:
@@ -18,4 +19,4 @@ public slots:
 
 };
 
-#endif // QTIMEDEVICE_H
+#endif // QUTIMEDEVICE_H

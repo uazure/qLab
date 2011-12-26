@@ -1,9 +1,10 @@
 #include "qgpibdevice.h"
 
 QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
-        QAbstractDevice (Gpib, parent)
+        QAbstractDevice (parent)
 
 {
+    bus=Gpib;
     // initialising gpib external variables;
     ibsta=0x11;
     iberr=0x22;

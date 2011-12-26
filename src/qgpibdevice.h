@@ -24,8 +24,6 @@ public:
       channel. If channel is not specified or if channel==0 then default
     or last used channel is used.
     */
-//    bool readValue(QByteArray &returnValue,int channel=0);
-//    bool readValue(QByteArray &returnValue,QByteArray a="",QByteArray b="");
     bool readValue(QByteArray &returnValue, QStringList &parameters);
 
     /** Checks if device is online */
