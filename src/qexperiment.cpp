@@ -70,7 +70,7 @@ void QExperiment::initDevices() {
         deviceList[i]->setMinValue(settings->value(name+"/"+deviceName+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
         deviceList[i]->setMaxValue(settings->value(name+"/"+deviceName+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
         deviceList[i]->setScaleHint(settings->value(name+"/"+deviceName+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
-        deviceList[i]->setUnit(settings->value(name+"/"+deviceName+"/unit","Unit").toString());
+        deviceList[i]->setUnit(settings->value(name+"/"+deviceName+"/unit",deviceList.at(i)->getUnit()).toString());
         deviceList[i]->setLabel(settings->value(name+"/"+deviceName+"/label",deviceList.at(i)->getLabel()).toString());
     }
 }
@@ -117,8 +117,9 @@ void QExperiment::stop() {
 
 QString QExperiment::getHeader() {
     QString returnValue;
-    returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (ddd)")+"\n";
-    returnValue+="#Devices used:\n";
+
+    returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (dddd)")+"\n";
+    returnValue+="#Devices used: (name, label, min, max, unit)\n";
 //    for (int i=0;i<deviceList.size();i++) {
 //        returnValue+='#'+deviceList.at(i)->shortName()+' '+
 //                     deviceList.at(i)->getLabel()+" ("+
@@ -135,7 +136,28 @@ QString QExperiment::getHeader() {
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->getLabel();
     }
-
+    /* Uncomment this if you need factor printed in header of the experiment datafile.
+    returnValue+="\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        if (deviceList.at(i)->getFactor()==0 || deviceList.at(i)->getFactor()==1) {
+            returnValue+="y";
+        } else {
+            returnValue+='y*'+QString::number(deviceList.at(i)->getFactor());
+        }
+    }
+    */
+    returnValue+="\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        returnValue+=QString::number(deviceList.at(i)->getMinValue());
+    }
+    returnValue+="\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        returnValue+=QString::number(deviceList.at(i)->getMaxValue());
+    }
+    returnValue+="\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        returnValue+=deviceList.at(i)->getUnit();
+    }
 
 
     emit measured(returnValue);

@@ -7,6 +7,7 @@ QTimeDevice::QTimeDevice(QObject *parent) :
     bus=Time;
     shortname="time";
     setLabel("Time");
+    setUnit("H:mm:ss");
 }
 
 bool QTimeDevice::readValue(QByteArray &returnValue, QStringList) {

@@ -7,6 +7,7 @@ QUtimeDevice::QUtimeDevice(QObject *parent) :
     bus=Utime;
     shortname="utime";
     setLabel("Time");
+    setUnit("sec");
 }
 
 bool QUtimeDevice::readValue(QByteArray &returnValue, QStringList) {
