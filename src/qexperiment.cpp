@@ -3,6 +3,7 @@
 QExperiment::QExperiment(QString name, QObject *parent) :
     QObject(parent)
 {
+    startedOn=QDateTime::currentDateTime();
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     timer=new QTimer(this);
@@ -13,6 +14,9 @@ QExperiment::QExperiment(QString name, QObject *parent) :
 QExperiment::~QExperiment() {
     delete settings;
     delete timer;
+    for (int i=0;i<deviceList.size();i++) {
+        delete deviceList.at(i);
+    }
 }
 
 void QExperiment::setExperiment(QString experiment) {
@@ -44,6 +48,7 @@ void QExperiment::setExperiment(QString experiment) {
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
     initDevices();
+    getHeader();
     doMeasure();
     timer->start();
 }
@@ -61,12 +66,12 @@ void QExperiment::initDevices() {
         QByteArray deviceName=deviceStringList.at(i).toAscii();
         deviceList.append(DeviceFarm::getDeviceObject(deviceName));
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
-        deviceList[i]->setFactor(settings->value(name+"/"+deviceName+"/factor",0).toDouble());
-        deviceList[i]->setMinValue(settings->value(name+"/"+deviceName+"/min_value",0).toDouble());
-        deviceList[i]->setMaxValue(settings->value(name+"/"+deviceName+"/max_value",100).toDouble());
-        deviceList[i]->setScaleHint(settings->value(name+"/"+deviceName+"/scale_hint",5).toDouble());
+        deviceList[i]->setFactor(settings->value(name+"/"+deviceName+"/factor",deviceList.at(i)->getFactor()).toDouble());
+        deviceList[i]->setMinValue(settings->value(name+"/"+deviceName+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
+        deviceList[i]->setMaxValue(settings->value(name+"/"+deviceName+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
+        deviceList[i]->setScaleHint(settings->value(name+"/"+deviceName+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
         deviceList[i]->setUnit(settings->value(name+"/"+deviceName+"/unit","Unit").toString());
-        deviceList[i]->setLabel(settings->value(name+"/"+deviceName+"/label","").toString());
+        deviceList[i]->setLabel(settings->value(name+"/"+deviceName+"/label",deviceList.at(i)->getLabel()).toString());
     }
 }
 
@@ -110,6 +115,29 @@ void QExperiment::stop() {
     emit statusChanged(isActive());
 }
 
-QString QExperiment::getHeader() const {
+QString QExperiment::getHeader() {
+    QString returnValue;
+    returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (ddd)")+"\n";
+    returnValue+="#Devices used:\n";
+//    for (int i=0;i<deviceList.size();i++) {
+//        returnValue+='#'+deviceList.at(i)->shortName()+' '+
+//                     deviceList.at(i)->getLabel()+" ("+
+//                     QString::number(deviceList.at(i)->getMinValue())+" - "+
+//                     QString::number(deviceList.at(i)->getMaxValue())+" "+
+//                     deviceList.at(i)->getUnit()+") min scale: "+
+//                     QString::number(deviceList.at(i)->getScaleHint())+"\n";
+//    }
+    returnValue+="#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        returnValue+=deviceList.at(i)->shortName();
+    }
+    returnValue+="\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        returnValue+=deviceList.at(i)->getLabel();
+    }
 
+
+
+    emit measured(returnValue);
+    return returnValue;
 }

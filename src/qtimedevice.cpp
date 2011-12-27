@@ -5,6 +5,8 @@ QTimeDevice::QTimeDevice(QObject *parent) :
         QAbstractDevice(parent)
 {
     bus=Time;
+    shortname="time";
+    setLabel("Time");
 }
 
 bool QTimeDevice::readValue(QByteArray &returnValue, QStringList) {

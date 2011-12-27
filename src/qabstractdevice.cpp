@@ -11,8 +11,9 @@ QAbstractDevice::QAbstractDevice(QObject *parent) :
     factor=0;
     min_value=0;
     max_value=100;
-    unit="No unit specified";
-    label="No label specified";
+    scale_hint=5;
+    unit="UNIT";
+    label="LABEL";
 }
 
 QAbstractDevice::~QAbstractDevice() {
@@ -35,17 +36,9 @@ deviceBusType QAbstractDevice::busType() const {
     return busType();
 }
 
-//const char * QAbstractDevice::shortName() const {
-//    return shortname.data();
-//}
-
 const QByteArray QAbstractDevice::shortName() const {
     return shortname;
 }
-
-//const QString QAbstractDevice::shortName(void) const {
-//    return QString(shortname);
-//}
 
 double QAbstractDevice::getFactor() const {
     return factor;

@@ -140,6 +140,13 @@ which commands to issue to the device. */
 bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
     if (ask(readCommand,returnValue)) {
         returnValue=returnValue.trimmed();
+        if (getFactor() == 0 || getFactor() == 1) {
+            qDebug()<<"No factor for"<<shortname;
+        } else {
+            qDebug()<<"Factor for"<<shortName()<<getFactor();
+            returnValue=QByteArray::number(returnValue.toDouble()*getFactor());
+        }
+
         //qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
     }

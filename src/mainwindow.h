@@ -8,6 +8,7 @@
 #include "qexperiment.h"
 #include <QSettings>
 #include <QLabel>
+#include <QLocale>
 
 namespace Ui {
     class MainWindow;

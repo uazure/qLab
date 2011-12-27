@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    QLocale::setDefault(QLocale::English);
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     experiment=new QExperiment();
@@ -70,6 +71,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     ConfirmExitDialog *dialog=new ConfirmExitDialog(this);
     dialog->setQuestion("Really exit?");
+    dialog->activateWindow();
+
     if (dialog->exec())
     {
         event->accept();

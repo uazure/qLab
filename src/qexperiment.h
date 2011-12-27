@@ -32,6 +32,7 @@ public:
     QList <QStringList> parametersList;
     QSettings *settings;
     QTimer *timer;
+    QDateTime startedOn;
 
 private slots:
 
@@ -49,7 +50,7 @@ public slots:
     void start(void);
     void stop(void);
     void setInterval(int msec);
-    QString getHeader(void) const;
+    QString getHeader(void);
 };
 
 #endif // QEXPERIMENT_H

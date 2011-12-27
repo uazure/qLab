@@ -23,8 +23,6 @@ DeviceFarm::DeviceFarm()
 
     if (bus=="gpib") {
         QGpibDevice *device=new QGpibDevice(shortname);
-
-
         return device;
     }
 
