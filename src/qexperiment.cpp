@@ -3,12 +3,13 @@
 QExperiment::QExperiment(QString name, QObject *parent) :
     QObject(parent)
 {
-    startedOn=QDateTime::currentDateTime();
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     timer=new QTimer(this);
-    timer->setInterval(2000);
+    interval=2000;
+    timer->setInterval(interval);
     timer->connect (timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
+    currentFileName="test.dat";
 }
 
 QExperiment::~QExperiment() {
@@ -21,6 +22,11 @@ QExperiment::~QExperiment() {
 
 void QExperiment::setExperiment(QString experiment) {
     setName(experiment);
+    stop();
+    dataStringList.clear();
+    if (! name.isEmpty()) {
+        startedOn=QDateTime().currentDateTime();
+    }
     QString out=settings->value(experiment+"/out").toString();
     qDebug()<<"Output read from"<<experiment<<"config:"<<out;
     QStringList outList=out.split(",",QString::SkipEmptyParts);
@@ -50,7 +56,7 @@ void QExperiment::setExperiment(QString experiment) {
     initDevices();
     getHeader();
     doMeasure();
-    timer->start();
+    start();
 }
 
 void QExperiment::initDevices() {
@@ -62,22 +68,39 @@ void QExperiment::initDevices() {
     deviceList.clear();
 
     // go thru all devices we need to init and init them!
-    for (int i=0;i<deviceStringList.size();i++) {
+    for (int i=0;i<deviceStringList.size() && i<parametersList.size();i++) {
         QByteArray deviceName=deviceStringList.at(i).toAscii();
+        QByteArray deviceNameWithParameters=deviceName;
+        if (! parametersList.at(i).isEmpty() ) {
+            deviceNameWithParameters.append('(');
+            for (int j=0;j<parametersList.at(i).size();j++) {
+                deviceNameWithParameters.append(parametersList.at(i).at(j).toAscii()+';');
+            }
+            //replace last character (i.e. ';') with ')';
+            deviceNameWithParameters[deviceNameWithParameters.size()-1]=')';
+            qDebug()<<"deviceNameWithParameters"<<deviceNameWithParameters;
+        }
         deviceList.append(DeviceFarm::getDeviceObject(deviceName));
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
-        deviceList[i]->setFactor(settings->value(name+"/"+deviceName+"/factor",deviceList.at(i)->getFactor()).toDouble());
-        deviceList[i]->setMinValue(settings->value(name+"/"+deviceName+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
-        deviceList[i]->setMaxValue(settings->value(name+"/"+deviceName+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
-        deviceList[i]->setScaleHint(settings->value(name+"/"+deviceName+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
-        deviceList[i]->setUnit(settings->value(name+"/"+deviceName+"/unit",deviceList.at(i)->getUnit()).toString());
-        deviceList[i]->setLabel(settings->value(name+"/"+deviceName+"/label",deviceList.at(i)->getLabel()).toString());
+        deviceList[i]->setFactor(settings->value(name+"/"+deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble());
+        deviceList[i]->setMinValue(settings->value(name+"/"+deviceNameWithParameters+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
+        deviceList[i]->setMaxValue(settings->value(name+"/"+deviceNameWithParameters+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
+        deviceList[i]->setScaleHint(settings->value(name+"/"+deviceNameWithParameters+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
+        deviceList[i]->setUnit(settings->value(name+"/"+deviceNameWithParameters+"/unit",deviceList.at(i)->getUnit()).toString());
+        deviceList[i]->setLabel(settings->value(name+"/"+deviceNameWithParameters+"/label",deviceList.at(i)->getLabel()).toString());
     }
 }
 
 void QExperiment::setName(QString name) {
-    this->name=name;
-    emit experimentChanged(name);
+    if (this->name!=name) {
+        this->name=name;
+        stop();
+        dataStringList.clear();
+        if (! name.isEmpty()) {
+            startedOn=QDateTime().currentDateTime();
+            emit experimentChanged(name);
+        }
+    }
 }
 
 QString QExperiment::getName() const {
@@ -93,6 +116,7 @@ void QExperiment::doMeasure() {
         output.append(tmp).append("\t");
     }
     qDebug("MEASURE CYCLE END");
+    this->dataStringList.append(output.trimmed());
     emit measured(output.trimmed());
 }
 
@@ -120,14 +144,6 @@ QString QExperiment::getHeader() {
 
     returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (dddd)")+"\n";
     returnValue+="#Devices used: (name, label, min, max, unit)\n";
-//    for (int i=0;i<deviceList.size();i++) {
-//        returnValue+='#'+deviceList.at(i)->shortName()+' '+
-//                     deviceList.at(i)->getLabel()+" ("+
-//                     QString::number(deviceList.at(i)->getMinValue())+" - "+
-//                     QString::number(deviceList.at(i)->getMaxValue())+" "+
-//                     deviceList.at(i)->getUnit()+") min scale: "+
-//                     QString::number(deviceList.at(i)->getScaleHint())+"\n";
-//    }
     returnValue+="#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->shortName();
@@ -159,7 +175,16 @@ QString QExperiment::getHeader() {
         returnValue+=deviceList.at(i)->getUnit();
     }
 
-
-    emit measured(returnValue);
+    qDebug()<< returnValue;
     return returnValue;
+}
+
+void QExperiment::saveFile() {
+    QFile file(currentFileName);
+    file.open(QFile::WriteOnly,QFile::Text);
+    QTextStream stream(&file);
+    for (int i=0;i<dataStringList.size();i++) {
+        stream<<dataStringList.at(i)+'\n';
+    }
+    file.close();
 }

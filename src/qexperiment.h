@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QSettings>
 #include <QApplication>
+#include <QFile>
 #include "devicefarm.h"
 
 class QExperiment : public QObject
@@ -32,7 +33,10 @@ public:
     QList <QStringList> parametersList;
     QSettings *settings;
     QTimer *timer;
+    int interval;
     QDateTime startedOn;
+    QStringList dataStringList;
+    QString currentFileName;
 
 private slots:
 
@@ -50,6 +54,7 @@ public slots:
     void start(void);
     void stop(void);
     void setInterval(int msec);
+    void saveFile();
     QString getHeader(void);
 };
 
