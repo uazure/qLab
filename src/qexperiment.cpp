@@ -44,6 +44,7 @@ void QExperiment::setExperiment(QString experiment) {
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
     initDevices();
+    doMeasure();
     timer->start();
 }
 
@@ -79,12 +80,36 @@ QString QExperiment::getName() const {
 }
 
 void QExperiment::doMeasure() {
-    qDebug("MEASURE STARTED");
+    qDebug("MEASURE CYCLE START");
     QByteArray tmp, output;
     for (int i=0;i<deviceList.size() && i<parametersList.size();i++) {
         deviceList.at(i)->readValue(tmp,parametersList.at(i));
         qDebug()<<tmp;
         output.append(tmp).append("\t");
     }
+    qDebug("MEASURE CYCLE END");
     emit measured(output.trimmed());
+}
+
+void QExperiment::setInterval(int msec) {
+    timer->setInterval(msec);
+    emit intervalChanged(msec);
+}
+
+bool QExperiment::isActive() const {
+    return timer->isActive();
+}
+
+void QExperiment::start() {
+    timer->start();
+    emit statusChanged(isActive());
+}
+
+void QExperiment::stop() {
+    timer->stop();
+    emit statusChanged(isActive());
+}
+
+QString QExperiment::getHeader() const {
+
 }

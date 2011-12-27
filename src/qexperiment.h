@@ -20,6 +20,7 @@ public:
     ~QExperiment();
 
     void initDevices();
+    bool isActive(void) const;
 
 
     private:
@@ -39,10 +40,16 @@ private slots:
 signals:
     void experimentChanged(QString experimentName);
     void measured (QString line);
+    void statusChanged (bool isOnline);
+    void intervalChanged(int msec);
 
 public slots:
     void setExperiment(QString experiment);
     void doMeasure(void);
+    void start(void);
+    void stop(void);
+    void setInterval(int msec);
+    QString getHeader(void) const;
 };
 
 #endif // QEXPERIMENT_H

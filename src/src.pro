@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     experimentconfigurationselectdialog.cpp \
     qtimedevice.cpp \
     qutimedevice.cpp \
-    qexperiment.cpp
+    qexperiment.cpp \
+    confirmexitdialog.cpp
 HEADERS += mainwindow.h \
     gpib-32.h \
     qabstractdevice.h \
@@ -22,12 +23,14 @@ HEADERS += mainwindow.h \
     experimentconfigurationselectdialog.h \
     qtimedevice.h \
     qutimedevice.h \
-    qexperiment.h
+    qexperiment.h \
+    confirmexitdialog.h
 INCLUDEPATH += ../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32
 FORMS += mainwindow.ui \
-    experimentconfigurationselectdialog.ui
+    experimentconfigurationselectdialog.ui \
+    confirmexitdialog.ui
 OTHER_FILES += ../README.txt \
     ../lib/gpib-32.dll \
     ../lib/gpib-32.obj

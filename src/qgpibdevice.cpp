@@ -140,7 +140,7 @@ which commands to issue to the device. */
 bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
     if (ask(readCommand,returnValue)) {
         returnValue=returnValue.trimmed();
-        qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
+        //qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
     }
     return false;

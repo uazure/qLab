@@ -6,12 +6,16 @@
 #include <QDateTime>
 #include <QByteArray>
 
+/**  This class provides device that returns current time as
+unix timestamp with milliseconds resolution
+  */
 class QUtimeDevice : public QAbstractDevice
 {
 Q_OBJECT
 public:
     explicit QUtimeDevice(QObject *parent = 0);
-    bool readValue(QByteArray &returnValue, QStringList parameters);
+    /// Implementation of pure virtual method of QAbstractDevice
+    bool readValue(QByteArray &returnValue, QStringList parameters=QStringList());
 
 signals:
 

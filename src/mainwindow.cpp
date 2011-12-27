@@ -42,8 +42,6 @@ void MainWindow::setFullscreen(bool a) {
      setWindowState(windowState() ^ Qt::WindowFullScreen);
 }
 
-
-
 void MainWindow::showAboutQt(void) {
     QApplication::aboutQt();
 }
@@ -66,3 +64,17 @@ void MainWindow::setExperiment(QString  experimentName) {
     this->statusBar()->showMessage("Experiment configuration: "+experimentName);
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (event->spontaneous()) event->accept();
+
+    ConfirmExitDialog *dialog=new ConfirmExitDialog(this);
+    dialog->setQuestion("Really exit?");
+    if (dialog->exec())
+    {
+        event->accept();
+    } else {
+        event->ignore();
+    }
+    delete dialog;
+}
