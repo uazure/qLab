@@ -22,6 +22,7 @@ public:
 
     void initDevices();
     bool isActive(void) const;
+    void setFileName(QString filename);
 
 
     private:
@@ -47,6 +48,7 @@ signals:
     void measured (QString line);
     void statusChanged (bool isOnline);
     void intervalChanged(int msec);
+    void fileChanged(QString filename);
 
 public slots:
     void setExperiment(QString experiment);

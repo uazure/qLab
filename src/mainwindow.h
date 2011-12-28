@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QLabel>
 #include <QLocale>
+#include <QFileDialog>
 
 namespace Ui {
     class MainWindow;
@@ -40,6 +41,8 @@ private slots:
 
 public slots:
     void setExperiment(QString experiment);
+    void setFile(QString filename);
+    void getFile(void);
 };
 
 #endif // MAINWINDOW_H

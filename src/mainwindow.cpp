@@ -18,8 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
     connect(ui->actionNew_experiment,SIGNAL(triggered()),this,SLOT(getExperiment()));
+    connect(ui->actionSave,SIGNAL(triggered()),this,SLOT(getFile()));
     connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
     connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
+    connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
 
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");
@@ -63,6 +65,15 @@ void MainWindow::setExperiment(QString  experimentName) {
     qDebug()<<"Experiment set to"<<experimentName;
     experimentLabel.setText(experimentName);
     this->statusBar()->showMessage("Experiment configuration: "+experimentName);
+}
+
+void MainWindow::getFile() {
+     experiment->setFileName(
+QFileDialog::getOpenFileName(this,tr("Open data file"), "", tr("Data files (*.dat *.txt)")));
+}
+
+void MainWindow::setFile(QString filename) {
+    this->statusBar()->showMessage("File: "+filename);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

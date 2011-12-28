@@ -188,3 +188,10 @@ void QExperiment::saveFile() {
     }
     file.close();
 }
+
+void QExperiment::setFileName(QString filename) {
+    if (filename!=currentFileName) {
+        emit fileChanged(filename);
+        currentFileName=filename;
+    }
+}
