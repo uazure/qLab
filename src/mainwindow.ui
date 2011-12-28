@@ -60,10 +60,10 @@
      <string>File</string>
     </property>
     <addaction name="actionNew_experiment"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
