@@ -20,20 +20,29 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNew_experiment,SIGNAL(triggered()),this,SLOT(getExperiment()));
     connect(ui->actionSave,SIGNAL(triggered()),experiment,SLOT(saveFile()));
     connect(ui->actionSave_as,SIGNAL(triggered()),this,SLOT(getFile()));
+    connect(ui->actionStartMeasure,SIGNAL(toggled(bool)),experiment,SLOT(start(bool)));
 
+    connect(experiment,SIGNAL(statusChanged(bool)),ui->actionStartMeasure,SLOT(setChecked(bool)));
+    connect(experiment,SIGNAL(statusChanged(bool)),this,SLOT(statusChanged(bool)));
     connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
     connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
     connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
     connect(experiment,SIGNAL(Notify(QString)),SLOT(Notify(QString)));
 
+
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");
+    statusLabel.setToolTip("Experiment status:\nR - running\nS - stopped");
+    QFont font(statusLabel.font());
+    font.setBold(true);
+    statusLabel.setFont(font);
 
     statusBar()->addPermanentWidget(&fileLabel);
     statusBar()->addPermanentWidget(&experimentLabel);
+    statusBar()->addPermanentWidget(&statusLabel);
 
     // Ask user to select experiment
-    this->getExperiment();
+    getExperiment();
 }
 
 MainWindow::~MainWindow()
@@ -94,6 +103,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if (dialog->exec())
     {
+        experiment->saveFile();
         event->accept();
     } else {
         event->ignore();
@@ -103,4 +113,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::Notify(QString message) {
     statusBar()->showMessage(message);
+}
+
+void MainWindow::statusChanged(bool status) {
+    if (status) {
+        statusLabel.setText("R");
+        statusLabel.setStyleSheet("QLabel {color: green;}");
+    } else {
+        statusLabel.setText("S");
+        statusLabel.setStyleSheet("QLabel {background-color: red;color:white;}");
+    }
 }

@@ -30,6 +30,7 @@ private:
     QExperiment *experiment;
     QLabel experimentLabel;
     QLabel fileLabel;
+    QLabel statusLabel;
     QStringList devices;
     QList <QStringList> parameters;
     QList <QAbstractDevice *> deviceList;
@@ -45,6 +46,7 @@ public slots:
     void setFile(QString filename);
     void getFile(void);
     void Notify(QString message);
+    void statusChanged(bool status);
 };
 
 #endif // MAINWINDOW_H

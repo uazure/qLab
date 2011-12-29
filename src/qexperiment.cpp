@@ -135,12 +135,19 @@ void QExperiment::start() {
     timer->start();
     saveTimer.start();
     emit statusChanged(isActive());
+    emit Notify("Started");
+}
+
+void QExperiment::start(bool arg) {
+    if (arg) start();
+    else stop();
 }
 
 void QExperiment::stop() {
     timer->stop();
     saveTimer.stop();
     emit statusChanged(isActive());
+    emit Notify("Stopped");
 }
 
 QString QExperiment::getHeader() {

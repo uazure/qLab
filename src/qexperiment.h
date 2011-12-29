@@ -57,6 +57,7 @@ signals:
 public slots:
     void setExperiment(QString experiment);
     void doMeasure(void);
+    void start(bool);
     void start(void);
     void stop(void);
     void setInterval(int msec);
