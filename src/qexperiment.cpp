@@ -54,6 +54,7 @@ void QExperiment::setExperiment(QString experiment) {
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
     initDevices();
+    setFileName(startedOn.toString("yyyy-MM-dd ")+name+".dat");
     getHeader();
     doMeasure();
     start();
@@ -97,7 +98,6 @@ void QExperiment::setName(QString name) {
         stop();
         dataStringList.clear();
         if (! name.isEmpty()) {
-            startedOn=QDateTime().currentDateTime();
             emit experimentChanged(name);
         }
     }
@@ -175,23 +175,41 @@ QString QExperiment::getHeader() {
         returnValue+=deviceList.at(i)->getUnit();
     }
 
-    qDebug()<< returnValue;
+    returnValue+='\n';
+    qDebug()<<returnValue;
     return returnValue;
 }
 
 void QExperiment::saveFile() {
+    if (currentFileName.isEmpty()) {
+        qWarning()<<"No file specified. Nothing to save";
+        return;
+    }
+
     QFile file(currentFileName);
-    file.open(QFile::WriteOnly,QFile::Text);
+    if (!file.open(QFile::WriteOnly))
+    {
+        qWarning()<<"Failed to open file"<<currentFileName<<"for writing";
+        return;
+    }
     QTextStream stream(&file);
+    stream<<getHeader();
     for (int i=0;i<dataStringList.size();i++) {
         stream<<dataStringList.at(i)+'\n';
     }
     file.close();
+    qDebug()<<"File saved ok:"<<currentFileName;
 }
 
 void QExperiment::setFileName(QString filename) {
+    // do nothing is string is NULL (i.e. no file was selected);
+    if (filename.isNull()) return;
     if (filename!=currentFileName) {
-        emit fileChanged(filename);
         currentFileName=filename;
+        emit fileChanged(filename);
     }
+}
+
+QString QExperiment::getCurrentFileName() const {
+    return currentFileName;
 }

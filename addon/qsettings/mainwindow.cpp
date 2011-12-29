@@ -54,6 +54,6 @@ void MainWindow::writeSettings(void) {
 
     }
     settings->setDefaultFormat(QSettings::IniFormat);
-    settings->setValue(ui->Key->text(),QVariant::QVariant(ui->Value->toPlainText()));
+    settings->setValue(ui->Key->text(),QVariant(ui->Value->toPlainText()));
     delete settings;
 }

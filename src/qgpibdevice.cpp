@@ -141,7 +141,7 @@ bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList)
     if (ask(readCommand,returnValue)) {
         returnValue=returnValue.trimmed();
         if (getFactor() == 0 || getFactor() == 1) {
-            qDebug()<<"No factor for"<<shortname;
+            //qDebug()<<"No factor for"<<shortname;
         } else {
             qDebug()<<"Factor for"<<shortName()<<getFactor();
             returnValue=QByteArray::number(returnValue.toDouble()*getFactor());

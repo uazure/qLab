@@ -23,6 +23,7 @@ public:
     void initDevices();
     bool isActive(void) const;
     void setFileName(QString filename);
+    QString getCurrentFileName() const;
 
 
     private:
@@ -38,6 +39,7 @@ public:
     QDateTime startedOn;
     QStringList dataStringList;
     QString currentFileName;
+
 
 private slots:
 

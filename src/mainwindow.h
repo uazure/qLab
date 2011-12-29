@@ -29,6 +29,7 @@ private:
     QSettings *experimentSettings;
     QExperiment *experiment;
     QLabel experimentLabel;
+    QLabel fileLabel;
     QStringList devices;
     QList <QStringList> parameters;
     QList <QAbstractDevice *> deviceList;

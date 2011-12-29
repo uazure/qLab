@@ -1,4 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = src addon \
-    addon
-
+SUBDIRS = src addon
