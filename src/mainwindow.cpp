@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
     connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
     connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
+    connect(experiment,SIGNAL(Notify(QString)),SLOT(Notify(QString)));
 
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");
@@ -67,7 +68,7 @@ void MainWindow::setExperiment(QString  experimentName) {
     // update ui
     qDebug()<<"Experiment set to"<<experimentName;
     experimentLabel.setText(experimentName);
-    this->statusBar()->showMessage("Experiment configuration: "+experimentName);
+    statusBar()->showMessage("Experiment configuration: "+experimentName);
 }
 
 void MainWindow::getFile() {
@@ -98,4 +99,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
     delete dialog;
+}
+
+void MainWindow::Notify(QString message) {
+    statusBar()->showMessage(message);
 }

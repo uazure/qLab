@@ -44,6 +44,7 @@ public slots:
     void setExperiment(QString experiment);
     void setFile(QString filename);
     void getFile(void);
+    void Notify(QString message);
 };
 
 #endif // MAINWINDOW_H

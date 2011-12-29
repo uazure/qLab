@@ -35,6 +35,7 @@ public:
     QList <QStringList> parametersList;
     QSettings *settings;
     QTimer *timer;
+    QTimer saveTimer;
     int interval;
     QDateTime startedOn;
     QStringList dataStringList;
@@ -51,6 +52,7 @@ signals:
     void statusChanged (bool isOnline);
     void intervalChanged(int msec);
     void fileChanged(QString filename);
+    void Notify(QString message);
 
 public slots:
     void setExperiment(QString experiment);

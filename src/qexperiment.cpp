@@ -10,6 +10,8 @@ QExperiment::QExperiment(QString name, QObject *parent) :
     timer->setInterval(interval);
     timer->connect (timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
     currentFileName="test.dat";
+    saveTimer.setInterval(10000);
+    saveTimer.connect(&saveTimer,SIGNAL(timeout()),this,SLOT(saveFile()));
 }
 
 QExperiment::~QExperiment() {
@@ -131,11 +133,13 @@ bool QExperiment::isActive() const {
 
 void QExperiment::start() {
     timer->start();
+    saveTimer.start();
     emit statusChanged(isActive());
 }
 
 void QExperiment::stop() {
     timer->stop();
+    saveTimer.stop();
     emit statusChanged(isActive());
 }
 
@@ -199,6 +203,7 @@ void QExperiment::saveFile() {
     }
     file.close();
     qDebug()<<"File saved ok:"<<currentFileName;
+    emit Notify("File saved Ok");
 }
 
 void QExperiment::setFileName(QString filename) {
@@ -207,6 +212,7 @@ void QExperiment::setFileName(QString filename) {
     if (filename!=currentFileName) {
         currentFileName=filename;
         emit fileChanged(filename);
+        emit Notify("Filename: "+filename);
     }
 }
 
