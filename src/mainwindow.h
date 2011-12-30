@@ -6,6 +6,8 @@
 #include "experimentconfigurationselectdialog.h"
 #include "confirmexitdialog.h"
 #include "qexperiment.h"
+#include "tcpserver.h"
+
 #include <QSettings>
 #include <QLabel>
 #include <QLocale>
@@ -28,9 +30,11 @@ private:
     Ui::MainWindow *ui;
     QSettings *experimentSettings;
     QExperiment *experiment;
+    TcpServer *tcp;
     QLabel experimentLabel;
     QLabel fileLabel;
     QLabel statusLabel;
+    QLabel tcpClientsLabel;
     QStringList devices;
     QList <QStringList> parameters;
     QList <QAbstractDevice *> deviceList;
@@ -47,6 +51,8 @@ public slots:
     void getFile(void);
     void Notify(QString message);
     void statusChanged(bool status);
+    void setMeasureInterval(int msec);
+
 };
 
 #endif // MAINWINDOW_H

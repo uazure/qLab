@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     experiment=new QExperiment();
+    tcp=new TcpServer(this);
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
@@ -28,7 +29,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
     connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
     connect(experiment,SIGNAL(Notify(QString)),SLOT(Notify(QString)));
+    connect(experiment,SIGNAL(intervalChanged(int)),SLOT(setMeasureInterval(int)));
 
+    connect(tcp,SIGNAL(clientCountChanged(int)),&tcpClientsLabel,SLOT(setNum(int)));
+
+    connect(ui->measureIntervalSpinBox,SIGNAL(valueChanged(int)),SLOT(setMeasureInterval(int)));
+
+
+
+    experiment->setInterval(2000);
 
     // Additional ui preparation
     experimentLabel.setToolTip("Experiment configuration");
@@ -36,7 +45,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QFont font(statusLabel.font());
     font.setBold(true);
     statusLabel.setFont(font);
+    //set experiment status to stopped
+    statusChanged(false);
+    tcpClientsLabel.setToolTip("Number of tcp clients");
+    tcpClientsLabel.setNum(0);
 
+    statusBar()->addPermanentWidget(&tcpClientsLabel);
     statusBar()->addPermanentWidget(&fileLabel);
     statusBar()->addPermanentWidget(&experimentLabel);
     statusBar()->addPermanentWidget(&statusLabel);
@@ -123,4 +137,11 @@ void MainWindow::statusChanged(bool status) {
         statusLabel.setText("S");
         statusLabel.setStyleSheet("QLabel {background-color: red;color:white;}");
     }
+}
+
+void MainWindow::setMeasureInterval(int msec) {
+    if (ui->measureIntervalSpinBox->value()!=msec)
+    ui->measureIntervalSpinBox->setValue(msec);
+
+    experiment->setInterval(msec);
 }

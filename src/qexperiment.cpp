@@ -5,10 +5,7 @@ QExperiment::QExperiment(QString name, QObject *parent) :
 {
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
-    timer=new QTimer(this);
-    interval=2000;
-    timer->setInterval(interval);
-    timer->connect (timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
+    timer.connect (&timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
     currentFileName="test.dat";
     saveTimer.setInterval(10000);
     saveTimer.connect(&saveTimer,SIGNAL(timeout()),this,SLOT(saveFile()));
@@ -16,7 +13,6 @@ QExperiment::QExperiment(QString name, QObject *parent) :
 
 QExperiment::~QExperiment() {
     delete settings;
-    delete timer;
     for (int i=0;i<deviceList.size();i++) {
         delete deviceList.at(i);
     }
@@ -123,19 +119,24 @@ void QExperiment::doMeasure() {
 }
 
 void QExperiment::setInterval(int msec) {
-    timer->setInterval(msec);
-    emit intervalChanged(msec);
+    if (msec!=timer.interval()) {
+        timer.setInterval(msec);
+        emit intervalChanged(msec);
+    }
 }
 
 bool QExperiment::isActive() const {
-    return timer->isActive();
+    return timer.isActive();
 }
 
 void QExperiment::start() {
-    timer->start();
+    if (! name.isEmpty()) {
+    timer.start();
     saveTimer.start();
-    emit statusChanged(isActive());
     emit Notify("Started");
+
+    }
+    emit statusChanged(isActive());
 }
 
 void QExperiment::start(bool arg) {
@@ -144,7 +145,7 @@ void QExperiment::start(bool arg) {
 }
 
 void QExperiment::stop() {
-    timer->stop();
+    timer.stop();
     saveTimer.stop();
     emit statusChanged(isActive());
     emit Notify("Stopped");
@@ -225,4 +226,8 @@ void QExperiment::setFileName(QString filename) {
 
 QString QExperiment::getCurrentFileName() const {
     return currentFileName;
+}
+
+int QExperiment::getInterval() const {
+    return timer.interval();
 }

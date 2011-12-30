@@ -24,6 +24,7 @@ public:
     bool isActive(void) const;
     void setFileName(QString filename);
     QString getCurrentFileName() const;
+    int getInterval() const;
 
 
     private:
@@ -34,9 +35,8 @@ public:
     QList <QAbstractDevice *> deviceList;
     QList <QStringList> parametersList;
     QSettings *settings;
-    QTimer *timer;
+    QTimer timer;
     QTimer saveTimer;
-    int interval;
     QDateTime startedOn;
     QStringList dataStringList;
     QString currentFileName;
