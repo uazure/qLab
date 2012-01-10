@@ -15,25 +15,29 @@ TcpServer::TcpServer(QObject *parent) :
 
 void TcpServer::acceptConnection() {
     while (hasPendingConnections()) {
-        clientSocket.append(nextPendingConnection());
-        setClientCount(getClientCount()+1);
-        QTcpSocket *socket=clientSocket.last();
+        QTcpSocket *socket=nextPendingConnection();
+        incrementClientCount();
+        qDebug()<<"Client connected. Client count:"<<getClientCount();
         connect(socket,SIGNAL(disconnected()),this,SLOT(removeConnection()));
     }
 }
 
 void TcpServer::removeConnection() {
-
-    qDebug()<<"Remove connection";
-    setClientCount(getClientCount()-1);
+    decrementClientCount();
+    qDebug()<<"Client disconnected. Client count:"<<getClientCount();
     //FIXME:
     //Here we need to know ip and port of QTcpSocket to remove it from the list.
     //we can make a dirty hack to get this info from sender() pointer, but there must be a better way...
 }
 
-void TcpServer::setClientCount(int count) {
-    clientCount=count;
-    emit clientCountChanged(count);
+void TcpServer::incrementClientCount(void) {
+    ++clientCount;
+    emit clientCountChanged(clientCount);
+}
+
+void TcpServer::decrementClientCount(void) {
+    --clientCount;
+    emit clientCountChanged(clientCount);
 }
 
 int TcpServer::getClientCount() const {

@@ -10,11 +10,12 @@ class TcpServer : public QTcpServer
 Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
-    void setClientCount(int);
+    void incrementClientCount(void);
+    void decrementClientCount(void);
     int getClientCount(void) const;
 
 private:
-    QList<QTcpSocket *> clientSocket;
+    //QList<QTcpSocket *> clientSocket;
     int clientCount;
 
 private slots:
