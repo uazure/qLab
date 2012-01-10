@@ -1,7 +1,9 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-12-02T14:55:52
 # -------------------------------------------------
-QT += core gui network
+QT += core \
+    gui \
+    network
 TARGET = server
 TEMPLATE = app
 SOURCES += main.cpp \
@@ -13,7 +15,6 @@ SOURCES += main.cpp \
     qtimedevice.cpp \
     qutimedevice.cpp \
     qexperiment.cpp \
-    confirmexitdialog.cpp \
     tcpserver.cpp
 HEADERS += mainwindow.h \
     gpib-32.h \
@@ -24,7 +25,6 @@ HEADERS += mainwindow.h \
     qtimedevice.h \
     qutimedevice.h \
     qexperiment.h \
-    confirmexitdialog.h \
     tcpserver.h
 INCLUDEPATH += ../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'

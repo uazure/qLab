@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include "devicefarm.h"
 #include "experimentconfigurationselectdialog.h"
-#include "confirmexitdialog.h"
 #include "qexperiment.h"
 #include "tcpserver.h"
 

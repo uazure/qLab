@@ -134,8 +134,9 @@ void QExperiment::start() {
     timer.start();
     saveTimer.start();
     emit Notify("Started");
-
-    }
+} else {
+    qWarning("Experiment name is not set");
+}
     emit statusChanged(isActive());
 }
 
