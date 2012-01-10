@@ -110,19 +110,20 @@ void MainWindow::setFile(QString filename) {
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (event->spontaneous()) event->accept();
+    QMessageBox dialog(this);
+    dialog.setText("Really exit?");
+    dialog.setIcon(QMessageBox::Question);
+    dialog.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    dialog.setDefaultButton(QMessageBox::Cancel);
+    dialog.setFocus();
 
-    ConfirmExitDialog *dialog=new ConfirmExitDialog(this);
-    dialog->setQuestion("Really exit?");
-    dialog->activateWindow();
-
-    if (dialog->exec())
+    if (dialog.exec()==QMessageBox::Ok)
     {
         experiment->saveFile();
         event->accept();
     } else {
         event->ignore();
     }
-    delete dialog;
 }
 
 void MainWindow::Notify(QString message) {
@@ -142,6 +143,5 @@ void MainWindow::statusChanged(bool status) {
 void MainWindow::setMeasureInterval(int msec) {
     if (ui->measureIntervalSpinBox->value()!=msec)
     ui->measureIntervalSpinBox->setValue(msec);
-
     experiment->setInterval(msec);
 }

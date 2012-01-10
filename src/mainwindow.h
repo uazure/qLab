@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QLocale>
 #include <QFileDialog>
+#include <QMessageBox>
 
 namespace Ui {
     class MainWindow;
