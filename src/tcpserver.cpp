@@ -11,6 +11,7 @@ TcpServer::TcpServer(QObject *parent) :
     qDebug()<<"Listening on port"<<serverPort();
     connect(this,SIGNAL(newConnection()),this,SLOT(acceptConnection()));
     clientCount=0;
+    experiment=0;
 }
 
 void TcpServer::acceptConnection() {
@@ -19,6 +20,12 @@ void TcpServer::acceptConnection() {
         incrementClientCount();
         qDebug()<<"Client connected. Client count:"<<getClientCount();
         connect(socket,SIGNAL(disconnected()),this,SLOT(removeConnection()));
+        connect(socket,SIGNAL(readyRead()),this,SLOT(readCommand()));
+        if (!experiment) {
+            qWarning()<<"No pointer to experiment object set in TcpServer class";
+            continue;
+        }
+
     }
 }
 
@@ -42,4 +49,12 @@ void TcpServer::decrementClientCount(void) {
 
 int TcpServer::getClientCount() const {
     return clientCount;
+}
+
+void TcpServer::setExperiment(QExperiment *experiment) {
+    this->experiment=experiment;
+}
+
+void TcpServer::readCommand() {
+
 }
