@@ -115,6 +115,16 @@ void TcpServer::readCommand() {
         replied=true;
     }
 
+    if (buf=="start") {
+        experiment->start();
+        replied=true;
+    }
+
+    if (buf=="stop") {
+        experiment->stop();
+        replied=true;
+    }
+
     if (buf=="status") {
         if (experiment->isActive())
            socket->write("200 Running\n");
@@ -122,6 +132,7 @@ void TcpServer::readCommand() {
            socket->write("200 Idle\n");
         replied=true;
     }
+
 
     if (buf=="version") {
         socket->write(QCoreApplication::applicationName().toAscii()+" version "+QCoreApplication::applicationVersion().toAscii()+'\n');
@@ -148,13 +159,13 @@ void TcpServer::experimentStatusChanged(bool running) {
         message="200 Idle\n";
     }
     foreach (QTcpSocket *socket, clientSocket) {
-     socket->write(message);
+        socket->write(message);
     }
 }
 
 void TcpServer::disconnectClients() {
     foreach (QTcpSocket *socket, clientSocket) {
-     socket->write("You are about to be disconnected. Bye!\n");
-     socket->disconnectFromHost();
+        socket->write("You are about to be disconnected. Bye!\n");
+        socket->disconnectFromHost();
     }
 }

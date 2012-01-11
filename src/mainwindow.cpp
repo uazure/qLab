@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
-    connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
+    connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),this,SLOT(showAboutQt()));
     connect(ui->actionNew_experiment,SIGNAL(triggered()),this,SLOT(getExperiment()));
     connect(ui->actionSave,SIGNAL(triggered()),experiment,SLOT(saveFile()));

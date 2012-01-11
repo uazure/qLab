@@ -131,14 +131,18 @@ bool QExperiment::isActive() const {
 }
 
 void QExperiment::start() {
+    bool status=isActive();
     if (! name.isEmpty()) {
-    timer.start();
-    saveTimer.start();
-    emit Notify("Started");
-} else {
-    qWarning("Experiment name is not set");
-}
-    emit statusChanged(isActive());
+        timer.start();
+        saveTimer.start();
+
+    } else {
+        qWarning("Experiment name is not set");
+    }
+    if (status!=isActive()) {
+        emit statusChanged(isActive());
+        emit Notify("Started");
+    }
 }
 
 void QExperiment::start(bool arg) {
@@ -147,10 +151,13 @@ void QExperiment::start(bool arg) {
 }
 
 void QExperiment::stop() {
+    bool status=isActive();
     timer.stop();
     saveTimer.stop();
+    if (status!=isActive()) {
     emit statusChanged(isActive());
     emit Notify("Stopped");
+}
 }
 
 QString QExperiment::getHeader() {
