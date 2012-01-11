@@ -10,17 +10,22 @@ TcpServer::TcpServer(QObject *parent) :
     }
     qDebug()<<"Listening on port"<<serverPort();
     connect(this,SIGNAL(newConnection()),this,SLOT(acceptConnection()));
-    clientCount=0;
     experiment=0;
 }
 
 void TcpServer::acceptConnection() {
     while (hasPendingConnections()) {
         QTcpSocket *socket=nextPendingConnection();
-        incrementClientCount();
+        //remember connection
+        clientSocket.insert(socket);
+        //inform that we have +1 to connection count
+        emit clientCountChanged(clientSocket.count());
+
         qDebug()<<"Client connected. Client count:"<<getClientCount();
         connect(socket,SIGNAL(disconnected()),this,SLOT(removeConnection()));
         connect(socket,SIGNAL(readyRead()),this,SLOT(readCommand()));
+        socket->write("You are connected to qLab server\n");
+
         if (!experiment) {
             qWarning()<<"No pointer to experiment object set in TcpServer class";
             continue;
@@ -30,25 +35,21 @@ void TcpServer::acceptConnection() {
 }
 
 void TcpServer::removeConnection() {
-    decrementClientCount();
+    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    if (clientSocket.remove(socket)) {
+        emit clientCountChanged(clientSocket.count());
+    }
+    else {
+        qWarning()<<"";
+    }
     qDebug()<<"Client disconnected. Client count:"<<getClientCount();
-    //FIXME:
-    //Here we need to know ip and port of QTcpSocket to remove it from the list.
-    //we can make a dirty hack to get this info from sender() pointer, but there must be a better way...
+    socket->deleteLater();
 }
 
-void TcpServer::incrementClientCount(void) {
-    ++clientCount;
-    emit clientCountChanged(clientCount);
-}
 
-void TcpServer::decrementClientCount(void) {
-    --clientCount;
-    emit clientCountChanged(clientCount);
-}
 
 int TcpServer::getClientCount() const {
-    return clientCount;
+    return clientSocket.count();
 }
 
 void TcpServer::setExperiment(QExperiment *experiment) {
@@ -56,5 +57,104 @@ void TcpServer::setExperiment(QExperiment *experiment) {
 }
 
 void TcpServer::readCommand() {
+    //Notice: I think of pointer type conversion as of dirty hack.
+    //This was took from bittorrent qt example.
+    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    QByteArray peer;
+    qint64 bufsize;
 
+    //set peer as string containging "ip:port"
+    peer.append(socket->peerAddress().toString().toAscii()).append(':').append(QByteArray::number(socket->peerPort()));
+
+    //if no bytes available in the socket then quit
+    if (socket->bytesAvailable()<1) {
+        qWarning()<<"bytesAvailable() ="<<socket->bytesAvailable()<<
+                "peer"<<peer;
+        return;
+    }
+    bufsize=socket->bytesAvailable();
+    QByteArray buf;
+    qDebug()<<"Bytes available to read from client"<<peer<<bufsize;
+    if (!socket->canReadLine()) {
+        qWarning()<<"Could not read line from client";
+        qDebug()<<socket->readAll();
+        return;
+    }
+
+    buf=socket->read(bufsize);
+    if (buf.size()!=bufsize) {
+        qWarning()<<"Read"<<buf.size()<<"bytes of"<<bufsize;
+        qDebug()<<"Buffer:"<<buf;
+    }
+    //here we gonna recognize request and send an answer
+    buf=buf.trimmed();
+    bool replied=false;
+    if (buf=="ping") {
+        socket->write("200 pong\n");
+        replied=true;
+    }
+    if (buf=="help") {
+        socket->write("200 Help:\n"
+                      "quit - close this channel\n"
+                      "exit - close this channel\n"
+                      "ping - ask if server is online. 'pong' reply should be get\n"
+                      "version - program version\n"
+                      "get interval - measuring interval in msec\n"
+                      "set interval=NUMBER - set measuring interval in msec\n"
+                      ""
+                      ""
+                      ""
+                      ""
+                      ""
+                      "");
+        replied=true;
+    }
+
+    if (buf=="get interval") {
+        socket->write("200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
+        replied=true;
+    }
+
+    if (buf=="status") {
+        if (experiment->isActive())
+           socket->write("200 Running\n");
+        else
+           socket->write("200 Idle\n");
+        replied=true;
+    }
+
+    if (buf=="version") {
+        socket->write(QCoreApplication::applicationName().toAscii()+" version "+QCoreApplication::applicationVersion().toAscii()+'\n');
+        replied=true;
+    }
+
+    if (buf=="quit" || buf=="exit") {
+        socket->write("Bye!\n");
+        socket->disconnectFromHost();
+        return;
+    }
+
+    if (!replied) {
+        socket->write("Type 'help' for full list of supported commands\n");
+    }
+
+}
+
+void TcpServer::experimentStatusChanged(bool running) {
+    QByteArray message;
+    if (running) {
+        message="200 Running\n";
+    } else {
+        message="200 Idle\n";
+    }
+    foreach (QTcpSocket *socket, clientSocket) {
+     socket->write(message);
+    }
+}
+
+void TcpServer::disconnectClients() {
+    foreach (QTcpSocket *socket, clientSocket) {
+     socket->write("You are about to be disconnected. Bye!\n");
+     socket->disconnectFromHost();
+    }
 }

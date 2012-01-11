@@ -18,6 +18,7 @@ QExperiment::~QExperiment() {
     }
 }
 
+
 void QExperiment::setExperiment(QString experiment) {
     setName(experiment);
     stop();

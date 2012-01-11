@@ -11,14 +11,11 @@ class TcpServer : public QTcpServer
 Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
-    void incrementClientCount(void);
-    void decrementClientCount(void);
     int getClientCount(void) const;
     void setExperiment(QExperiment *experiment);
 
 private:
-    //QList<QTcpSocket *> clientSocket;
-    int clientCount;
+    QSet<QTcpSocket *> clientSocket;
     QExperiment *experiment;
 
 private slots:
@@ -26,10 +23,13 @@ private slots:
     void removeConnection();
     void readCommand(void);
 
+
 signals:
     void clientCountChanged(int count);
 
 public slots:
+    void experimentStatusChanged(bool running);
+    void disconnectClients(void);
 
 };
 

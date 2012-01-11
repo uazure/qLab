@@ -25,6 +25,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
+    QExperiment * getExperimentInstance(void) const;
 
 private:
     Ui::MainWindow *ui;

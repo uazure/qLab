@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
     a.setOrganizationName("qLab");
-    a.setApplicationName("qlab");
+    a.setApplicationName("qLab server");
+    a.setApplicationVersion("0.0.1 develop");
 
     MainWindow w;
     w.show();

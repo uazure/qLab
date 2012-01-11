@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     experiment=new QExperiment();
     tcp=new TcpServer(this);
+    tcp->setExperiment(experiment);
+    connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionFullscreen,SIGNAL(toggled(bool)),this,SLOT(setFullscreen(bool)));
@@ -120,6 +122,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (dialog.exec()==QMessageBox::Ok)
     {
         experiment->saveFile();
+        tcp->disconnectClients();
         event->accept();
     } else {
         event->ignore();
@@ -144,4 +147,8 @@ void MainWindow::setMeasureInterval(int msec) {
     if (ui->measureIntervalSpinBox->value()!=msec)
     ui->measureIntervalSpinBox->setValue(msec);
     experiment->setInterval(msec);
+}
+
+QExperiment * MainWindow::getExperimentInstance(void) const {
+    return experiment;
 }
