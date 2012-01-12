@@ -9,6 +9,9 @@ QExperiment::QExperiment(QString name, QObject *parent) :
     currentFileName="test.dat";
     saveTimer.setInterval(10000);
     saveTimer.connect(&saveTimer,SIGNAL(timeout()),this,SLOT(saveFile()));
+    timer_progress=0;
+    progressTimer.connect(&progressTimer,SIGNAL(timeout()),this,SLOT(updateProgress()));
+
 }
 
 QExperiment::~QExperiment() {
@@ -107,6 +110,9 @@ QString QExperiment::getName() const {
 }
 
 void QExperiment::doMeasure() {
+    timer_progress=0;
+    progressTimer.start();;
+    emit updateProgress(100);
     qDebug("MEASURE CYCLE START");
     QByteArray tmp, output;
     for (int i=0;i<deviceList.size() && i<parametersList.size();i++) {
@@ -120,8 +126,26 @@ void QExperiment::doMeasure() {
 }
 
 void QExperiment::setInterval(int msec) {
+    if (msec<min_interval) {
+        qWarning()<<"Will not set interval to"<<msec<<"because it's too low";
+
+        emit TcpForbidden("Interval is too low. Accepted values from "+
+                          QString::number(min_interval)+" to "+
+                          QString::number(max_interval)+" (msec)");
+        return;
+    }
+    if (msec>max_interval) {
+        qWarning()<<"Will not set interval to"<<msec<<"because it's too high";
+        emit TcpForbidden("Interval is too high. Accepted values from "+
+                          QString::number(min_interval)+" to "+
+                          QString::number(max_interval)+" (msec)");
+        return;
+    }
+
     if (msec!=timer.interval()) {
+        timer_progress=0;
         timer.setInterval(msec);
+        progressTimer.setInterval(msec/10);
         emit intervalChanged(msec);
     }
 }
@@ -135,6 +159,7 @@ void QExperiment::start() {
     if (! name.isEmpty()) {
         timer.start();
         saveTimer.start();
+        progressTimer.start();
 
     } else {
         qWarning("Experiment name is not set");
@@ -154,13 +179,16 @@ void QExperiment::stop() {
     bool status=isActive();
     timer.stop();
     saveTimer.stop();
+    progressTimer.stop();
+    timer_progress=0;
     if (status!=isActive()) {
     emit statusChanged(isActive());
+    emit updateProgress(0);
     emit Notify("Stopped");
 }
 }
 
-QString QExperiment::getHeader() {
+QString QExperiment::getHeader() const {
     QString returnValue;
 
     returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (dddd)")+"\n";
@@ -197,7 +225,7 @@ QString QExperiment::getHeader() {
     }
 
     returnValue+='\n';
-    qDebug()<<returnValue;
+    //qDebug()<<returnValue;
     return returnValue;
 }
 
@@ -239,4 +267,18 @@ QString QExperiment::getCurrentFileName() const {
 
 int QExperiment::getInterval() const {
     return timer.interval();
+}
+
+void QExperiment::updateProgress(void) {
+    if (!isActive()) return;
+    //qDebug()<<"progressTimer"<<progressTimer.interval();
+    //qDebug()<<"timer_progress"<<timer_progress;
+    timer_progress=timer_progress+progressTimer.interval();
+    int progress=timer_progress*100/timer.interval();
+    //qWarning()<<"update progress issued"<<progress;
+    if (progress>100) qWarning()<<"Progress:"<<progress;
+    else
+    emit updateProgress(progress);
+    //FIXME: Need to find a way to calculate progress of timer.
+    //using some var can be used to
 }

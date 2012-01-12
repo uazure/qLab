@@ -12,6 +12,10 @@
 #include <QFile>
 #include "devicefarm.h"
 
+// minimal interval is 100 msec
+#define EXPERIMENT_MIN_INTERVAL 100
+#define EXPERIMENT_MAX_INTERVAL 60000
+
 class QExperiment : public QObject
 {
 Q_OBJECT
@@ -25,17 +29,26 @@ public:
     void setFileName(QString filename);
     QString getCurrentFileName() const;
     int getInterval() const;
-
+    /*Get the header of the experiment. Header is the text data
+    (commented out) with description of the experiment settings and
+    measured units, limits, etc.
+    */
+    QString getHeader(void) const;
+    QString getName(void) const;
+    static const int min_interval=EXPERIMENT_MIN_INTERVAL;
+    static const int max_interval=EXPERIMENT_MAX_INTERVAL;
 
     private:
     QString name;
     void setName(QString name);
-    QString getName(void) const;
+    int timer_progress;
+
     QStringList deviceStringList;
     QList <QAbstractDevice *> deviceList;
     QList <QStringList> parametersList;
     QSettings *settings;
     QTimer timer;
+    QTimer progressTimer;
     QTimer saveTimer;
     QDateTime startedOn;
     QStringList dataStringList;
@@ -43,26 +56,42 @@ public:
 
 
 private slots:
-
+    void updateProgress(void);
 
 
 signals:
+    /// When experiment name (configuration) has changed
     void experimentChanged(QString experimentName);
+    /// When measure cycle performed
     void measured (QString line);
+    /// When status (running/idle) changed
     void statusChanged (bool isOnline);
+    /// When measuring interval changed
     void intervalChanged(int msec);
+    /// When active file has changed
     void fileChanged(QString filename);
+    /// To notify user about something
     void Notify(QString message);
+    /// To notify tcp clients that they are forbidden to change settings
+    void TcpForbidden(QString message);
+    /// says to update progress-meter for interval. progress is from 0 to 100;
+    void updateProgress(int progress);
 
 public slots:
+    /// set experiment name (configuration)
     void setExperiment(QString experiment);
+    /// force measuring cycle
     void doMeasure(void);
+    /// start timer. To start measuring immediately consider call doMeasure() before start()
     void start(bool);
     void start(void);
+    /// stop timer
     void stop(void);
+    /// set the measuring interval
     void setInterval(int msec);
+    /// Saves data to active file
     void saveFile();
-    QString getHeader(void);
+
 };
 
 #endif // QEXPERIMENT_H

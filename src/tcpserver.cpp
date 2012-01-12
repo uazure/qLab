@@ -114,6 +114,21 @@ void TcpServer::readCommand() {
         socket->write("200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
         replied=true;
     }
+    if (buf.startsWith("set interval=")) {
+        bool ok=false;
+        int interval=buf.remove(0,13).trimmed().toInt(&ok);
+        if (ok) {
+            experiment->setInterval(interval);
+        } else {
+            qWarning()<<"Failed to get interval from request:\n"<<buf;
+            socket->write("400 Bad request\nInterval should be specified as a number");
+        }
+        replied=true;
+    }
+
+    if (buf=="get latest") {
+        //socket->write(experiment->dataStringList)
+    }
 
     if (buf=="start") {
         experiment->start();
@@ -140,13 +155,13 @@ void TcpServer::readCommand() {
     }
 
     if (buf=="quit" || buf=="exit") {
-        socket->write("Bye!\n");
+        socket->write("200 Bye!\n");
         socket->disconnectFromHost();
         return;
     }
 
     if (!replied) {
-        socket->write("Type 'help' for full list of supported commands\n");
+        socket->write("400 Bad request\nType 'help' for full list of supported commands\n");
     }
 
 }
@@ -163,9 +178,26 @@ void TcpServer::experimentStatusChanged(bool running) {
     }
 }
 
+void TcpServer::experimentIntervalChanged(int msec) {
+    if (msec<100) {
+        qWarning()<<"Interval is too low!"<<msec;
+        return;
+    }
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write("200 Interval:\n"+QByteArray::number(msec)+'\n');
+    }
+}
+
+void TcpServer::experimentForbidden(QString message) {
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write("403 "+message.toAscii()+'\n');
+    }
+}
+
 void TcpServer::disconnectClients() {
     foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("You are about to be disconnected. Bye!\n");
+        socket->write("200 You are about to be disconnected. Bye!\n");
         socket->disconnectFromHost();
     }
 }
+

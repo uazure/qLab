@@ -29,6 +29,8 @@ signals:
 
 public slots:
     void experimentStatusChanged(bool running);
+    void experimentIntervalChanged(int msec);
+    void experimentForbidden(QString message);
     void disconnectClients(void);
 
 };

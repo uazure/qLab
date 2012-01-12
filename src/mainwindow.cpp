@@ -16,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
     tcp=new TcpServer(this);
     tcp->setExperiment(experiment);
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
+    connect(experiment,SIGNAL(intervalChanged(int)),tcp,SLOT(experimentIntervalChanged(int)));
+    connect(experiment,SIGNAL(TcpForbidden(QString)),tcp,SLOT(experimentForbidden(QString)));
+
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));
@@ -24,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave,SIGNAL(triggered()),experiment,SLOT(saveFile()));
     connect(ui->actionSave_as,SIGNAL(triggered()),this,SLOT(getFile()));
     connect(ui->actionStartMeasure,SIGNAL(toggled(bool)),experiment,SLOT(start(bool)));
+    connect(ui->actionMeasuring_interval,SIGNAL(triggered()),this,SLOT(changeMeasureIntervalDialog()));
 
     connect(experiment,SIGNAL(statusChanged(bool)),ui->actionStartMeasure,SLOT(setChecked(bool)));
     connect(experiment,SIGNAL(statusChanged(bool)),this,SLOT(statusChanged(bool)));
@@ -32,12 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
     connect(experiment,SIGNAL(Notify(QString)),SLOT(Notify(QString)));
     connect(experiment,SIGNAL(intervalChanged(int)),SLOT(setMeasureInterval(int)));
+    connect(experiment,SIGNAL(updateProgress(int)),ui->measureIntervalProgressBar,SLOT(setValue(int)));
 
     connect(tcp,SIGNAL(clientCountChanged(int)),&tcpClientsLabel,SLOT(setNum(int)));
-
-    connect(ui->measureIntervalSpinBox,SIGNAL(valueChanged(int)),SLOT(setMeasureInterval(int)));
-
-
 
     experiment->setInterval(2000);
 
@@ -144,11 +145,21 @@ void MainWindow::statusChanged(bool status) {
 }
 
 void MainWindow::setMeasureInterval(int msec) {
-    if (ui->measureIntervalSpinBox->value()!=msec)
-    ui->measureIntervalSpinBox->setValue(msec);
     experiment->setInterval(msec);
 }
 
+
 QExperiment * MainWindow::getExperimentInstance(void) const {
     return experiment;
+}
+
+
+void MainWindow::changeMeasureIntervalDialog() {
+    bool ok;
+    int interval = QInputDialog::getInt(this, tr("Input measuring interval in msec"),
+                                        tr("Measuring interval:"),experiment->getInterval(),experiment->min_interval,experiment->max_interval,1000, &ok);
+    if (ok) {
+        this->setMeasureInterval(interval);
+        qDebug()<<"Interval set to"<<interval;
+    }
 }

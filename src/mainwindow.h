@@ -12,6 +12,7 @@
 #include <QLocale>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QInputDialog>
 
 namespace Ui {
     class MainWindow;
@@ -52,7 +53,9 @@ public slots:
     void getFile(void);
     void Notify(QString message);
     void statusChanged(bool status);
+    //experiment can set ui to display interval
     void setMeasureInterval(int msec);
+    void changeMeasureIntervalDialog();
 
 };
 
