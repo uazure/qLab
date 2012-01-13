@@ -35,7 +35,10 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
 
     if (isOnline()) {
         this->getIdn();
+    } else {
+        qWarning()<<"Device"<<shortName()<<"id"<< Id() <<"is OFFLINE";
     }
+    resetDevice();
 #endif
 
     // Read init string for the device from settings object
@@ -97,7 +100,7 @@ int QGpibDevice::Handle() const {
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
 bool QGpibDevice::set(QByteArray command) {
 #ifdef WIN32
-    ibwrt(this->handle,command.data(),command.size());
+    ibwrt(this->handle,command.data(),command.size()+1);
     if (ibsta&ERR) {
         qDebug()<<"Gpib error: ibwrt failed on device" <<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibwrt failed");
@@ -111,13 +114,15 @@ bool QGpibDevice::set(QByteArray command) {
 bool QGpibDevice::get(QByteArray &reply) {
 #ifdef WIN32
     char tmp[255];
-    ibrd(Handle(),tmp,255);
+    ibrd(Handle(),tmp,254);
     if (ibsta&ERR) {
-        qDebug()<<"Gpib error: ibrd failed on device"<<shortName()<<"with id"<<Id();
+        qWarning()<<"Gpib error: ibrd failed on device"<<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibrd failed");
         return false;
     }
+    reply.clear();
     reply.append(tmp);
+    reply=reply.trimmed();
 #endif
     return true;
 }

@@ -23,8 +23,8 @@ QExperiment::~QExperiment() {
 
 
 void QExperiment::setExperiment(QString experiment) {
-    setName(experiment);
     stop();
+    setName(experiment);
     dataStringList.clear();
     if (! name.isEmpty()) {
         startedOn=QDateTime().currentDateTime();
@@ -58,7 +58,7 @@ void QExperiment::setExperiment(QString experiment) {
     initDevices();
     setFileName(startedOn.toString("yyyy-MM-dd ")+name+".dat");
     getHeader();
-    doMeasure();
+    //doMeasure();
     start();
 }
 
@@ -113,14 +113,14 @@ void QExperiment::doMeasure() {
     timer_progress=0;
     progressTimer.start();;
     emit updateProgress(100);
-    qDebug("MEASURE CYCLE START");
+    //qDebug("MEASURE CYCLE START");
     QByteArray tmp, output;
     for (int i=0;i<deviceList.size() && i<parametersList.size();i++) {
         deviceList.at(i)->readValue(tmp,parametersList.at(i));
-        qDebug()<<tmp;
+        //qDebug()<<tmp;
         output.append(tmp).append("\t");
     }
-    qDebug("MEASURE CYCLE END");
+    //qDebug("MEASURE CYCLE END");
     this->dataStringList.append(output.trimmed());
     emit measured(output.trimmed());
 }
@@ -279,6 +279,4 @@ void QExperiment::updateProgress(void) {
     if (progress>100) qWarning()<<"Progress:"<<progress;
     else
     emit updateProgress(progress);
-    //FIXME: Need to find a way to calculate progress of timer.
-    //using some var can be used to
 }
