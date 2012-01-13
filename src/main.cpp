@@ -29,7 +29,9 @@
 
 int main(int argc, char *argv[])
 {
+#ifndef WINNT
     qInstallMsgHandler(myMessageOutput);
+#endif
     QApplication a(argc, argv);
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 

@@ -95,7 +95,7 @@ int QGpibDevice::Handle() const {
 }
 
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
-bool QGpibDevice::set(QString command) {
+bool QGpibDevice::set(QByteArray command) {
 #ifdef WIN32
     ibwrt(this->handle,command.data(),command.size());
     if (ibsta&ERR) {
@@ -123,7 +123,7 @@ bool QGpibDevice::get(QByteArray &reply) {
 }
 
 /// Handful method for asking gpib device for value. Returns true on success or false on failure.
-bool QGpibDevice::ask(QString command, QByteArray &reply) {
+bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
     if (!set(command)) {
         return false;
     }
@@ -138,7 +138,7 @@ bool QGpibDevice::ask(QString command, QByteArray &reply) {
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
 bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
-    if (ask(readCommand,returnValue)) {
+    if (ask(readCommand.toAscii(),returnValue)) {
         returnValue=returnValue.trimmed();
         if (getFactor() == 0 || getFactor() == 1) {
             //qDebug()<<"No factor for"<<shortname;
