@@ -11,8 +11,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    plot.cpp \
+    tcpclient.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    plot.h \
+    tcpclient.h
 
 FORMS    += mainwindow.ui
+
+INCLUDEPATH += ../qwt6/
+LIBS += -L ../../lib/ -lqwt
