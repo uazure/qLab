@@ -14,6 +14,8 @@ signals:
 
 public slots:
 
+    void askInitialData();
+    void getData();
 
 };
 
