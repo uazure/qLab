@@ -18,6 +18,9 @@ void TcpServer::acceptConnection() {
         QTcpSocket *socket=nextPendingConnection();
         //remember connection
         clientSocket.insert(socket);
+        //set monitoring mode off (it will be swithced to on when client ask for initial data
+        setClientMonitoringMode(socket,false);
+
         //inform that we have +1 to connection count
         emit clientCountChanged(clientSocket.count());
 
@@ -36,7 +39,10 @@ void TcpServer::acceptConnection() {
 
 void TcpServer::removeConnection() {
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    if (!socket) return;
+
     if (clientSocket.remove(socket)) {
+        clientSocketMonitorMode.remove(socket);
         emit clientCountChanged(clientSocket.count());
     }
     else {
@@ -54,6 +60,8 @@ int TcpServer::getClientCount() const {
 
 void TcpServer::setExperiment(Experiment *experiment) {
     this->experiment=experiment;
+    //measured data from experiment will go to all clients that are in monitoring mode
+    connect(experiment,SIGNAL(measured(QString)),SLOT(measured(QString)));
 }
 
 void TcpServer::readCommand() {
@@ -88,10 +96,9 @@ void TcpServer::readCommand() {
     }
     //here we gonna recognize request and send an answer
     buf=buf.trimmed();
-    bool replied=false;
     if (buf=="ping") {
         socket->write("200 pong\n");
-        replied=true;
+        return;
     }
     if (buf=="help") {
         socket->write("200 Help:\n"
@@ -101,18 +108,18 @@ void TcpServer::readCommand() {
                       "version - program version\n"
                       "get interval - measuring interval in msec\n"
                       "set interval=NUMBER - set measuring interval in msec\n"
-                      ""
-                      ""
-                      ""
+                      "get initial data - get initial experimental data with header\n"
+                      "monitor on - set monitoring mode on\n"
+                      "monitor off - set monitoring mode off\n"
                       ""
                       ""
                       "");
-        replied=true;
+        return;
     }
 
     if (buf=="get interval") {
         socket->write("200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
-        replied=true;
+        return;
     }
     if (buf.startsWith("set interval=")) {
         bool ok=false;
@@ -123,21 +130,50 @@ void TcpServer::readCommand() {
             qWarning()<<"Failed to get interval from request:\n"<<buf;
             socket->write("400 Bad request\nInterval should be specified as a number");
         }
-        replied=true;
+        return;
     }
 
     if (buf=="get latest") {
         //socket->write(experiment->dataStringList)
     }
 
+    if (buf=="get initial data") {
+        socket->write(experiment->getHeader().toAscii());
+        socket->write(experiment->getData().toAscii());
+        socket->write("\n");
+        setClientMonitoringMode(socket, true);
+        return;
+    }
+
+    if (buf=="monitor on") {
+        setClientMonitoringMode(socket,true);
+        socket->write("200 Monitoring on\n");
+        return;
+    }
+
+    if (buf=="monitor off") {
+        setClientMonitoringMode(socket,false);
+        socket->write("200 Monitoring off\n");
+        return;
+    }
+
+    if (buf=="get monitor") {
+        if (getClientMonitoringMode(socket)) {
+            socket->write("200 Monitoring on\n");
+        } else {
+            socket->write("200 Monitoring off\n");
+        }
+        return;
+    }
+
     if (buf=="start") {
         experiment->start();
-        replied=true;
+        return;
     }
 
     if (buf=="stop") {
         experiment->stop();
-        replied=true;
+        return;
     }
 
     if (buf=="status") {
@@ -145,13 +181,13 @@ void TcpServer::readCommand() {
            socket->write("200 Running\n");
         else
            socket->write("200 Idle\n");
-        replied=true;
+        return;
     }
 
 
     if (buf=="version") {
         socket->write(QCoreApplication::applicationName().toAscii()+" version "+QCoreApplication::applicationVersion().toAscii()+'\n');
-        replied=true;
+        return;
     }
 
     if (buf=="quit" || buf=="exit") {
@@ -160,10 +196,9 @@ void TcpServer::readCommand() {
         return;
     }
 
-    if (!replied) {
-        socket->write("400 Bad request\nType 'help' for full list of supported commands\n");
-    }
 
+    //if we did not recogized request
+        socket->write("400 Bad request\nType 'help' for full list of supported commands\n");
 }
 
 void TcpServer::experimentStatusChanged(bool running) {
@@ -201,3 +236,28 @@ void TcpServer::disconnectClients() {
     }
 }
 
+void TcpServer::setClientMonitoringMode(QTcpSocket *socket, bool on) {
+    if (!socket) {
+        qWarning()<<"Empty socket to set monitoring mode on";
+        return;
+    }
+    clientSocketMonitorMode.insert(socket,on);
+}
+
+bool TcpServer::getClientMonitoringMode(QTcpSocket *socket) const {
+    if (!socket) {
+        qWarning()<<"Empty socket to get monitoring mode from";
+        return false;
+    }
+    return clientSocketMonitorMode.value(socket);
+}
+
+void TcpServer::measured(QString dataLine) {
+    QHashIterator<QTcpSocket *, bool> i(clientSocketMonitorMode);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value()) {
+            i.key()->write(dataLine.toAscii().append("\n"));
+        }
+    }
+}

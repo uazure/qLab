@@ -13,15 +13,20 @@ public:
     explicit TcpServer(QObject *parent = 0);
     int getClientCount(void) const;
     void setExperiment(Experiment *experiment);
+    void setClientMonitoringMode(QTcpSocket * socket, bool on);
+    bool getClientMonitoringMode(QTcpSocket * socket) const;
 
 private:
     QSet<QTcpSocket *> clientSocket;
+    QHash<QTcpSocket *, bool> clientSocketMonitorMode;
+
     Experiment *experiment;
 
 private slots:
     void acceptConnection();
     void removeConnection();
     void readCommand(void);
+    void measured(QString dataLine);
 
 
 signals:

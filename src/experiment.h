@@ -34,6 +34,7 @@ public:
     measured units, limits, etc.
     */
     QString getHeader(void) const;
+    QString getData(void) const;
     QString getName(void) const;
     static const int min_interval=EXPERIMENT_MIN_INTERVAL;
     static const int max_interval=EXPERIMENT_MAX_INTERVAL;

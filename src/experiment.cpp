@@ -229,6 +229,10 @@ QString Experiment::getHeader() const {
     return returnValue;
 }
 
+QString Experiment::getData() const {
+    return this->dataStringList.join("\n");
+}
+
 void Experiment::saveFile() {
     if (currentFileName.isEmpty()) {
         qWarning()<<"No file specified. Nothing to save";
