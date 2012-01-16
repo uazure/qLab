@@ -72,7 +72,7 @@ void TcpServer::readCommand() {
     qint64 bufsize;
 
     //set peer as string containging "ip:port"
-    peer.append(socket->peerAddress().toString().toAscii()).append(':').append(QByteArray::number(socket->peerPort()));
+    peer.append(socket->peerAddress().toString().toUtf8()).append(':').append(QByteArray::number(socket->peerPort()));
 
     //if no bytes available in the socket then quit
     if (socket->bytesAvailable()<1) {
@@ -108,7 +108,7 @@ void TcpServer::readCommand() {
                       "version - program version\n"
                       "get interval - measuring interval in msec\n"
                       "set interval=NUMBER - set measuring interval in msec\n"
-                      "get initial data - get initial experimental data with header\n"
+                      "get all - get initial experimental data with header\n"
                       "monitor on - set monitoring mode on\n"
                       "monitor off - set monitoring mode off\n"
                       ""
@@ -137,9 +137,10 @@ void TcpServer::readCommand() {
         //socket->write(experiment->dataStringList)
     }
 
-    if (buf=="get initial data") {
-        socket->write(experiment->getHeader().toAscii());
-        socket->write(experiment->getData().toAscii());
+    if (buf=="get all") {
+        socket->write("200 Initial data:\n");
+        socket->write(experiment->getHeader().toUtf8 ());
+        socket->write(experiment->getData().toUtf8());
         socket->write("\n");
         setClientMonitoringMode(socket, true);
         return;
@@ -186,7 +187,7 @@ void TcpServer::readCommand() {
 
 
     if (buf=="version") {
-        socket->write(QCoreApplication::applicationName().toAscii()+" version "+QCoreApplication::applicationVersion().toAscii()+'\n');
+        socket->write(QCoreApplication::applicationName().toUtf8()+" version "+QCoreApplication::applicationVersion().toUtf8()+'\n');
         return;
     }
 
@@ -225,7 +226,7 @@ void TcpServer::experimentIntervalChanged(int msec) {
 
 void TcpServer::experimentForbidden(QString message) {
     foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("403 "+message.toAscii()+'\n');
+        socket->write("403 "+message.toUtf8()+'\n');
     }
 }
 
@@ -257,7 +258,7 @@ void TcpServer::measured(QString dataLine) {
     while (i.hasNext()) {
         i.next();
         if (i.value()) {
-            i.key()->write(dataLine.toAscii().append("\n"));
+            i.key()->write(dataLine.toUtf8().append("\n"));
         }
     }
 }

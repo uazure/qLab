@@ -72,12 +72,12 @@ void Experiment::initDevices() {
 
     // go thru all devices we need to init and init them!
     for (int i=0;i<deviceStringList.size() && i<parametersList.size();i++) {
-        QByteArray deviceName=deviceStringList.at(i).toAscii();
+        QByteArray deviceName=deviceStringList.at(i).toUtf8();
         QByteArray deviceNameWithParameters=deviceName;
         if (! parametersList.at(i).isEmpty() ) {
             deviceNameWithParameters.append('(');
             for (int j=0;j<parametersList.at(i).size();j++) {
-                deviceNameWithParameters.append(parametersList.at(i).at(j).toAscii()+';');
+                deviceNameWithParameters.append(parametersList.at(i).at(j).toUtf8()+';');
             }
             //replace last character (i.e. ';') with ')';
             deviceNameWithParameters[deviceNameWithParameters.size()-1]=')';
