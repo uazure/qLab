@@ -1,9 +1,9 @@
-#ifndef QEXPERIMENT_H
-#define QEXPERIMENT_H
+#ifndef EXPERIMENT_H
+#define EXPERIMENT_H
 
 #include <QObject>
 #include <QTimer>
-#include "qabstractdevice.h"
+#include "abstractdevice.h"
 #include <QString>
 #include <QList>
 #include <QStringList>
@@ -16,13 +16,13 @@
 #define EXPERIMENT_MIN_INTERVAL 100
 #define EXPERIMENT_MAX_INTERVAL 60000
 
-class QExperiment : public QObject
+class Experiment : public QObject
 {
 Q_OBJECT
 
 public:
-    explicit QExperiment(QString name="",QObject *parent = 0);
-    ~QExperiment();
+    explicit Experiment(QString name="",QObject *parent = 0);
+    ~Experiment();
 
     void initDevices();
     bool isActive(void) const;
@@ -44,7 +44,7 @@ public:
     int timer_progress;
 
     QStringList deviceStringList;
-    QList <QAbstractDevice *> deviceList;
+    QList <AbstractDevice *> deviceList;
     QList <QStringList> parametersList;
     QSettings *settings;
     QTimer timer;
@@ -94,4 +94,4 @@ public slots:
 
 };
 
-#endif // QEXPERIMENT_H
+#endif // EXPERIMENT_H

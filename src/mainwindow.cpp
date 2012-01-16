@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "qgpibdevice.h"
+//#include "gpibdevice.h"
 #include <QDebug>
 #include <QSystemTrayIcon>
 #include <QMenu>
@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QLocale::setDefault(QLocale::English);
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
-    experiment=new QExperiment();
+    experiment=new Experiment();
     tcp=new TcpServer(this);
     tcp->setExperiment(experiment);
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
@@ -149,7 +149,7 @@ void MainWindow::setMeasureInterval(int msec) {
 }
 
 
-QExperiment * MainWindow::getExperimentInstance(void) const {
+Experiment * MainWindow::getExperimentInstance(void) const {
     return experiment;
 }
 

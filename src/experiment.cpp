@@ -1,6 +1,6 @@
-#include "qexperiment.h"
+#include "experiment.h"
 
-QExperiment::QExperiment(QString name, QObject *parent) :
+Experiment::Experiment(QString name, QObject *parent) :
     QObject(parent)
 {
     this->name=name;
@@ -14,7 +14,7 @@ QExperiment::QExperiment(QString name, QObject *parent) :
 
 }
 
-QExperiment::~QExperiment() {
+Experiment::~Experiment() {
     delete settings;
     for (int i=0;i<deviceList.size();i++) {
         delete deviceList.at(i);
@@ -22,7 +22,7 @@ QExperiment::~QExperiment() {
 }
 
 
-void QExperiment::setExperiment(QString experiment) {
+void Experiment::setExperiment(QString experiment) {
     stop();
     setName(experiment);
     dataStringList.clear();
@@ -62,7 +62,7 @@ void QExperiment::setExperiment(QString experiment) {
     start();
 }
 
-void QExperiment::initDevices() {
+void Experiment::initDevices() {
     // delete existing QAbstractDevice child objects from list:
     for (int i=0;i<deviceList.size();i++) {
         delete deviceList.at(i);
@@ -94,7 +94,7 @@ void QExperiment::initDevices() {
     }
 }
 
-void QExperiment::setName(QString name) {
+void Experiment::setName(QString name) {
     if (this->name!=name) {
         this->name=name;
         stop();
@@ -105,11 +105,11 @@ void QExperiment::setName(QString name) {
     }
 }
 
-QString QExperiment::getName() const {
+QString Experiment::getName() const {
     return name;
 }
 
-void QExperiment::doMeasure() {
+void Experiment::doMeasure() {
     timer_progress=0;
     progressTimer.start();;
     emit updateProgress(100);
@@ -125,7 +125,7 @@ void QExperiment::doMeasure() {
     emit measured(output.trimmed());
 }
 
-void QExperiment::setInterval(int msec) {
+void Experiment::setInterval(int msec) {
     if (msec<min_interval) {
         qWarning()<<"Will not set interval to"<<msec<<"because it's too low";
 
@@ -150,11 +150,11 @@ void QExperiment::setInterval(int msec) {
     }
 }
 
-bool QExperiment::isActive() const {
+bool Experiment::isActive() const {
     return timer.isActive();
 }
 
-void QExperiment::start() {
+void Experiment::start() {
     bool status=isActive();
     if (! name.isEmpty()) {
         timer.start();
@@ -170,12 +170,12 @@ void QExperiment::start() {
     }
 }
 
-void QExperiment::start(bool arg) {
+void Experiment::start(bool arg) {
     if (arg) start();
     else stop();
 }
 
-void QExperiment::stop() {
+void Experiment::stop() {
     bool status=isActive();
     timer.stop();
     saveTimer.stop();
@@ -188,7 +188,7 @@ void QExperiment::stop() {
 }
 }
 
-QString QExperiment::getHeader() const {
+QString Experiment::getHeader() const {
     QString returnValue;
 
     returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (dddd)")+"\n";
@@ -229,7 +229,7 @@ QString QExperiment::getHeader() const {
     return returnValue;
 }
 
-void QExperiment::saveFile() {
+void Experiment::saveFile() {
     if (currentFileName.isEmpty()) {
         qWarning()<<"No file specified. Nothing to save";
         return;
@@ -251,7 +251,7 @@ void QExperiment::saveFile() {
     emit Notify("File saved Ok");
 }
 
-void QExperiment::setFileName(QString filename) {
+void Experiment::setFileName(QString filename) {
     // do nothing is string is NULL (i.e. no file was selected);
     if (filename.isNull()) return;
     if (filename!=currentFileName) {
@@ -261,15 +261,15 @@ void QExperiment::setFileName(QString filename) {
     }
 }
 
-QString QExperiment::getCurrentFileName() const {
+QString Experiment::getCurrentFileName() const {
     return currentFileName;
 }
 
-int QExperiment::getInterval() const {
+int Experiment::getInterval() const {
     return timer.interval();
 }
 
-void QExperiment::updateProgress(void) {
+void Experiment::updateProgress(void) {
     if (!isActive()) return;
     //qDebug()<<"progressTimer"<<progressTimer.interval();
     //qDebug()<<"timer_progress"<<timer_progress;

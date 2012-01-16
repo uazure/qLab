@@ -5,14 +5,14 @@ DeviceFarm::DeviceFarm()
 
 }
 
- QAbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName) {
+ AbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName) {
     QByteArray shortname=DeviceShortName;
     if (shortname=="time") {
-        return new QTimeDevice();
+        return new TimeDevice();
     }
 
     if (shortname=="utime") {
-        return new QUtimeDevice();
+        return new UtimeDevice();
     }
 
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");
@@ -22,7 +22,7 @@ DeviceFarm::DeviceFarm()
     qDebug()<<"Device:"<<shortname<<"bus:"<<bus;
 
     if (bus=="gpib") {
-        QGpibDevice *device=new QGpibDevice(shortname);
+        GpibDevice *device=new GpibDevice(shortname);
         return device;
     }
 

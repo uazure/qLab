@@ -1,9 +1,9 @@
 #ifndef DEVICEFARM_H
 #define DEVICEFARM_H
-#include "qabstractdevice.h"
-#include "qgpibdevice.h"
-#include "qtimedevice.h"
-#include "qutimedevice.h"
+#include "abstractdevice.h"
+#include "gpibdevice.h"
+#include "timedevice.h"
+#include "utimedevice.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QApplication>
@@ -28,7 +28,7 @@ public:
       This method returns pointer to object on success or null on fail.
       */
 
-    static QAbstractDevice * getDeviceObject(QByteArray &DeviceShortName);
+    static AbstractDevice * getDeviceObject(QByteArray &DeviceShortName);
 };
 
 #endif // DEVICEFARM_H

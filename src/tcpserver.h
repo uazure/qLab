@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QTcpSocket>
 #include <QTcpServer>
-#include "qexperiment.h"
+#include "experiment.h"
 
 class TcpServer : public QTcpServer
 {
@@ -12,11 +12,11 @@ Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
     int getClientCount(void) const;
-    void setExperiment(QExperiment *experiment);
+    void setExperiment(Experiment *experiment);
 
 private:
     QSet<QTcpSocket *> clientSocket;
-    QExperiment *experiment;
+    Experiment *experiment;
 
 private slots:
     void acceptConnection();

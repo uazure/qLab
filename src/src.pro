@@ -8,23 +8,23 @@ TARGET = server
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    qabstractdevice.cpp \
-    qgpibdevice.cpp \
+    abstractdevice.cpp \
+    gpibdevice.cpp \
     devicefarm.cpp \
     experimentconfigurationselectdialog.cpp \
-    qtimedevice.cpp \
-    qutimedevice.cpp \
-    qexperiment.cpp \
+    timedevice.cpp \
+    utimedevice.cpp \
+    experiment.cpp \
     tcpserver.cpp
 HEADERS += mainwindow.h \
     gpib-32.h \
-    qabstractdevice.h \
-    qgpibdevice.h \
+    abstractdevice.h \
+    gpibdevice.h \
     devicefarm.h \
     experimentconfigurationselectdialog.h \
-    qtimedevice.h \
-    qutimedevice.h \
-    qexperiment.h \
+    timedevice.h \
+    utimedevice.h \
+    experiment.h \
     tcpserver.h
 INCLUDEPATH += ../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'

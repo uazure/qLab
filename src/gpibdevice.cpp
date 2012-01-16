@@ -1,7 +1,7 @@
-#include "qgpibdevice.h"
+#include "gpibdevice.h"
 
-QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
-        QAbstractDevice (parent)
+GpibDevice::GpibDevice(QByteArray &DeviceShortName, QObject *parent) :
+        AbstractDevice (parent)
 
 {
     bus=Gpib;
@@ -69,13 +69,13 @@ QGpibDevice::QGpibDevice(QByteArray &DeviceShortName, QObject *parent) :
 
 }
 
-QGpibDevice::~QGpibDevice() {
+GpibDevice::~GpibDevice() {
     delete deviceSettings;
     delete experimentSettings;
 }
 
 /// Get identification string from the device
-bool QGpibDevice::getIdn() {
+bool GpibDevice::getIdn() {
     QByteArray query("*IDN?");
     QByteArray response;
     if (ask (query,response)) {
@@ -88,17 +88,17 @@ bool QGpibDevice::getIdn() {
 }
 
 /// Returns gpib id of the device.
-int QGpibDevice::Id() const {
+int GpibDevice::Id() const {
     return id;
 }
 
 /// Returns gpib handle of the device
-int QGpibDevice::Handle() const {
+int GpibDevice::Handle() const {
     return handle;
 }
 
 /// Write data to the gpib device. Returns true on success or false on failure. Emits errorMessage on error.
-bool QGpibDevice::set(QByteArray command) {
+bool GpibDevice::set(QByteArray command) {
 #ifdef WIN32
     ibwrt(this->handle,command.data(),command.size()+1);
     if (ibsta&ERR) {
@@ -111,7 +111,7 @@ bool QGpibDevice::set(QByteArray command) {
 }
 
 /// Read data from the gpib device. Returns true on success or false on failure.
-bool QGpibDevice::get(QByteArray &reply) {
+bool GpibDevice::get(QByteArray &reply) {
 #ifdef WIN32
     char tmp[255];
     ibrd(Handle(),tmp,254);
@@ -128,7 +128,7 @@ bool QGpibDevice::get(QByteArray &reply) {
 }
 
 /// Handful method for asking gpib device for value. Returns true on success or false on failure.
-bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
+bool GpibDevice::ask(QByteArray command, QByteArray &reply) {
     if (!set(command)) {
         return false;
     }
@@ -139,10 +139,10 @@ bool QGpibDevice::ask(QByteArray command, QByteArray &reply) {
     return true;
 }
 
-/// Implementation of QAbstractDevice virtual primary method for gpib deivce
+/// Implementation of AbstractDevice virtual primary method for gpib deivce
 /** FIXME: This requres to read configuration for each device to know
 which commands to issue to the device. */
-bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
+bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
     if (ask(readCommand.toAscii(),returnValue)) {
         returnValue=returnValue.trimmed();
         if (getFactor() == 0 || getFactor() == 1) {
@@ -159,7 +159,7 @@ bool QGpibDevice::readValue(QByteArray &returnValue, QStringList parametersList)
 }
 
 /// This function checks if device is online. Returns true on success.
-bool QGpibDevice::isOnline() {
+bool GpibDevice::isOnline() {
 #ifdef WIN32
     short listen;
     ibln(handle,id,NO_SAD,&listen);
@@ -173,7 +173,7 @@ bool QGpibDevice::isOnline() {
     return true;
 }
 
-void QGpibDevice::resetDevice() {
+void GpibDevice::resetDevice() {
     QByteArray query("*RST");
     if (! set (query)) {
         qWarning()<<"Gpib device"<<Id()<<"handle"<<Handle()<<"Failed to ibwrt *RST command";

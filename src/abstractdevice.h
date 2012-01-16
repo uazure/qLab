@@ -15,13 +15,13 @@ enum deviceBusType {
     Multi
 };
 
-class QAbstractDevice : public QObject
+class AbstractDevice : public QObject
 {
     Q_OBJECT
 public:
     //
-    explicit QAbstractDevice(QObject *parent = 0);
-    ~QAbstractDevice();
+    explicit AbstractDevice(QObject *parent = 0);
+    ~AbstractDevice();
 
 
     /** The MAIN function of the deivce :)

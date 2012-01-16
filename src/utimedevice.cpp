@@ -1,8 +1,8 @@
-#include "qutimedevice.h"
+#include "utimedevice.h"
 #include <QByteArray>
 
-QUtimeDevice::QUtimeDevice(QObject *parent) :
-        QAbstractDevice(parent)
+UtimeDevice::UtimeDevice(QObject *parent) :
+        AbstractDevice(parent)
 {
     bus=Utime;
     shortname="utime";
@@ -10,7 +10,7 @@ QUtimeDevice::QUtimeDevice(QObject *parent) :
     setUnit("sec");
 }
 
-bool QUtimeDevice::readValue(QByteArray &returnValue, QStringList) {
+bool UtimeDevice::readValue(QByteArray &returnValue, QStringList) {
     returnValue=QByteArray::number(QDateTime::currentDateTime().toTime_t())+"."+QTime::currentTime().toString("zzz").toAscii();
     return true;
 }

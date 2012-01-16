@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "devicefarm.h"
 #include "experimentconfigurationselectdialog.h"
-#include "qexperiment.h"
+#include "experiment.h"
 #include "tcpserver.h"
 
 #include <QSettings>
@@ -26,12 +26,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
-    QExperiment * getExperimentInstance(void) const;
+    Experiment * getExperimentInstance(void) const;
 
 private:
     Ui::MainWindow *ui;
     QSettings *experimentSettings;
-    QExperiment *experiment;
+    Experiment *experiment;
     TcpServer *tcp;
     QLabel experimentLabel;
     QLabel fileLabel;
@@ -39,7 +39,7 @@ private:
     QLabel tcpClientsLabel;
     QStringList devices;
     QList <QStringList> parameters;
-    QList <QAbstractDevice *> deviceList;
+    QList <AbstractDevice *> deviceList;
     void initDevices();
 
 private slots:

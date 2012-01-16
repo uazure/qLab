@@ -52,7 +52,7 @@ int TcpServer::getClientCount() const {
     return clientSocket.count();
 }
 
-void TcpServer::setExperiment(QExperiment *experiment) {
+void TcpServer::setExperiment(Experiment *experiment) {
     this->experiment=experiment;
 }
 

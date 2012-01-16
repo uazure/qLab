@@ -5,19 +5,19 @@
 #include "gpib-32.h"
 #endif
 
-#include "qabstractdevice.h"
+#include "abstractdevice.h"
 #include <QDebug>
 #include <QByteArray>
 #include <QStringList>
 #include <QSettings>
 #include <QApplication>
 
-class QGpibDevice : public QAbstractDevice
+class GpibDevice : public AbstractDevice
 {
     Q_OBJECT
 public:
-    explicit QGpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
-    ~QGpibDevice();
+    explicit GpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
+    ~GpibDevice();
     int Id(void) const;
     int Handle(void) const;
     /** Implementation of QAbstractDevice method. Reads value from specified

@@ -1,7 +1,7 @@
-#ifndef QUTIMEDEVICE_H
-#define QUTIMEDEVICE_H
+#ifndef UTIMEDEVICE_H
+#define UTIMEDEVICE_H
 
-#include "qabstractdevice.h"
+#include "abstractdevice.h"
 #include <QTime>
 #include <QDateTime>
 #include <QByteArray>
@@ -9,11 +9,11 @@
 /**  This class provides device that returns current time as
 unix timestamp with milliseconds resolution
   */
-class QUtimeDevice : public QAbstractDevice
+class UtimeDevice : public AbstractDevice
 {
 Q_OBJECT
 public:
-    explicit QUtimeDevice(QObject *parent = 0);
+    explicit UtimeDevice(QObject *parent = 0);
     /// Implementation of pure virtual method of QAbstractDevice
     bool readValue(QByteArray &returnValue, QStringList parameters=QStringList());
 
@@ -23,4 +23,4 @@ public slots:
 
 };
 
-#endif // QUTIMEDEVICE_H
+#endif // UTIMEDEVICE_H
