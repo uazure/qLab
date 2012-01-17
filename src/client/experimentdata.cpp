@@ -99,6 +99,6 @@ void ExperimentData::readInitialData(QByteArray &initialData) {
     //Better solution is to read lines to buf from initialData
     QList<QByteArray> array=initialData.split('\n');
     for (int i=0;i<array.size();i++) {
-        parseLine(array.at(i));
+        parseLine(array[i]);
     }
 }

@@ -9,7 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
     plot=new Plot(this);
     data=new ExperimentData(this);
 
+
+
     ui->plotLayout->addWidget(plot);
+
     connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionConnect_to,SIGNAL(triggered()),this,SLOT(connectTo()));
@@ -17,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
-
+    connect(&tcpClient,SIGNAL(initialData(QByteArray&)),data,SLOT(readInitialData(QByteArray&)));
 
 
     connectionLabel.setText("*");

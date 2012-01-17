@@ -22,6 +22,7 @@ signals:
 
 
 public slots:
+    void readInitialData(QByteArray &initialData);
     void parseLine(QByteArray &line);
     void parseComment(QByteArray &commentLine);
     void parseData(QByteArray &dataLine);

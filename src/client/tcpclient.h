@@ -11,6 +11,8 @@ public:
 
 
 signals:
+    void initialData(QByteArray &data);
+    void dataLine(QByteArray &dataLine);
 
 public slots:
 
