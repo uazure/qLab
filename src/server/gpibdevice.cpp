@@ -123,6 +123,9 @@ bool GpibDevice::get(QByteArray &reply) {
     reply.clear();
     reply.append(tmp);
     reply=reply.trimmed();
+#else
+
+    reply=QByteArray::number((double) rand()/RAND_MAX*1000,'g',3);
 #endif
     return true;
 }

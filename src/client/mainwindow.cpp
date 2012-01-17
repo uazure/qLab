@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     plot=new Plot(this);
+    data=new ExperimentData(this);
 
     ui->plotLayout->addWidget(plot);
     connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));

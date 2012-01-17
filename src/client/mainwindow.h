@@ -10,6 +10,7 @@
 
 #include "plot.h"
 #include "tcpclient.h"
+#include "experimentdata.h"
 
 namespace Ui {
     class MainWindow;
@@ -26,6 +27,7 @@ public:
 private:
     Ui::MainWindow *ui;
     Plot *plot;
+    ExperimentData *data;
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;

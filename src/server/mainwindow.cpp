@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     experiment=new Experiment();
     tcp=new TcpServer(this);
     tcp->setExperiment(experiment);
+    udp=new UdpServer(this);
+    udp->setExperiment(experiment);
+
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
     connect(experiment,SIGNAL(intervalChanged(int)),tcp,SLOT(experimentIntervalChanged(int)));
     connect(experiment,SIGNAL(TcpForbidden(QString)),tcp,SLOT(experimentForbidden(QString)));

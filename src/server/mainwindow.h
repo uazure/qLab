@@ -6,6 +6,7 @@
 #include "experimentconfigurationselectdialog.h"
 #include "experiment.h"
 #include "tcpserver.h"
+#include "udpserver.h"
 
 #include <QSettings>
 #include <QLabel>
@@ -33,6 +34,7 @@ private:
     QSettings *experimentSettings;
     Experiment *experiment;
     TcpServer *tcp;
+    UdpServer *udp;
     QLabel experimentLabel;
     QLabel fileLabel;
     QLabel statusLabel;

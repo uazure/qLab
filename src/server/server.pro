@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     timedevice.cpp \
     utimedevice.cpp \
     experiment.cpp \
-    tcpserver.cpp
+    tcpserver.cpp \
+    udpserver.cpp
 HEADERS += mainwindow.h \
     gpib-32.h \
     abstractdevice.h \
@@ -25,7 +26,8 @@ HEADERS += mainwindow.h \
     timedevice.h \
     utimedevice.h \
     experiment.h \
-    tcpserver.h
+    tcpserver.h \
+    udpserver.h
 INCLUDEPATH += ../../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32

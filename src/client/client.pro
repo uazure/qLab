@@ -1,25 +1,26 @@
-#-------------------------------------------------
-#
+# -------------------------------------------------
 # Project created by QtCreator 2012-01-16T13:39:54
-#
-#-------------------------------------------------
-
-QT       += core gui network
-
+# -------------------------------------------------
+QT += core \
+    gui \
+    network
 TARGET = client
 TEMPLATE = app
-
-
-SOURCES += main.cpp\
-        mainwindow.cpp \
+SOURCES += main.cpp \
+    mainwindow.cpp \
     plot.cpp \
-    tcpclient.cpp
+    tcpclient.cpp \
+    experimentdata.cpp
 
-HEADERS  += mainwindow.h \
+# SOURCES += ../qwt6/qwt_plot.cpp
+HEADERS += mainwindow.h \
     plot.h \
-    tcpclient.h
+    tcpclient.h \
+    experimentdata.h
 
-FORMS    += mainwindow.ui
-
+# HEADERS += ../qwt6/qwt_plot.h
+FORMS += mainwindow.ui
 INCLUDEPATH += ../qwt6/
-LIBS += -L ../../lib/ -lqwt
+
+# qwt 6.0.1 need to be compiled and installed to system path
+LIBS += -lqwt

@@ -230,7 +230,10 @@ QString Experiment::getHeader() const {
 }
 
 QString Experiment::getData() const {
-    return this->dataStringList.join("\n");
+    return dataStringList.join("\n");
+}
+QStringList Experiment::getDataStringList() const {
+    return dataStringList;
 }
 
 void Experiment::saveFile() {
