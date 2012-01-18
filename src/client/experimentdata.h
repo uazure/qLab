@@ -19,6 +19,7 @@ private:
     QVector<QVector<double> > dataTable;
 
 signals:
+    void newDataAvailable();
 
 
 public slots:

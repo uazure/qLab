@@ -79,8 +79,10 @@ void ExperimentData::parseData(QByteArray &dataLine) {
                 dataTable.append(tmpdoublelist);
             } else {
                 qCritical()<<"Critical: row 0, column"<<i<<"is NaN";
-                dataTable.clear();
-                return;
+                tmpdoublelist.clear();
+                tmpdoublelist.append(0);
+                dataTable.append(tmpdoublelist);
+//                return;
             }
         }
         qDebug()<<"Init dataTable with values\n"<<dataTable.size()<<'x'

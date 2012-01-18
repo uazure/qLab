@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
     connect(&tcpClient,SIGNAL(initialData(QByteArray&)),data,SLOT(readInitialData(QByteArray&)));
+    connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseData(QByteArray&)));
 
 
     connectionLabel.setText("*");
@@ -32,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete plot;
+    delete data;
 }
 
 void MainWindow::setFullscreen(bool a) {

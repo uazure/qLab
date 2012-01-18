@@ -28,7 +28,7 @@ void TcpClient::getData()
     }
     if (buf.startsWith("200 Initial data:")) {
 //truncate first string (evertything before \n)
-        buf=buf.right(buf.size()-buf.indexOf('\n')+1);
+        buf=buf.right(buf.size()-buf.indexOf('\n')-1);
         emit initialData(buf);
     }
 
