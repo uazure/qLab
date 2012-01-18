@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>qLab client</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -49,6 +49,7 @@
      <string>View</string>
     </property>
     <addaction name="actionFullscreen"/>
+    <addaction name="actionViewData"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -104,6 +105,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionData_ASCII">
+   <property name="text">
+    <string>Data (ASCII)</string>
+   </property>
+  </action>
+  <action name="actionData_Table">
+   <property name="text">
+    <string>Data (Table)</string>
+   </property>
+  </action>
+  <action name="actionViewData">
+   <property name="text">
+    <string>Data</string>
    </property>
   </action>
  </widget>

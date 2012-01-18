@@ -10,16 +10,19 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     plot.cpp \
     tcpclient.cpp \
-    experimentdata.cpp
+    experimentdata.cpp \
+    dataviewwindow.cpp
 
 # SOURCES += ../qwt6/qwt_plot.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
-    experimentdata.h
+    experimentdata.h \
+    dataviewwindow.h
 
 # HEADERS += ../qwt6/qwt_plot.h
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+    dataviewwindow.ui
 INCLUDEPATH += ../qwt6/
 
 # qwt 6.0.1 need to be compiled and installed to system path

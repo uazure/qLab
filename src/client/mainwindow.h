@@ -11,6 +11,7 @@
 #include "plot.h"
 #include "tcpclient.h"
 #include "experimentdata.h"
+#include "dataviewwindow.h"
 
 namespace Ui {
     class MainWindow;
@@ -40,6 +41,7 @@ private slots:
     void socketDisconnectedFromServer(void);
     void socketStateChanged(QAbstractSocket::SocketState state);
     void socketDisconnect(void);
+    void showDataViewWindow(void);
 
 };
 

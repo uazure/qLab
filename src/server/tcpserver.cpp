@@ -97,11 +97,11 @@ void TcpServer::readCommand() {
     //here we gonna recognize request and send an answer
     buf=buf.trimmed();
     if (buf=="ping") {
-        socket->write("200 pong\n");
+        socket->write("\n200 pong\n");
         return;
     }
     if (buf=="help") {
-        socket->write("200 Help:\n"
+        socket->write("\n200 Help:\n"
                       "quit - close this channel\n"
                       "exit - close this channel\n"
                       "ping - ask if server is online. 'pong' reply should be get\n"
@@ -118,7 +118,7 @@ void TcpServer::readCommand() {
     }
 
     if (buf=="get interval") {
-        socket->write("200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
+        socket->write("\n200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
         return;
     }
     if (buf.startsWith("set interval=")) {
@@ -128,7 +128,7 @@ void TcpServer::readCommand() {
             experiment->setInterval(interval);
         } else {
             qWarning()<<"Failed to get interval from request:\n"<<buf;
-            socket->write("400 Bad request\nInterval should be specified as a number");
+            socket->write("\n400 Bad request\nInterval should be specified as a number");
         }
         return;
     }
@@ -138,7 +138,7 @@ void TcpServer::readCommand() {
     }
 
     if (buf=="get all") {
-        socket->write("200 Initial data:\n");
+        socket->write("\n200 Initial data:\n");
         socket->write(experiment->getHeader().toUtf8 ());
         socket->write(experiment->getData().toUtf8());
         socket->write("\n");
@@ -148,21 +148,21 @@ void TcpServer::readCommand() {
 
     if (buf=="monitor on") {
         setClientMonitoringMode(socket,true);
-        socket->write("200 Monitoring on\n");
+        socket->write("\n200 Monitoring on\n");
         return;
     }
 
     if (buf=="monitor off") {
         setClientMonitoringMode(socket,false);
-        socket->write("200 Monitoring off\n");
+        socket->write("\n200 Monitoring off\n");
         return;
     }
 
     if (buf=="get monitor") {
         if (getClientMonitoringMode(socket)) {
-            socket->write("200 Monitoring on\n");
+            socket->write("\n200 Monitoring on\n");
         } else {
-            socket->write("200 Monitoring off\n");
+            socket->write("\n200 Monitoring off\n");
         }
         return;
     }
@@ -179,9 +179,9 @@ void TcpServer::readCommand() {
 
     if (buf=="status") {
         if (experiment->isActive())
-           socket->write("200 Running\n");
+           socket->write("\n200 Running\n");
         else
-           socket->write("200 Idle\n");
+           socket->write("\n200 Idle\n");
         return;
     }
 
@@ -192,22 +192,22 @@ void TcpServer::readCommand() {
     }
 
     if (buf=="quit" || buf=="exit") {
-        socket->write("200 Bye!\n");
+        socket->write("\n200 Bye!\n");
         socket->disconnectFromHost();
         return;
     }
 
 
     //if we did not recogized request
-        socket->write("400 Bad request\nType 'help' for full list of supported commands\n");
+        socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n");
 }
 
 void TcpServer::experimentStatusChanged(bool running) {
     QByteArray message;
     if (running) {
-        message="200 Running\n";
+        message="\n200 Running\n";
     } else {
-        message="200 Idle\n";
+        message="\n200 Idle\n";
     }
     foreach (QTcpSocket *socket, clientSocket) {
         socket->write(message);
@@ -220,19 +220,19 @@ void TcpServer::experimentIntervalChanged(int msec) {
         return;
     }
     foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("200 Interval:\n"+QByteArray::number(msec)+'\n');
+        socket->write("\n200 Interval:\n"+QByteArray::number(msec)+'\n');
     }
 }
 
 void TcpServer::experimentForbidden(QString message) {
     foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("403 "+message.toUtf8()+'\n');
+        socket->write("\n403 "+message.toUtf8()+'\n');
     }
 }
 
 void TcpServer::disconnectClients() {
     foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("200 You are about to be disconnected. Bye!\n");
+        socket->write("\n200 You are about to be disconnected. Bye!\n");
         socket->disconnectFromHost();
     }
 }
@@ -258,7 +258,7 @@ void TcpServer::measured(QString dataLine) {
     while (i.hasNext()) {
         i.next();
         if (i.value()) {
-            i.key()->write(dataLine.toUtf8().append("\n"));
+            i.key()->write("\n200 Data:\n"+dataLine.toUtf8().append("\n"));
         }
     }
 }

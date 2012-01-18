@@ -5,6 +5,7 @@ TcpClient::TcpClient(QObject *parent) :
 {
     connect(this,SIGNAL(connected()),this,SLOT(askInitialData()));
     connect(this,SIGNAL(readyRead()),this,SLOT(getData()));
+    Expect=expectCommand;
 }
 
 void TcpClient::askInitialData()
@@ -14,23 +15,84 @@ void TcpClient::askInitialData()
 
 void TcpClient::getData()
 {
-
-    if (bytesAvailable()<=0) {
+    qint64 bytes=bytesAvailable();
+    QByteArray buf;
+    if (bytes<1) {
         qWarning()<<"No bytes available to read from network";
         //return;
     }
-//    QByteArray buf;
-//    buf=readAll();
-//    qDebug()<<"Read buffer: "<<buf;
-//    if (buf.startsWith("400") || buf.startsWith("403") || buf.startsWith("404")) {
-//        qWarning()<<"Server said:"<<buf;
-//        return;
-//    }
-//    if (buf.startsWith("200 Initial data:")) {
-////truncate first string (evertything before \n)
-//        buf=buf.right(buf.size()-buf.indexOf('\n')-1);
-//        emit initialData(buf);
-//}
+    while (canReadLine()) {
+        buf=readLine(bytes);
+        protocolParser(buf);
+    }
+
+    //    buf=readAll();
+    //    qDebug()<<"Read buffer: "<<buf;
+    //    if (buf.startsWith("400") || buf.startsWith("403") || buf.startsWith("404")) {
+    //        qWarning()<<"Server said:"<<buf;
+    //        return;
+    //    }
+    //    if (buf.startsWith("200 Initial data:")) {
+    ////truncate first string (evertything before \n)
+    //        buf=buf.right(buf.size()-buf.indexOf('\n')-1);
+    //        emit initialData(buf);
+    //}
 
 
+}
+
+void TcpClient::protocolParser(QByteArray &line) {
+    if (line.size()<1) {
+        qWarning()<<"protocolParser: Line size is"<<line.size();
+        qDebug()<<"protocolParser:"<<line;
+    }
+    line=line.trimmed();
+
+    //If line is empty after trimming it means it was just empty!
+    //And empty lines prepends the commands from server :)
+    if (line.isEmpty()) {
+        Expect==expectCommand;
+        return;
+    }
+
+
+    if (Expect==expectData && !line.startsWith("200 ") && line.contains('\t')) {
+        emit dataLine(line);
+        return;
+    }
+
+    if (Expect==expectInterval) {
+        int a;
+        bool ok=false;
+        a=line.toInt(&ok);
+        if (ok) {
+            emit serverInterval(a);
+        } else {
+            qWarning()<<"Failed to get interval integer from string"<<line;
+        }
+        return;
+    }
+
+    if (line.startsWith("200 Initial data:")) {
+        emit initialData();
+        setExpect(expectData);
+    } else if (line.startsWith("200 Data:")) {
+        setExpect(expectData);
+    } else if (line.startsWith("200 Interval:")) {
+        setExpect(expectInterval);
+    } else if (line.startsWith("200 Idle")) {
+        emit serverStatus(false);
+        setExpect(expectCommand);
+    } else if (line.startsWith("200 Running")) {
+        emit serverStatus(true);
+        setExpect(expectCommand);
+    }
+}
+
+void TcpClient::setExpect(expect Expectation) {
+    Expect=Expectation;
+}
+
+TcpClient::expect TcpClient::getExpect() const {
+    return Expect;
 }

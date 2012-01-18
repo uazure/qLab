@@ -17,10 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionConnect_to,SIGNAL(triggered()),this,SLOT(connectTo()));
     connect(ui->actionDisconnect,SIGNAL(triggered()),this,SLOT(socketDisconnect()));
+    connect(ui->actionViewData,SIGNAL(triggered()),this,SLOT(showDataViewWindow()));
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
-    connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseData(QByteArray&)));
+    connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseLine(QByteArray&)));
+    connect(&tcpClient,SIGNAL(initialData()),data,SLOT(resetData()));
 
 
     connectionLabel.setText("*");
@@ -115,4 +117,11 @@ void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
 void MainWindow::socketDisconnect(void) {
     tcpClient.disconnectFromHost();
     ui->actionDisconnect->setDisabled(true);
+}
+
+void MainWindow::showDataViewWindow() {
+    DataViewWindow *dataView=new DataViewWindow(this);
+    dataView->setAscii(data->getAscii());
+    dataView->setItem(data);
+    dataView->show();
 }
