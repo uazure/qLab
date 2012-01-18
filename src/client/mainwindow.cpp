@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
-    connect(&tcpClient,SIGNAL(initialData(QByteArray&)),data,SLOT(readInitialData(QByteArray&)));
     connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseData(QByteArray&)));
 
 

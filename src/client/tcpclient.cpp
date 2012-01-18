@@ -19,18 +19,18 @@ void TcpClient::getData()
         qWarning()<<"No bytes available to read from network";
         //return;
     }
-    QByteArray buf;
-    buf=readAll();
-    qDebug()<<"Read buffer: "<<buf;
-    if (buf.startsWith("400") || buf.startsWith("403") || buf.startsWith("404")) {
-        qWarning()<<"Server said:"<<buf;
-        return;
-    }
-    if (buf.startsWith("200 Initial data:")) {
-//truncate first string (evertything before \n)
-        buf=buf.right(buf.size()-buf.indexOf('\n')-1);
-        emit initialData(buf);
-    }
+//    QByteArray buf;
+//    buf=readAll();
+//    qDebug()<<"Read buffer: "<<buf;
+//    if (buf.startsWith("400") || buf.startsWith("403") || buf.startsWith("404")) {
+//        qWarning()<<"Server said:"<<buf;
+//        return;
+//    }
+//    if (buf.startsWith("200 Initial data:")) {
+////truncate first string (evertything before \n)
+//        buf=buf.right(buf.size()-buf.indexOf('\n')-1);
+//        emit initialData(buf);
+//}
 
 
 }
