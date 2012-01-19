@@ -5,7 +5,7 @@ TcpClient::TcpClient(QObject *parent) :
 {
     connect(this,SIGNAL(connected()),this,SLOT(askInitialData()));
     connect(this,SIGNAL(readyRead()),this,SLOT(getData()));
-    Expect=expectCommand;
+    expect=expectCommand;
 }
 
 void TcpClient::askInitialData()
@@ -51,17 +51,17 @@ void TcpClient::protocolParser(QByteArray &line) {
     //If line is empty after trimming it means it was just empty!
     //And empty lines prepends the commands from server :)
     if (line.isEmpty()) {
-        Expect==expectCommand;
+        setExpect(expectCommand);
         return;
     }
 
 
-    if (Expect==expectData && !line.startsWith("200 ") && line.contains('\t')) {
+    if (getExpect()==expectData && !line.startsWith("200 ")) {
         emit dataLine(line);
         return;
     }
 
-    if (Expect==expectInterval) {
+    if (getExpect()==expectInterval) {
         int a;
         bool ok=false;
         a=line.toInt(&ok);
@@ -89,10 +89,10 @@ void TcpClient::protocolParser(QByteArray &line) {
     }
 }
 
-void TcpClient::setExpect(expect Expectation) {
-    Expect=Expectation;
+void TcpClient::setExpect(Expect expectation) {
+    expect=expectation;
 }
 
-TcpClient::expect TcpClient::getExpect() const {
-    return Expect;
+TcpClient::Expect TcpClient::getExpect() const {
+    return expect;
 }

@@ -192,12 +192,11 @@ QString Experiment::getHeader() const {
     QString returnValue;
 
     returnValue+="#Experiment "+name+" started on "+startedOn.toString("dd.MM.yyyy hh:mm (dddd)")+"\n";
-    returnValue+="#Devices used: (name, label, min, max, unit)\n";
-    returnValue+="#";
+    returnValue+="#Device:\n#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->shortName();
     }
-    returnValue+="\n#";
+    returnValue+="\n#Label:\n#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->getLabel();
     }
@@ -211,15 +210,15 @@ QString Experiment::getHeader() const {
         }
     }
     */
-    returnValue+="\n#";
+    returnValue+="\n#Min:\n#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=QString::number(deviceList.at(i)->getMinValue());
     }
-    returnValue+="\n#";
+    returnValue+="\n#Max:\n#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=QString::number(deviceList.at(i)->getMaxValue());
     }
-    returnValue+="\n#";
+    returnValue+="\n#Unit:\n#";
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->getUnit();
     }

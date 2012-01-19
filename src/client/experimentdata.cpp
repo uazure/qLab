@@ -3,7 +3,8 @@
 ExperimentData::ExperimentData(QObject *parent) :
     QAbstractTableModel(parent)
 {
-
+//set expect variable to none (for comment parsing)
+    expect=expectNone;
 }
 
 QVariant ExperimentData::data(const QModelIndex &index, int role) const {
@@ -113,19 +114,53 @@ void ExperimentData::parseData(QByteArray &dataLine) {
 }
 
 void ExperimentData::parseComment(QByteArray &commentLine) {
-    asciiTable.append(commentLine);
+    commentLine=commentLine.trimmed();
+    asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
+
+    if (getExpect()==expectDevice) {
+        //FIXME: Here should be the code to assign device names to columns
+        setExpect(expectNone);
+        return;
+    }
+
+    if (commentLine.startsWith("#Device:")) {
+        setExpect(expectDevice);
+        return;
+    }
+    if (commentLine.startsWith("#Label:")) {
+        setExpect(expectLabel);
+        return;
+    }
+
+    if (commentLine.startsWith("#Min:")) {
+        setExpect(expectMin);
+        return;
+    }
+
+    if (commentLine.startsWith("Max:")) {
+        setExpect(expectMax);
+        return;
+    }
+
+    if (commentLine.startsWith("#Unit:")) {
+        setExpect(expectUnit);
+        return;
+    }
+
+
+
     qDebug()<<"FIXME: parse comment not implemented";
-    qDebug()<<commentLine;
 }
 
-void ExperimentData::readInitialData(QByteArray &initialData) {
-    //FIXME: this algorithm is memory consuming. Anybody cares?
-    //Better solution is to read lines to buf from initialData
-    QList<QByteArray> array=initialData.split('\n');
-    for (int i=0;i<array.size();i++) {
-        parseLine(array[i]);
-    }
-}
+//void ExperimentData::readInitialData(QByteArray &initialData) {
+//    qCritical()<<"readInitialData used!";
+//    //FIXME: this algorithm is memory consuming. Anybody cares?
+//    //Better solution is to read lines to buf from initialData
+//    QList<QByteArray> array=initialData.split('\n');
+//    for (int i=0;i<array.size();i++) {
+//        parseLine(array[i]);
+//    }
+//}
 
 void ExperimentData::resetData() {
     for (int i=0;i<dataTable.size();i++) {
@@ -139,3 +174,12 @@ const QStringList & ExperimentData::getAscii() const
 {
     return asciiTable;
 }
+
+void ExperimentData::setExpect(Expect expectation) {
+    expect=expectation;
+}
+
+ExperimentData::Expect ExperimentData::getExpect() const {
+    return expect;
+}
+

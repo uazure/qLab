@@ -9,7 +9,7 @@ class TcpClient : public QTcpSocket
     Q_OBJECT
 public:
     explicit TcpClient(QObject *parent = 0);
-    enum expect {
+    enum Expect {
         expectCommand,
         expectData,
         expectInterval
@@ -17,9 +17,9 @@ public:
 
 private:
     QByteArray buffer;
-    expect Expect;
-    void setExpect(expect Expectation);
-    expect getExpect(void) const;
+    Expect expect;
+    void setExpect(Expect Expectation);
+    Expect getExpect(void) const;
 
 
 signals:
