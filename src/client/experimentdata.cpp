@@ -9,9 +9,10 @@ ExperimentData::ExperimentData(QObject *parent) :
 
 QVariant ExperimentData::data(const QModelIndex &index, int role) const {
 
-    if (dataTable.isEmpty() || role!=Qt::DisplayRole) {
-        return QVariant();
+    if (role!=Qt::DisplayRole || dataTable.isEmpty() ) {
+        return QVariant(QVariant::Invalid);
     }
+
     QVariant val(QVariant::Invalid);
     if (index.column()<dataTable.size() || index.row()<dataTable.at(0).size()) {
         val=this->dataTable.at(index.column()).at(index.row());
