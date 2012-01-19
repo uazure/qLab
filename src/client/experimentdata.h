@@ -19,6 +19,7 @@ public:
     int rowCount(const QModelIndex &parent=QModelIndex()) const;
     /// Implementation of virtual member of QAbstractTableModel
     Qt::ItemFlags flags(const QModelIndex &index) const;
+    QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
     /// returns reference to QStringList containing ascii;
     const QStringList & getAscii() const;
@@ -32,6 +33,17 @@ public:
         expectMax,
         expectUnit
     };
+
+    void setColumnShortname(int column, QByteArray &shortname);
+    inline QString getColumnShortname(int column=0) const;
+    void setColumnLabel(int column, QByteArray &label);
+    inline QString getColumnLabel (int column=0) const;
+    void setColumnMin(int column, double min);
+    inline double getColumnMin(int column=0) const;
+    void setColumnMax(int column, double max);
+    inline double getColumnMax(int column=0) const;
+    void setColumnUnit(int column, QByteArray &unit);
+    inline QString getColumnUnit (int column=0) const;
 
 private:
     /// This is the DATA STORAGE for table of doubles
@@ -59,6 +71,7 @@ private:
     /// Access functions to expect variable
     inline void setExpect(Expect expectation);
     inline Expect getExpect(void) const;
+
 
 
 
