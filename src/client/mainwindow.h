@@ -9,6 +9,10 @@
 #include <QLabel>
 
 #include "plot.h"
+#include "qwt_plot_curve.h"
+#include "qwt_series_data.h"
+#include "qwt_symbol.h"
+#include "seriesdata.h"
 #include "tcpclient.h"
 #include "experimentdata.h"
 #include "dataviewwindow.h"
@@ -29,6 +33,10 @@ private:
     Ui::MainWindow *ui;
     Plot *plot;
     ExperimentData *data;
+    QwtPlotCurve * plotCurve;
+    QwtPlotCurve * plotCurve2;
+    SeriesData *series;
+    SeriesData *series2;
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;

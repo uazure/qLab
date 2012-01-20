@@ -11,14 +11,16 @@ SOURCES += main.cpp \
     plot.cpp \
     tcpclient.cpp \
     experimentdata.cpp \
-    dataviewwindow.cpp
+    dataviewwindow.cpp \
+    seriesdata.cpp
 
 # SOURCES += ../qwt6/qwt_plot.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
     experimentdata.h \
-    dataviewwindow.h
+    dataviewwindow.h \
+    seriesdata.h
 
 # HEADERS += ../qwt6/qwt_plot.h
 FORMS += mainwindow.ui \

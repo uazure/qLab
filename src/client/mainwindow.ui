@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -50,6 +50,7 @@
     </property>
     <addaction name="actionFullscreen"/>
     <addaction name="actionViewData"/>
+    <addaction name="actionReplot"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -120,6 +121,14 @@
   <action name="actionViewData">
    <property name="text">
     <string>Data</string>
+   </property>
+  </action>
+  <action name="actionReplot">
+   <property name="text">
+    <string>Replot</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

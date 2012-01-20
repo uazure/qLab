@@ -349,3 +349,7 @@ QString ExperimentData::getColumnUnit(int column) const {
     }
     return "";
 }
+
+const QVector<QVector<double> > * ExperimentData::getDataTable() const {
+    return &dataTable;
+}

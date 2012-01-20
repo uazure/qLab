@@ -8,6 +8,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     plot=new Plot(this);
     data=new ExperimentData(this);
+    plotCurve=new QwtPlotCurve("1");
+    plotCurve2=new QwtPlotCurve("2");
+    series=new SeriesData(data->getDataTable(),1,3);
+    series2=new SeriesData(data->getDataTable(),2,3);
+    plotCurve->setData(series);
+    plotCurve2->setData(series);
+//    QwtSymbol *symbol = new QwtSymbol (
+//            QwtSymbol::Triangle,        //default is the triangle
+//            QBrush(Qt::black),          //default color
+//            QPen(Qt::NoPen),            //empty pen
+//            QSize(7,7));                //hard-coded size
+//    plotCurve->setSymbol(symbol);
+    plotCurve->attach(plot);
+    plotCurve2->attach(plot);
 
 
 
@@ -18,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionConnect_to,SIGNAL(triggered()),this,SLOT(connectTo()));
     connect(ui->actionDisconnect,SIGNAL(triggered()),this,SLOT(socketDisconnect()));
     connect(ui->actionViewData,SIGNAL(triggered()),this,SLOT(showDataViewWindow()));
+    connect(ui->actionReplot,SIGNAL(triggered()),plot,SLOT(replot()));
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
@@ -36,6 +51,8 @@ MainWindow::~MainWindow()
     delete ui;
     delete plot;
     delete data;
+    delete plotCurve;
+    delete series;
 }
 
 void MainWindow::setFullscreen(bool a) {
@@ -93,11 +110,6 @@ void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
     switch (state) {
     case QAbstractSocket::UnconnectedState:
         qWarning()<<"Unconnected";
-//        QMessageBox msgBox(this);
-//        msgBox.setStandardButtons(QMessageBox::Ok);
-//        msgBox.setText("Failed to connect to server");
-//        msgBox.setIcon(QMessageBox::Warning);
-//        msgBox.show();
         break;
     case QAbstractSocket::HostLookupState:
         qDebug()<<"Lookup for host";
@@ -110,6 +122,12 @@ void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
         break;
     case QAbstractSocket::ClosingState:
         qWarning()<<"Closing socket!";
+        break;
+    case QAbstractSocket::BoundState:
+        qDebug()<<"Socket is bound";
+        break;
+    case QAbstractSocket::ListeningState:
+        qDebug()<<"Socket is listening";
         break;
     }
 }

@@ -7,5 +7,5 @@ Plot::Plot(QWidget *parent) :
 }
 
 Plot::~Plot() {
-
+this->detachItems();
 }

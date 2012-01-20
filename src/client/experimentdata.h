@@ -24,6 +24,8 @@ public:
     /// returns reference to QStringList containing ascii;
     const QStringList & getAscii() const;
 
+    const QVector<QVector<double> > * getDataTable(void) const;
+
     /// Enumeration of available expectations for parseComment() functions
     enum Expect {
         expectNone,
