@@ -7,6 +7,8 @@
 class TcpClient : public QTcpSocket
 {
     Q_OBJECT
+    //unidentified copy constructor
+    TcpClient(const TcpClient&);
 public:
     explicit TcpClient(QObject *parent = 0);
     enum Expect {

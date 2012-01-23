@@ -5,8 +5,12 @@
 
 class SeriesData : public QwtSeriesData<QPointF>
 {
+   //unidentified copy constructor
+    SeriesData(const SeriesData&);
+
 public:
     explicit SeriesData(const QVector<QVector<double> > *data,int y, int x=0);
+    ~SeriesData();
     //void setData ();
     size_t size() const;
     QPointF sample(size_t i) const;

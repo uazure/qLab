@@ -11,6 +11,8 @@ namespace Ui {
 class DataViewWindow : public QDialog
 {
     Q_OBJECT
+    //unidentified copy constructor
+    DataViewWindow(const DataViewWindow&);
 
 public:
     explicit DataViewWindow(QWidget *parent = 0);

@@ -9,6 +9,8 @@
 class ExperimentData : public QAbstractTableModel
 {
 Q_OBJECT
+    //unidentified copy constructor
+    ExperimentData(const ExperimentData &);
 public:
     explicit ExperimentData(QObject *parent = 0);
     /// Implementation of virtual member of QAbstractTableModel
@@ -50,6 +52,7 @@ public:
 private:
     /// This is the DATA STORAGE for table of doubles
     QVector<QVector<double> > dataTable;
+
     /** The string list containing raw ascii data before conversion.
 
       Here we can find comment lines and lines containing measured data

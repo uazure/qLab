@@ -9,11 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
     plot=new Plot(this);
     data=new ExperimentData(this);
     plotCurve=new QwtPlotCurve("1");
-    plotCurve2=new QwtPlotCurve("2");
+//    plotCurve2=new QwtPlotCurve("2");
     series=new SeriesData(data->getDataTable(),1,3);
-    series2=new SeriesData(data->getDataTable(),2,3);
+//    series2=new SeriesData(data->getDataTable(),2,3);
     plotCurve->setData(series);
-    plotCurve2->setData(series);
+
+//    plotCurve2->setData(series);
 //    QwtSymbol *symbol = new QwtSymbol (
 //            QwtSymbol::Triangle,        //default is the triangle
 //            QBrush(Qt::black),          //default color
@@ -21,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //            QSize(7,7));                //hard-coded size
 //    plotCurve->setSymbol(symbol);
     plotCurve->attach(plot);
-    plotCurve2->attach(plot);
+//    plotCurve2->attach(plot);
 
 
 
@@ -48,11 +49,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete plotCurve;
+    //delete series;
     delete plot;
     delete data;
-    delete plotCurve;
-    delete series;
+    delete ui;
+
 }
 
 void MainWindow::setFullscreen(bool a) {

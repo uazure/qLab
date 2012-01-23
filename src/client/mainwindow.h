@@ -24,6 +24,8 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    //unidentified copy constructor
+    MainWindow(const MainWindow &);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -34,9 +36,9 @@ private:
     Plot *plot;
     ExperimentData *data;
     QwtPlotCurve * plotCurve;
-    QwtPlotCurve * plotCurve2;
+//    QwtPlotCurve * plotCurve2;
     SeriesData *series;
-    SeriesData *series2;
+//    SeriesData *series2;
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;

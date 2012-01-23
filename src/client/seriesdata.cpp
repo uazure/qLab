@@ -8,6 +8,10 @@ SeriesData::SeriesData(const QVector<QVector<double> > *data, int y, int x)
     yCol=y;
 }
 
+SeriesData::~SeriesData() {
+
+}
+
 size_t SeriesData::size() const {
     if (dataTable->size()==0) return 0;
     return dataTable->at(0).size()-1;
