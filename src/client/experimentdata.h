@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QStringList>
+#include "qwt_plot.h"
 
 class ExperimentData : public QAbstractTableModel
 {
@@ -35,19 +36,23 @@ public:
         expectLabel,
         expectMin,
         expectMax,
-        expectUnit
+        expectUnit,
+        expectAxisHint
     };
 
     void setColumnShortname(int column, QByteArray &shortname);
-    inline QString getColumnShortname(int column=0) const;
+    QString getColumnShortname(int column=0) const;
     void setColumnLabel(int column, QByteArray &label);
-    inline QString getColumnLabel (int column=0) const;
+    QString getColumnLabel (int column=0) const;
     void setColumnMin(int column, double min);
-    inline double getColumnMin(int column=0) const;
+    double getColumnMin(int column=0) const;
     void setColumnMax(int column, double max);
-    inline double getColumnMax(int column=0) const;
+    double getColumnMax(int column=0) const;
     void setColumnUnit(int column, QByteArray &unit);
-    inline QString getColumnUnit (int column=0) const;
+    QString getColumnUnit (int column=0) const;
+    void setColumnAxis(int column, QByteArray &axis);
+    QwtPlot::Axis getColumnAxis(int column=0) const;
+
 
 private:
     /// This is the DATA STORAGE for table of doubles
@@ -72,15 +77,24 @@ private:
     QList<double> columnMax;
     /// Array of units for columns
     QStringList columnUnit;
+    /// Enumeration of axes
+    QList<QwtPlot::Axis> columnAxis;
+
 
     /// Access functions to expect variable
     inline void setExpect(Expect expectation);
     inline Expect getExpect(void) const;
 
+    static QwtPlot::Axis toAxisId(const QByteArray &axis);
+
+
 
 
 
 signals:
+    /// Emitted when initial data arrives. It's possible to create curves when we have data and headers arrived and parsed.
+    void initialized();
+
     /// Emitted when new data is appended to dataTable array
     void newDataAvailable();
 

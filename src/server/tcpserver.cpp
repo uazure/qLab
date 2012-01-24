@@ -262,3 +262,4 @@ void TcpServer::measured(QString dataLine) {
         }
     }
 }
+

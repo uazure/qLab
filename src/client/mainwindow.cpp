@@ -6,24 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    plot=new Plot(this);
     data=new ExperimentData(this);
-    plotCurve=new QwtPlotCurve("1");
-//    plotCurve2=new QwtPlotCurve("2");
-    series=new SeriesData(data->getDataTable(),1,3);
-//    series2=new SeriesData(data->getDataTable(),2,3);
-    plotCurve->setData(series);
-
-//    plotCurve2->setData(series);
-//    QwtSymbol *symbol = new QwtSymbol (
-//            QwtSymbol::Triangle,        //default is the triangle
-//            QBrush(Qt::black),          //default color
-//            QPen(Qt::NoPen),            //empty pen
-//            QSize(7,7));                //hard-coded size
-//    plotCurve->setSymbol(symbol);
-    plotCurve->attach(plot);
-//    plotCurve2->attach(plot);
-
+    plot=new Plot(this,data);
 
 
     ui->plotLayout->addWidget(plot);
@@ -38,7 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));
     connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseLine(QByteArray&)));
+    connect(&tcpClient,SIGNAL(initialData()),plot,SLOT(clear()));
     connect(&tcpClient,SIGNAL(initialData()),data,SLOT(resetData()));
+    connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
 
 
     connectionLabel.setText("*");
@@ -49,8 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete plotCurve;
-    //delete series;
     delete plot;
     delete data;
     delete ui;

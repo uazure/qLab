@@ -14,7 +14,7 @@ public:
     enum Expect {
         expectCommand,
         expectData,
-        expectInterval
+        expectInterval,
     };
 
 private:

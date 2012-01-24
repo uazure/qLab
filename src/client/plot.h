@@ -1,6 +1,10 @@
 #ifndef PLOT_H
 #define PLOT_H
 #include "qwt_plot.h"
+#include "seriesdata.h"
+#include "experimentdata.h"
+#include "qwt_plot_curve.h"
+#include "qwt_symbol.h"
 
 class Plot : public QwtPlot
 {
@@ -8,13 +12,22 @@ class Plot : public QwtPlot
     //unidentified copy constructor
     Plot(const Plot&);
 public:
-    explicit Plot(QWidget *parent = 0);
+    explicit Plot(QWidget *parent, ExperimentData* data);
     ~Plot();
+    void addCurve(int yColumn, int xColumn=-1);
+
+
+private:
+    const ExperimentData *experimentData;
+    const QVector<QVector<double> > *dataTable;
+    int xCol;
 
 
 signals:
 
 public slots:
+    void clear(void);
+    void initialize(void);
 
 };
 

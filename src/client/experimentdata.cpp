@@ -114,7 +114,9 @@ void ExperimentData::parseData(QByteArray &dataLine) {
             }
         }
 
-        //inform plot that we have data
+        // inform that we have initial data and curves can be created!
+        emit initialized();
+        //inform plot that we have new data
         emit newDataAvailable();
 
         qDebug()<<"Init dataTable with values\n"<<dataTable.size()<<'x'
@@ -147,7 +149,8 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
         getExpect()==expectLabel ||
         getExpect()==expectUnit ||
         getExpect()==expectMin ||
-        getExpect()==expectMax) {
+        getExpect()==expectMax ||
+        getExpect()==expectAxisHint) {
 
         //trim the first symbol ('#')
         commentLine=commentLine.right(commentLine.size()-1);
@@ -164,6 +167,8 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
             setColumnMin(i,arr[i].toDouble());
         } else if (getExpect()==expectMax) {
             setColumnMax(i,arr[i].toDouble());
+        } else if (getExpect()==expectAxisHint) {
+            setColumnAxis(i,arr[i]);
         }
         }
         setExpect(expectNone);
@@ -196,9 +201,14 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
         return;
     }
 
+    if (commentLine.startsWith("#Axis hint:")) {
+        setExpect(expectAxisHint);
+        return;
+    }
 
 
-    qDebug()<<"FIXME: parse comment not implemented";
+
+
 }
 
 void ExperimentData::resetData() {
@@ -213,6 +223,7 @@ void ExperimentData::resetData() {
     columnMax.clear();
     columnMin.clear();
     columnUnit.clear();
+    columnAxis.clear();
 }
 
 const QStringList & ExperimentData::getAscii() const
@@ -315,6 +326,24 @@ void ExperimentData::setColumnMax(int column, double max) {
     }
 }
 
+void ExperimentData::setColumnAxis(int column, QByteArray &axis) {
+    if (column<0) return;
+
+    //if column index can be accessed in columnLabel
+        if (column<columnAxis.size()-1) {
+            columnAxis[column]=toAxisId(axis);
+        } else //if column is next to last item in columnSHortname
+            if (columnAxis.size()==column) {
+            columnAxis.append(toAxisId(axis));
+        } else //if we need to append additional values to access it
+        {
+            columnAxis.append(QwtPlot::xTop);
+            // call function recursively
+            setColumnAxis(column,axis);
+        }
+    }
+
+
 QString ExperimentData::getColumnShortname(int column) const {
     if (column<columnShortname.size()) {
         return columnShortname.at(column);
@@ -350,6 +379,25 @@ QString ExperimentData::getColumnUnit(int column) const {
     return "";
 }
 
+QwtPlot::Axis ExperimentData::getColumnAxis(int column) const {
+    if (column<columnAxis.size()) {
+        return columnAxis.at(column);
+    }
+    return QwtPlot::xTop;
+}
+
+
 const QVector<QVector<double> > * ExperimentData::getDataTable() const {
     return &dataTable;
+}
+
+QwtPlot::Axis ExperimentData::toAxisId(const QByteArray &axis) {
+    if (axis.startsWith('x')) {
+        if (axis=="xTop") return QwtPlot::xTop;
+        return QwtPlot::xBottom;
+    } else if (axis.startsWith('y')) {
+        if (axis=="yRight") return QwtPlot::yRight;
+        return QwtPlot::yLeft;
+    }
+    return QwtPlot::xTop;
 }

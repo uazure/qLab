@@ -35,10 +35,6 @@ private:
     Ui::MainWindow *ui;
     Plot *plot;
     ExperimentData *data;
-    QwtPlotCurve * plotCurve;
-//    QwtPlotCurve * plotCurve2;
-    SeriesData *series;
-//    SeriesData *series2;
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;

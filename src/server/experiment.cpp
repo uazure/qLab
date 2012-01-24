@@ -222,6 +222,14 @@ QString Experiment::getHeader() const {
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         returnValue+=deviceList.at(i)->getUnit();
     }
+    returnValue+="\n#Axis hint:\n#";
+    for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
+        if(deviceList.at(i)->shortName()=="utime") {
+            returnValue+="xBottom";
+        } else {
+            returnValue+="yLeft";
+        }
+    }
 
     returnValue+='\n';
     //qDebug()<<returnValue;
