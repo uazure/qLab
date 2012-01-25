@@ -18,6 +18,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionDisconnect,SIGNAL(triggered()),this,SLOT(socketDisconnect()));
     connect(ui->actionViewData,SIGNAL(triggered()),this,SLOT(showDataViewWindow()));
     connect(ui->actionReplot,SIGNAL(triggered()),plot,SLOT(replot()));
+    connect(ui->actionClear_plot,SIGNAL(triggered()),plot,SLOT(clear()));
+    connect(ui->actionAdd_curves,SIGNAL(triggered()),plot,SLOT(initialize()));
+
+
+
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
     connect(&tcpClient,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(socketStateChanged(QAbstractSocket::SocketState)));

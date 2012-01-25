@@ -5,6 +5,7 @@
 #include "experimentdata.h"
 #include "qwt_plot_curve.h"
 #include "qwt_symbol.h"
+#include "qwt_plot_grid.h"
 
 class Plot : public QwtPlot
 {

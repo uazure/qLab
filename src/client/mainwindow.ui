@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -50,7 +50,10 @@
     </property>
     <addaction name="actionFullscreen"/>
     <addaction name="actionViewData"/>
+    <addaction name="separator"/>
     <addaction name="actionReplot"/>
+    <addaction name="actionClear_plot"/>
+    <addaction name="actionAdd_curves"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -104,19 +107,6 @@
    <property name="text">
     <string>Disconnect</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
-   </property>
-  </action>
-  <action name="actionData_ASCII">
-   <property name="text">
-    <string>Data (ASCII)</string>
-   </property>
-  </action>
-  <action name="actionData_Table">
-   <property name="text">
-    <string>Data (Table)</string>
-   </property>
   </action>
   <action name="actionViewData">
    <property name="text">
@@ -129,6 +119,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionClear_plot">
+   <property name="text">
+    <string>Clear plot</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionAdd_curves">
+   <property name="text">
+    <string>Add curves</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Space</string>
    </property>
   </action>
  </widget>

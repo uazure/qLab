@@ -7,6 +7,9 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     xCol=-1;
     experimentData=data;
     dataTable=data->getDataTable();
+    setAutoDelete(true);
+    setAutoReplot(false);
+
 }
 
 Plot::~Plot() {
@@ -22,6 +25,13 @@ void Plot::addCurve(int yColumn, int xColumn) {
     QwtPlotCurve *plotCurve=new QwtPlotCurve(experimentData->getColumnLabel(yColumn));
     SeriesData *series=new SeriesData(experimentData->getDataTable(), yColumn, xColumn);
     plotCurve->setData(series);
+
+    // if curve should be plotted in xBottom-yRight axes
+    if (experimentData->getColumnAxis(yColumn)==yRight) {
+        plotCurve->setYAxis(yRight);
+    }
+
+    // specify a point marker (so called 'symbol') for curve
     QwtSymbol *symbol = new QwtSymbol (
             QwtSymbol::Triangle,        //default is the triangle
             QBrush(Qt::black),          //default color
@@ -32,12 +42,24 @@ void Plot::addCurve(int yColumn, int xColumn) {
 }
 
 void Plot::clear() {
+    // set xCol to -1 to indicate that absciss axis is not defined in data object to prevent automatic curve generation
     xCol=-1;
+    // detach all items from the plot
     detachItems( QwtPlotItem::Rtti_PlotItem, autoDelete() );
+    //disable yRight and xTop axes if they were enabled for some reason
+    enableAxis(yRight,false);
+    enableAxis(xTop,false);
+    replot();
 }
 
 void Plot::initialize() {
+    // Clear plot from all items
     clear();
+    // re-create plot grids
+    QwtPlotGrid *grid=new QwtPlotGrid;
+    grid->setMajPen(QPen(Qt::darkBlue,0,Qt::SolidLine));
+    grid->attach(this);
+
     if (dataTable->size()<1) {
         qWarning()<<"dataTable is empty! Can not initialize";
         return;
@@ -54,9 +76,26 @@ void Plot::initialize() {
         return;
     }
 
+    bool rightGridEnabled=false;
     for (int i=0;i<dataTable->size();i++) {
-        if (experimentData->getColumnAxis(i)!=xBottom && experimentData->getColumnAxis(i)!=xTop) {
+        if (experimentData->getColumnAxis(i)!=xBottom && experimentData->getColumnAxis(i)!=xTop &&
+                (experimentData->getColumnAxis(i)==yLeft || experimentData->getColumnAxis(i)==yRight) ) {
             qDebug()<<"Adding curve for column"<<i;
+
+            // create grid for yRight if we have at least one curve at yRight axis
+            if (experimentData->getColumnAxis(i)==yRight && !rightGridEnabled) {
+                QwtPlotGrid *grid=new QwtPlotGrid;
+                grid->setMajPen(QPen(Qt::darkRed,0,Qt::SolidLine));
+                // disable grid for X axis, because vertical grid will be painted using grid attached to xLeft axis
+                grid->enableX(false);
+                grid->setYAxis(yRight);
+                grid->attach(this);
+            }
+
+            // enable yRight axis
+            enableAxis(experimentData->getColumnAxis(i));
+
+            // add curve to the plot
             addCurve(i,xCol);
         }
     }
