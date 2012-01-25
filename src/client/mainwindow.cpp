@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     bytesWrittenLabel.setText("0");
     bytesWrittenLabel.setToolTip("Bytes written to network");
     bytesReadLabel.setText("0");
-    bytesWrittenLabel.setToolTip("Bytes read from network");
+    bytesReadLabel.setToolTip("Bytes read from network");
 
     ui->statusBar->addPermanentWidget(&bytesReadLabel);
     ui->statusBar->addPermanentWidget(&bytesWrittenLabel);

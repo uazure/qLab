@@ -127,8 +127,7 @@ void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
 {
     qDebug()<<"Hiding item"<<hide;
     plotItem->setVisible(!hide);
-    //replot();
-    repaint();
+    replot();
 }
 
 void Plot::getSelectedPoints(const QVector<QPointF> &points)
@@ -138,4 +137,9 @@ void Plot::getSelectedPoints(const QVector<QPointF> &points)
 
 void Plot::getSelectedPoints(const QPointF &point) {
     qDebug()<<"Point selected:"<<point;
+}
+
+void Plot::replot()
+{
+    QwtPlot::replot();
 }

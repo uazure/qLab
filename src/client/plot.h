@@ -20,6 +20,9 @@ public:
     ~Plot();
     void addCurve(int yColumn, int xColumn=-1);
 
+public slots:
+    void replot();
+
 
 private:
     const ExperimentData *experimentData;
