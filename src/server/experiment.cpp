@@ -55,9 +55,17 @@ void Experiment::setExperiment(QString experiment) {
         }
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
+    //initialize devices
     initDevices();
+
+    // Define axis hint from config file (if available)
+    axisStringList=settings->value(experiment+"/axis").toString().split(',',QString::KeepEmptyParts);
+    //trim each entry
+    for (int i=0;i<axisStringList.size();i++) {
+        axisStringList[i]=axisStringList.at(i).trimmed();
+    }
     setFileName(startedOn.toString("yyyy-MM-dd ")+name+".dat");
-    getHeader();
+    //getHeader();
     //doMeasure();
     start();
 }
@@ -223,11 +231,14 @@ QString Experiment::getHeader() const {
         returnValue+=deviceList.at(i)->getUnit();
     }
     returnValue+="\n#Axis hint:\n#";
+
     for (int i=0;i<deviceList.size();i++,returnValue+="\t") {
         if(deviceList.at(i)->shortName()=="utime") {
             returnValue+="xBottom";
+        } else if (i<axisStringList.size()){
+            returnValue+=axisStringList.at(i);
         } else {
-            returnValue+="yLeft";
+            returnValue+="yLeft"; //other variant - to use "none"
         }
     }
 

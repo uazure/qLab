@@ -5,6 +5,7 @@ TcpClient::TcpClient(QObject *parent) :
 {
     connect(this,SIGNAL(connected()),this,SLOT(askInitialData()));
     connect(this,SIGNAL(readyRead()),this,SLOT(getData()));
+    connect(this,SIGNAL(bytesWritten(qint64)),SLOT(bytesWritten(qint64)));
     expect=expectCommand;
 }
 
@@ -23,6 +24,7 @@ void TcpClient::getData()
     }
     while (canReadLine()) {
         buf=readLine(bytes);
+        emit bytesRead(buf.size());
         protocolParser(buf);
     }
 
@@ -82,4 +84,9 @@ void TcpClient::setExpect(Expect expectation) {
 
 TcpClient::Expect TcpClient::getExpect() const {
     return expect;
+}
+
+void TcpClient::bytesWritten(qint64 bytes)
+{
+    emit bytesWritten((int) bytes);
 }

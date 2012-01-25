@@ -46,6 +46,7 @@ public:
     int timer_progress;
 
     QStringList deviceStringList;
+    QStringList axisStringList;
     QList <AbstractDevice *> deviceList;
     QList <QStringList> parametersList;
     QSettings *settings;

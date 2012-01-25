@@ -6,6 +6,9 @@
 #include "qwt_plot_curve.h"
 #include "qwt_symbol.h"
 #include "qwt_plot_grid.h"
+#include "qwt_legend.h"
+#include "qwt_plot_picker.h"
+#include "qwt_picker_machine.h"
 
 class Plot : public QwtPlot
 {
@@ -22,6 +25,12 @@ private:
     const ExperimentData *experimentData;
     const QVector<QVector<double> > *dataTable;
     int xCol;
+
+private slots:
+    void hidePlotItem(QwtPlotItem *plotItem, bool hide);
+    void getSelectedPoints(const QVector<QPointF> &points);
+    void getSelectedPoints(const QPointF &point);
+
 
 
 signals:

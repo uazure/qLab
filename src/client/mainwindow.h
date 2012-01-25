@@ -7,6 +7,7 @@
 #include <QInputDialog>
 #include <QCloseEvent>
 #include <QLabel>
+#include <QSettings>
 
 #include "plot.h"
 #include "qwt_plot_curve.h"
@@ -38,6 +39,10 @@ private:
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;
+    QLabel pointCountLabel;
+    QLabel bytesWrittenLabel;
+    QLabel bytesReadLabel;
+    QSettings *appSettings;
 
 
 private slots:

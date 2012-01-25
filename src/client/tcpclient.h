@@ -38,6 +38,9 @@ signals:
     /// Signal is emitted when server changes measuring interval
     void serverInterval(int interval);
 
+    void bytesWritten(int bytes);
+    void bytesRead(int bytes);
+
 public slots:
 
     void askInitialData();
@@ -47,6 +50,10 @@ public slots:
       Or it can emit other signals to update app information about the server (i.e. interval change or status change)
       */
     void protocolParser(QByteArray& line);
+
+private slots:
+    void bytesWritten(qint64 bytes);
+
 
 };
 

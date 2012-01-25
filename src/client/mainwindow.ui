@@ -53,10 +53,17 @@
     <addaction name="separator"/>
     <addaction name="actionReplot"/>
     <addaction name="actionClear_plot"/>
-    <addaction name="actionAdd_curves"/>
+    <addaction name="actionInitialize"/>
+   </widget>
+   <widget class="QMenu" name="menuPlot">
+    <property name="title">
+     <string>Plot</string>
+    </property>
+    <addaction name="actionSetup"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuPlot"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -129,12 +136,17 @@
     <string>Ctrl+C</string>
    </property>
   </action>
-  <action name="actionAdd_curves">
+  <action name="actionInitialize">
    <property name="text">
-    <string>Add curves</string>
+    <string>Initialize</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Space</string>
+   </property>
+  </action>
+  <action name="actionSetup">
+   <property name="text">
+    <string>Setup</string>
    </property>
   </action>
  </widget>

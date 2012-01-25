@@ -10,10 +10,30 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     setAutoDelete(true);
     setAutoReplot(false);
 
+    //legend
+    QwtLegend *legend = new QwtLegend(this);
+    //legend->setFrameStyle(QFrame::Box|QFrame::Sunken);
+    legend->setItemMode(QwtLegend::CheckableItem);
+    insertLegend(legend, QwtPlot::BottomLegend);
+
+    //click on legend item allows to hide items from the plot
+    connect(this,SIGNAL(legendChecked(QwtPlotItem*,bool)),this, SLOT(hidePlotItem(QwtPlotItem*,bool)));
+
+    //picker
+    QwtPlotPicker *picker = new QwtPlotPicker (xBottom,yLeft,canvas());
+    qDebug()<<"picker is enabled:"<<picker->isEnabled();
+    picker->setStateMachine(new QwtPickerClickPointMachine);
+
+    connect(picker,SIGNAL(selected(QVector<QPointF>)),SLOT(getSelectedPoints(QVector<QPointF>)));
+    connect(picker,SIGNAL(selected(QPointF)),SLOT(getSelectedPoints(QPointF)));
+
+
+    //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
+    initialize();
 }
 
 Plot::~Plot() {
-//this->detachItems();
+    clear();
 }
 
 void Plot::addCurve(int yColumn, int xColumn) {
@@ -23,6 +43,8 @@ void Plot::addCurve(int yColumn, int xColumn) {
         return;
     }
     QwtPlotCurve *plotCurve=new QwtPlotCurve(experimentData->getColumnLabel(yColumn));
+    plotCurve->setLegendAttribute(QwtPlotCurve::LegendShowLine);
+    plotCurve->setLegendAttribute(QwtPlotCurve::LegendShowSymbol);
     SeriesData *series=new SeriesData(experimentData->getDataTable(), yColumn, xColumn);
     plotCurve->setData(series);
 
@@ -99,4 +121,21 @@ void Plot::initialize() {
             addCurve(i,xCol);
         }
     }
+}
+
+void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
+{
+    qDebug()<<"Hiding item"<<hide;
+    plotItem->setVisible(!hide);
+    //replot();
+    repaint();
+}
+
+void Plot::getSelectedPoints(const QVector<QPointF> &points)
+{
+    qDebug()<<"Points selected:"<<points;
+}
+
+void Plot::getSelectedPoints(const QPointF &point) {
+    qDebug()<<"Point selected:"<<point;
 }

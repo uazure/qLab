@@ -98,6 +98,9 @@ signals:
     /// Emitted when new data is appended to dataTable array
     void newDataAvailable();
 
+    /// Inform about number of points in each column we have
+    void pointCount(int count);
+
 
 public slots:
     /// Resets dataTable and prepares to read data from file or from another server

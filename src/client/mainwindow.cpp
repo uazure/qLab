@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
     data=new ExperimentData(this);
     plot=new Plot(this,data);
 
@@ -19,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionViewData,SIGNAL(triggered()),this,SLOT(showDataViewWindow()));
     connect(ui->actionReplot,SIGNAL(triggered()),plot,SLOT(replot()));
     connect(ui->actionClear_plot,SIGNAL(triggered()),plot,SLOT(clear()));
-    connect(ui->actionAdd_curves,SIGNAL(triggered()),plot,SLOT(initialize()));
+    connect(ui->actionInitialize,SIGNAL(triggered()),plot,SLOT(initialize()));
 
 
 
@@ -29,11 +31,28 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseLine(QByteArray&)));
     connect(&tcpClient,SIGNAL(initialData()),plot,SLOT(clear()));
     connect(&tcpClient,SIGNAL(initialData()),data,SLOT(resetData()));
+
+//FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
+    connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
+    connect(&tcpClient,SIGNAL(bytesRead(int)),&bytesReadLabel,SLOT(setNum(int)));
+
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
+    connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
 
 
     connectionLabel.setText("*");
+    connectionLabel.setToolTip(tr("Connection status:\nGreen - connected\nRed - disconnected"));
     connectionLabel.setStyleSheet("QLabel {color:red; font-weight:bold;}");
+    pointCountLabel.setText("0");
+    pointCountLabel.setToolTip(tr("Number of points"));
+    bytesWrittenLabel.setText("0");
+    bytesWrittenLabel.setToolTip("Bytes written to network");
+    bytesReadLabel.setText("0");
+    bytesWrittenLabel.setToolTip("Bytes read from network");
+
+    ui->statusBar->addPermanentWidget(&bytesReadLabel);
+    ui->statusBar->addPermanentWidget(&bytesWrittenLabel);
+    ui->statusBar->addPermanentWidget(&pointCountLabel);
     ui->statusBar->addPermanentWidget(&connectionLabel);
 
 }
@@ -42,6 +61,7 @@ MainWindow::~MainWindow()
 {
     delete plot;
     delete data;
+    delete appSettings;
     delete ui;
 
 }
@@ -75,8 +95,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::connectTo() {
     bool ok;
-    QString hostname=QInputDialog::getText(this,"Specify host name or ip","Host to connect to",QLineEdit::Normal,QString(),&ok,0);
+    QString hostname=QInputDialog::getText(this,"Specify host name or ip","Host to connect to",QLineEdit::Normal,appSettings->value("Connect to").toString(),&ok,0);
     if (ok) {
+        appSettings->setValue("Connect to",QVariant(hostname));
         qDebug()<<"Connecting to"<<hostname<<"port"<<25050;
         this->tcpClient.connectToHost(hostname,25050);
     }
@@ -85,7 +106,7 @@ void MainWindow::connectTo() {
 void MainWindow::socketConnectedToServer() {
     qDebug()<<"Connected!";
     ui->actionDisconnect->setDisabled(false);
-    connectionLabel.setStyleSheet("QLabel {color:green;}");
+    connectionLabel.setStyleSheet("QLabel {color:green;font-weight:bold;}");
 }
 
 void MainWindow::socketDisconnectedFromServer() {
@@ -94,7 +115,7 @@ void MainWindow::socketDisconnectedFromServer() {
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setText("Disconnected from server");
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.exec();
+    //msgBox.exec();
 }
 
 void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
@@ -126,6 +147,7 @@ void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
 void MainWindow::socketDisconnect(void) {
     tcpClient.disconnectFromHost();
     ui->actionDisconnect->setDisabled(true);
+    connectionLabel.setStyleSheet("QLabel {color:red;font-weight:bold;}");
 }
 
 void MainWindow::showDataViewWindow() {
@@ -134,3 +156,4 @@ void MainWindow::showDataViewWindow() {
     dataView->setItem(data);
     dataView->show();
 }
+
