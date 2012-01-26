@@ -18,14 +18,14 @@ size_t SeriesData::size() const {
 }
 
 QPointF SeriesData::sample(size_t i) const {
-    qDebug()<<"Requested sample"<<i;
+    //qDebug()<<"Requested sample"<<i;
     if (dataTable->size()==0) return QPointF();
 
     if (i>dataTable->at(0).size()) {
         return QPointF();
     }
     QPointF point(dataTable->at(xCol).at(i),dataTable->at(yCol).at(i));
-    qDebug()<<"Point:"<<point;
+    //qDebug()<<"Point:"<<point;
     return point;
 }
 

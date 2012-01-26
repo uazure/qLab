@@ -9,6 +9,9 @@
 #include "qwt_legend.h"
 #include "qwt_plot_picker.h"
 #include "qwt_picker_machine.h"
+#include "qwt_plot_directpainter.h"
+
+#include <QDebug>
 
 class Plot : public QwtPlot
 {
@@ -33,10 +36,17 @@ private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
     void getSelectedPoints(const QVector<QPointF> &points);
     void getSelectedPoints(const QPointF &point);
+    void getSelectedCanvasPoints(const QPoint &point);
+
+    /** Slot is called when user selects some point on the curve. If to
+      is omitted then it means that only ONE curve point should be marked,
+i.e. from=to */
+    void markCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
 
 
 
 signals:
+    void curvePointClicked(QwtPlotCurve *curve,int index);
 
 public slots:
     void clear(void);
