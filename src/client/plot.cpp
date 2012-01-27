@@ -5,6 +5,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
         QwtPlot(parent)
 {
     xCol=-1;
+    selectedCurve=NULL; // set null pointer (i.e. no curve selected)
+    selectedPoint=-1; //no point selected. 0 - means first point of the curve.
     experimentData=data;
     dataTable=data->getDataTable();
     setAutoDelete(true);
@@ -30,7 +32,7 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     connect(picker,SIGNAL(selected(QPointF)),SLOT(getSelectedPoints(QPointF)));
     connect(picker,SIGNAL(appended(QPoint)),SLOT(getSelectedCanvasPoints(QPoint)));
 
-    connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),this,SLOT(markCurvePoint(QwtPlotCurve*,int)));
+    connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(markCurvePoint(QwtPlotCurve*,int)));
 
 
 
@@ -132,7 +134,7 @@ void Plot::initialize() {
 void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
 {
     qDebug()<<"Hiding item"<<hide;
-    plotItem->setVisible(!hide);
+    plotItem->setVisible(hide);
     replot();
 }
 
@@ -174,30 +176,62 @@ void Plot::getSelectedCanvasPoints(const QPoint &point) {
     }
 
     // if there's a curve and index and it's closer than 10px then emit signal
-    if (curve!=NULL && index !=-1 && dist < 10) {
+    if (curve!=NULL && index !=-1 && dist < 15) {
         qDebug()<<"Curve point"<< index<<"selected on curve"<<curve->title().text();
         emit curvePointClicked(curve,index);
+    } else {
+        //clear any previous selections if no point selected
+        clearPointSelection();
     }
 }
 
 
 void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
-    QwtSymbol *symbol = const_cast<QwtSymbol *>(curve->symbol());
 
+
+    QwtSymbol *symbol = const_cast<QwtSymbol *>(curve->symbol());
     //remember brush
     const QBrush brush = symbol->brush();
-    symbol->setBrush(QBrush(QColor(Qt::red)));
+        symbol->setBrush(QBrush(QColor(Qt::red)));
+        selectedCurve=curve;
+        selectedPoint=from;
+
     QwtPlotDirectPainter directPainter;
 
     //if to defaulting to -1 then we want to mark just one curve point
     if (to==-1) to=from;
-    directPainter.drawSeries(curve, from, from);
+    directPainter.drawSeries(curve, from, to);
     symbol->setBrush(brush); // reset brush
 
+}
+
+void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
+    QwtPlotDirectPainter directPainter;
+    //if "to" defaulting to -1 then we want to mark just one curve point
+    if (to==-1) to=from;
+    directPainter.drawSeries(curve, from, to);
 }
 
 
 void Plot::replot()
 {
     QwtPlot::replot();
+}
+
+void Plot::clearPointSelection() {
+    QwtPlotCurve *curve = NULL;
+    QwtPlotDirectPainter directPainter;
+
+    const QwtPlotItemList& itmList = itemList();
+    //iterate over all plot items
+    for ( QwtPlotItemIterator it = itmList.begin();
+        it != itmList.end(); ++it )
+    {
+        // if plot item is of type PlotCurve then find closest point
+        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+        {
+            curve= (QwtPlotCurve*)(*it);
+            directPainter.drawSeries(curve,0,curve->dataSize()-1);
+        }
+    }
 }

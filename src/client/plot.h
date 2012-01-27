@@ -31,17 +31,21 @@ private:
     const ExperimentData *experimentData;
     const QVector<QVector<double> > *dataTable;
     int xCol;
+    QwtPlotCurve *selectedCurve;
+    int selectedPoint;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
     void getSelectedPoints(const QVector<QPointF> &points);
     void getSelectedPoints(const QPointF &point);
     void getSelectedCanvasPoints(const QPoint &point);
+    void clearPointSelection();
 
     /** Slot is called when user selects some point on the curve. If to
       is omitted then it means that only ONE curve point should be marked,
 i.e. from=to */
     void markCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
+    void unmarkCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
 
 
 
