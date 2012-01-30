@@ -10,6 +10,8 @@
 #include "qwt_plot_picker.h"
 #include "qwt_picker_machine.h"
 #include "qwt_plot_directpainter.h"
+#include "picker.h"
+#include "pickermachine.h"
 
 #include <QDebug>
 
@@ -36,9 +38,16 @@ private:
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
-    void getSelectedPoints(const QVector<QPointF> &points);
-    void getSelectedPoints(const QPointF &point);
-    void getSelectedCanvasPoints(const QPoint &point);
+//    void getSelectedPoints(const QVector<QPointF> &points);
+//    void getSelectedPoints(const QPointF &point);
+//    void getSelectedCanvasPoints(const QPoint &point);
+
+    void selectPoint(const QPoint &point);
+    void selectRange(const QPoint &point);
+    void appendPoint(const QPoint &point);
+
+    int getCurvePoint(const QPoint &point, QwtPlotCurve *curve);
+
     void clearPointSelection();
 
     /** Slot is called when user selects some point on the curve. If to

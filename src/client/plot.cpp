@@ -22,16 +22,15 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     connect(this,SIGNAL(legendChecked(QwtPlotItem*,bool)),this, SLOT(hidePlotItem(QwtPlotItem*,bool)));
 
     //picker
-    QwtPlotPicker *picker = new QwtPlotPicker (xBottom,yLeft,canvas());
+    Picker *picker = new Picker (this);
     qDebug()<<"picker is enabled:"<<picker->isEnabled();
 
-    QwtPickerMachine *pickerMachine= new QwtPickerClickPointMachine;
-    picker->setStateMachine(pickerMachine);
+    //QwtPickerMachine *pickerMachine= new QwtPickerClickPointMachine;
+    //QwtPickerMachine *pickerMachine= new PickerMachine;
+    //picker->setStateMachine(pickerMachine);
 
-    connect(picker,SIGNAL(selected(QVector<QPointF>)),SLOT(getSelectedPoints(QVector<QPointF>)));
-    connect(picker,SIGNAL(selected(QPointF)),SLOT(getSelectedPoints(QPointF)));
-    connect(picker,SIGNAL(appended(QPoint)),SLOT(getSelectedCanvasPoints(QPoint)));
-
+    //connect(picker,SIGNAL(appended(QPoint)),SLOT(getSelectedCanvasPoints(QPoint)));
+    connect(picker,SIGNAL(selectSignle(QPoint)),SLOT(selectPoint(QPoint)));
     connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(markCurvePoint(QwtPlotCurve*,int)));
 
 
@@ -134,20 +133,12 @@ void Plot::initialize() {
 void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
 {
     qDebug()<<"Hiding item"<<hide;
-    plotItem->setVisible(hide);
+    plotItem->setVisible(!hide);
     replot();
 }
 
-void Plot::getSelectedPoints(const QVector<QPointF> &points)
-{
-    qDebug()<<"Points selected:"<<points;
-}
 
-void Plot::getSelectedPoints(const QPointF &point) {
-    qDebug()<<"Point selected:"<<point;
-}
-
-void Plot::getSelectedCanvasPoints(const QPoint &point) {
+void Plot::selectPoint(const QPoint &point) {
     qDebug()<<"Point selected:"<<point;
     QwtPlotCurve *curve = NULL;
     double dist = 10e10;
@@ -234,4 +225,16 @@ void Plot::clearPointSelection() {
             directPainter.drawSeries(curve,0,curve->dataSize()-1);
         }
     }
+}
+
+void Plot::selectRange(const QPoint &point)
+{
+}
+
+void Plot::appendPoint(const QPoint &point)
+{
+}
+
+int Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
+{
 }

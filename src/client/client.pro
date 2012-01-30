@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     tcpclient.cpp \
     experimentdata.cpp \
     dataviewwindow.cpp \
-    seriesdata.cpp
+    seriesdata.cpp \
+    picker.cpp
 
 # SOURCES += ../qwt6/qwt_plot.cpp
 HEADERS += mainwindow.h \
@@ -20,7 +21,8 @@ HEADERS += mainwindow.h \
     tcpclient.h \
     experimentdata.h \
     dataviewwindow.h \
-    seriesdata.h
+    seriesdata.h \
+    picker.h
 
 # HEADERS += ../qwt6/qwt_plot.h
 FORMS += mainwindow.ui \
