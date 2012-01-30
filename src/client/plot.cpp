@@ -164,6 +164,16 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 void Plot::replot()
 {
     QwtPlot::replot();
+    if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
+        for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
+            markCurvePoint(selectedCurve,i.key());
+        }
+//        QMap<int, QPointF>::const_iterator i = selectedPoints.constBegin();
+//         while (i != map.constEnd()) {
+
+//             ++i;
+//         }
+    }
 }
 
 void Plot::clearPointSelection() {
@@ -176,22 +186,31 @@ void Plot::clearPointSelection() {
         it != itmList.end(); ++it )
     {
         // if plot item is of type PlotCurve then find closest point
-        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve)
         {
             curve= (QwtPlotCurve*)(*it);
-            directPainter.drawSeries(curve,0,curve->dataSize()-1);
+            if (curve->isVisible()) {
+                directPainter.drawSeries(curve,0,curve->dataSize()-1);
+            }
         }
     }
 }
 
 void Plot::selectPoint(const QPoint &point) {
+    selectedCurve=NULL;
+    selectedPoint=-1;
+    selectedPoints.clear();
     clearPointSelection();
+
     if (getCurvePoint(point)) {
         markCurvePoint(selectedCurve,selectedPoint);
+        selectedPoints.insert(selectedPoint,point);
     } else {
         selectedCurve=NULL;
         selectedPoint=-1;
+        selectedPoints.clear();
     }
+
 
 }
 
@@ -204,6 +223,15 @@ void Plot::selectRange(const QPoint &point)
 
     int i=selectedPoint;
     if (getCurvePoint(point,selectedCurve)) {
+        if (i<selectedPoint) {
+            for (int j=i;j<=selectedPoint;j++) {
+                selectedPoints.insert(j,selectedCurve->sample(j));
+            }
+        } else if (i>selectedPoint) {
+            for (int j=selectedPoint;j<=i;j++) {
+                selectedPoints.insert(j,selectedCurve->sample(j));
+            }
+        } // else if (i==selectedPoint) do nothing :)
         markCurvePoint(selectedCurve,i,selectedPoint);
     }
 }
@@ -216,8 +244,16 @@ void Plot::appendPoint(const QPoint &point)
     }
 
     if (getCurvePoint(point,selectedCurve)) {
-        qDebug()<<"Appending point";
-        markCurvePoint(selectedCurve,selectedPoint);
+        if (selectedPoints.contains(selectedPoint)) {
+            qDebug()<<"Removing point from selection";
+            selectedPoints.remove(selectedPoint);
+            unmarkCurvePoint(selectedCurve,selectedPoint);
+        } else {
+            qDebug()<<"Appending point to selection";
+            selectedPoints.insert(selectedPoint,selectedCurve->sample(selectedPoint));
+            markCurvePoint(selectedCurve,selectedPoint);
+        }
+
     } else {
         qDebug()<<"Failed to get curve point near"<<point;
     }
@@ -237,7 +273,7 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
              it != itmList.end(); ++it )
         {
             // if plot item is of type PlotCurve then find closest point
-            if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+            if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve && (QwtPlotCurve*)(*it)->isVisible())
             {
                 QwtPlotCurve *c = (QwtPlotCurve*)(*it);
                 double d;

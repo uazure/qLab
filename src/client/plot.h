@@ -13,6 +13,7 @@
 #include "picker.h"
 
 #include <QDebug>
+#include <QMap>
 
 class Plot : public QwtPlot
 {
@@ -34,15 +35,24 @@ private:
     int xCol;
     QwtPlotCurve *selectedCurve;
     int selectedPoint;
+    QMap<int,QPointF> selectedPoints;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
-//    void getSelectedPoints(const QVector<QPointF> &points);
-//    void getSelectedPoints(const QPointF &point);
-//    void getSelectedCanvasPoints(const QPoint &point);
 
+    /** Receives point coordinates of plot canvas and selects nearest point of all curves that are on the plot */
     void selectPoint(const QPoint &point);
+    /** Selects range of points on current curve between selectedPoint and nearest point of the curve to the current click position.
+      If no points were selected previously then it calls selectPoint();
+
+      sa selectedCurve, selectedPoint, selectPoint(), appendPoint();
+      */
     void selectRange(const QPoint &point);
+
+    /** Selects (or deselects) nearest point on the currently selected curve. If no curve selected then it calls selectPoint();
+
+      sa selectedCurve, selectedPoint, selectPoint(), selectRange();
+      */
     void appendPoint(const QPoint &point);
 
     /** Returns true if curve point near clicked position (QPoint point) was selected or false if it wasn't.
@@ -50,6 +60,7 @@ private slots:
       */
     bool getCurvePoint(const QPoint &point, QwtPlotCurve *curve=NULL);
 
+    /** Clears all selections of points */
     void clearPointSelection();
 
     /** Slot is called when user selects some point on the curve. If to
