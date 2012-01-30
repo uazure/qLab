@@ -11,7 +11,6 @@
 #include "qwt_picker_machine.h"
 #include "qwt_plot_directpainter.h"
 #include "picker.h"
-#include "pickermachine.h"
 
 #include <QDebug>
 
@@ -46,7 +45,10 @@ private slots:
     void selectRange(const QPoint &point);
     void appendPoint(const QPoint &point);
 
-    int getCurvePoint(const QPoint &point, QwtPlotCurve *curve);
+    /** Returns true if curve point near clicked position (QPoint point) was selected or false if it wasn't.
+      On success sets selectedCurve pointer and selectedPoint index or resets them on false.
+      */
+    bool getCurvePoint(const QPoint &point, QwtPlotCurve *curve=NULL);
 
     void clearPointSelection();
 

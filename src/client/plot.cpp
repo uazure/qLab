@@ -31,9 +31,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 
     //connect(picker,SIGNAL(appended(QPoint)),SLOT(getSelectedCanvasPoints(QPoint)));
     connect(picker,SIGNAL(selectSignle(QPoint)),SLOT(selectPoint(QPoint)));
-    connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(markCurvePoint(QwtPlotCurve*,int)));
-
-
+    connect(picker,SIGNAL(selectRange(QPoint)),SLOT(selectRange(QPoint)));
+    connect(picker,SIGNAL(appendSingle(QPoint)),SLOT(appendPoint(QPoint)));
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
     initialize();
@@ -137,49 +136,7 @@ void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
     replot();
 }
 
-
-void Plot::selectPoint(const QPoint &point) {
-    qDebug()<<"Point selected:"<<point;
-    QwtPlotCurve *curve = NULL;
-    double dist = 10e10;
-    int index = -1;
-
-    const QwtPlotItemList& itmList = itemList();
-
-    //iterate over all plot items
-    for ( QwtPlotItemIterator it = itmList.begin();
-        it != itmList.end(); ++it )
-    {
-        // if plot item is of type PlotCurve then find closest point
-        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
-        {
-            QwtPlotCurve *c = (QwtPlotCurve*)(*it);
-
-            double d;
-            int idx = c->closestPoint(point, &d);
-            if ( d < dist )
-            {
-                curve = c;
-                index = idx;
-                dist = d;
-            }
-        }
-    }
-
-    // if there's a curve and index and it's closer than 10px then emit signal
-    if (curve!=NULL && index !=-1 && dist < 15) {
-        qDebug()<<"Curve point"<< index<<"selected on curve"<<curve->title().text();
-        emit curvePointClicked(curve,index);
-    } else {
-        //clear any previous selections if no point selected
-        clearPointSelection();
-    }
-}
-
-
 void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
-
-
     QwtSymbol *symbol = const_cast<QwtSymbol *>(curve->symbol());
     //remember brush
     const QBrush brush = symbol->brush();
@@ -227,14 +184,81 @@ void Plot::clearPointSelection() {
     }
 }
 
+void Plot::selectPoint(const QPoint &point) {
+    clearPointSelection();
+    if (getCurvePoint(point)) {
+        markCurvePoint(selectedCurve,selectedPoint);
+    } else {
+        selectedCurve=NULL;
+        selectedPoint=-1;
+    }
+
+}
+
 void Plot::selectRange(const QPoint &point)
 {
+    if (selectedCurve==NULL) {
+        selectPoint(point);
+        return;
+    }
+
+    int i=selectedPoint;
+    if (getCurvePoint(point,selectedCurve)) {
+        markCurvePoint(selectedCurve,i,selectedPoint);
+    }
 }
 
 void Plot::appendPoint(const QPoint &point)
 {
+    if (selectedCurve==NULL) {
+        selectPoint(point);
+        return;
+    }
+
+    if (getCurvePoint(point,selectedCurve)) {
+        qDebug()<<"Appending point";
+        markCurvePoint(selectedCurve,selectedPoint);
+    } else {
+        qDebug()<<"Failed to get curve point near"<<point;
+    }
 }
 
-int Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
+bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
 {
+    qDebug()<<"Point selected:"<<point;
+    double dist = 10e10;
+    int index = -1;
+    if (curve!=NULL) {
+        index=curve->closestPoint(point,&dist);
+    } else {
+        const QwtPlotItemList& itmList = itemList();
+        //iterate over all plot items
+        for ( QwtPlotItemIterator it = itmList.begin();
+             it != itmList.end(); ++it )
+        {
+            // if plot item is of type PlotCurve then find closest point
+            if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve )
+            {
+                QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+                double d;
+                int idx = c->closestPoint(point, &d);
+                if ( d < dist )
+                {
+                    curve = c;
+                    index = idx;
+                    dist = d;
+                }
+            }
+        }
+    }
+    // if there's a curve and index and it's closer than 15px then emit signal
+    if (curve!=NULL && index !=-1 && dist < 15) {
+        qDebug()<<"Curve point"<< index<<"selected on curve"<<curve->title().text();
+        selectedCurve=curve;
+        selectedPoint=index;
+        emit curvePointClicked(curve,index);
+        return true;
+    } else {
+        return false;
+    }
 }
