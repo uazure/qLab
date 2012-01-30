@@ -267,13 +267,13 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
     if (curve!=NULL) {
         index=curve->closestPoint(point,&dist);
     } else {
-        const QwtPlotItemList& itmList = itemList();
+        const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
         //iterate over all plot items
         for ( QwtPlotItemIterator it = itmList.begin();
              it != itmList.end(); ++it )
         {
             // if plot item is of type PlotCurve then find closest point
-            if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve && (QwtPlotCurve*)(*it)->isVisible())
+            if ((QwtPlotCurve*)(*it)->isVisible())
             {
                 QwtPlotCurve *c = (QwtPlotCurve*)(*it);
                 double d;
@@ -298,3 +298,5 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
         return false;
     }
 }
+
+
