@@ -10,7 +10,6 @@
 #include "qwt_plot_picker.h"
 #include "qwt_picker_machine.h"
 #include "qwt_plot_directpainter.h"
-#include "picker.h"
 
 #include <QDebug>
 #include <QMap>
@@ -45,13 +44,13 @@ private slots:
     /** Selects range of points on current curve between selectedPoint and nearest point of the curve to the current click position.
       If no points were selected previously then it calls selectPoint();
 
-      sa selectedCurve, selectedPoint, selectPoint(), appendPoint();
+      \sa selectedCurve, selectedPoint, selectPoint(), appendPoint();
       */
     void selectRange(const QPoint &point);
 
     /** Selects (or deselects) nearest point on the currently selected curve. If no curve selected then it calls selectPoint();
 
-      sa selectedCurve, selectedPoint, selectPoint(), selectRange();
+      \sa selectedCurve, selectedPoint, selectPoint(), selectRange();
       */
     void appendPoint(const QPoint &point);
 

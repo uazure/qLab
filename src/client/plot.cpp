@@ -21,18 +21,23 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //click on legend item allows to hide items from the plot
     connect(this,SIGNAL(legendChecked(QwtPlotItem*,bool)),this, SLOT(hidePlotItem(QwtPlotItem*,bool)));
 
-    //picker
-    Picker *picker = new Picker (this);
-    qDebug()<<"picker is enabled:"<<picker->isEnabled();
+//Picker with click point machine to provide point selection
+    QwtPicker *picker=new QwtPicker(canvas());
+    picker->setStateMachine(new QwtPickerClickPointMachine);
+    connect(picker,SIGNAL(appended(QPoint)),SLOT(selectPoint(QPoint)));
 
-    //QwtPickerMachine *pickerMachine= new QwtPickerClickPointMachine;
-    //QwtPickerMachine *pickerMachine= new PickerMachine;
-    //picker->setStateMachine(pickerMachine);
+//Picker for selecting range of points (Shift+LMB)
+    QwtPicker *rangePicker=new QwtPicker(canvas());
+    rangePicker->setStateMachine(new QwtPickerClickPointMachine);
+    rangePicker->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
+    connect(rangePicker,SIGNAL(appended(QPoint)),SLOT(selectRange(QPoint)));
 
-    //connect(picker,SIGNAL(appended(QPoint)),SLOT(getSelectedCanvasPoints(QPoint)));
-    connect(picker,SIGNAL(selectSignle(QPoint)),SLOT(selectPoint(QPoint)));
-    connect(picker,SIGNAL(selectRange(QPoint)),SLOT(selectRange(QPoint)));
-    connect(picker,SIGNAL(appendSingle(QPoint)),SLOT(appendPoint(QPoint)));
+//Picker for append/remove additional points to/from selection (Ctrl+LMB)
+    QwtPicker *appendPicker=new QwtPicker(canvas());
+    appendPicker->setStateMachine(new QwtPickerClickPointMachine);
+    appendPicker->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
+    connect(appendPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
+
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
     initialize();
@@ -88,8 +93,10 @@ void Plot::initialize() {
     grid->setMajPen(QPen(Qt::darkBlue,0,Qt::SolidLine));
     grid->attach(this);
 
+
     if (dataTable->size()<1) {
         qWarning()<<"dataTable is empty! Can not initialize";
+        replot();
         return;
     }
     for (int i=0;i<dataTable->size();i++) {
@@ -127,6 +134,7 @@ void Plot::initialize() {
             addCurve(i,xCol);
         }
     }
+
 }
 
 void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
@@ -164,15 +172,11 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 void Plot::replot()
 {
     QwtPlot::replot();
+    QwtPlot::repaint();
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
         for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
             markCurvePoint(selectedCurve,i.key());
         }
-//        QMap<int, QPointF>::const_iterator i = selectedPoints.constBegin();
-//         while (i != map.constEnd()) {
-
-//             ++i;
-//         }
     }
 }
 
