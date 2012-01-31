@@ -137,6 +137,7 @@ void ExperimentData::parseData(QByteArray &dataLine) {
         //inform that we have a number of points currently
         emit pointCount(dataTable.at(0).size());
 
+
     } else {
         qWarning()<<"Number of columns in line"<<dataLine<<"don't match number of columns of dataTable:"<<
                      dataTable.size();

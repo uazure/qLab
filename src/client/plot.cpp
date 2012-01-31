@@ -4,6 +4,9 @@
 Plot::Plot(QWidget *parent, ExperimentData *data) :
         QwtPlot(parent)
 {
+    //should be faster on platforms that support this (unix)
+    canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
     selectedPoint=-1; //no point selected. 0 - means first point of the curve.
@@ -22,21 +25,38 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     connect(this,SIGNAL(legendChecked(QwtPlotItem*,bool)),this, SLOT(hidePlotItem(QwtPlotItem*,bool)));
 
 //Picker with click point machine to provide point selection
-    QwtPicker *picker=new QwtPicker(canvas());
-    picker->setStateMachine(new QwtPickerClickPointMachine);
-    connect(picker,SIGNAL(appended(QPoint)),SLOT(selectPoint(QPoint)));
+    selectPointPicker=new QwtPicker(canvas());
+    selectPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+    connect(selectPointPicker,SIGNAL(appended(QPoint)),SLOT(selectPoint(QPoint)));
 
 //Picker for selecting range of points (Shift+LMB)
-    QwtPicker *rangePicker=new QwtPicker(canvas());
-    rangePicker->setStateMachine(new QwtPickerClickPointMachine);
-    rangePicker->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
-    connect(rangePicker,SIGNAL(appended(QPoint)),SLOT(selectRange(QPoint)));
+    selectRangePicker=new QwtPicker(canvas());
+    selectRangePicker->setStateMachine(new QwtPickerClickPointMachine);
+    selectRangePicker->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
+    connect(selectRangePicker,SIGNAL(appended(QPoint)),SLOT(selectRange(QPoint)));
 
 //Picker for append/remove additional points to/from selection (Ctrl+LMB)
-    QwtPicker *appendPicker=new QwtPicker(canvas());
-    appendPicker->setStateMachine(new QwtPickerClickPointMachine);
-    appendPicker->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
-    connect(appendPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
+    appendPointPicker=new QwtPicker(canvas());
+    appendPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+    appendPointPicker->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
+    connect(appendPointPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
+
+    zoomerLeft=new QwtPlotZoomer(xBottom,yLeft,canvas());
+    //disable zoom to base with RMB (RMB is used by panner)
+    zoomerLeft->setMousePattern(1,Qt::NoButton);
+    zoomerRight=new QwtPlotZoomer(xBottom,yRight,canvas());
+    //disable zoom to base with RMB (RMB is used by panner)
+    zoomerRight->setMousePattern(1,Qt::NoButton);
+
+    //Panner is working with right mouse button
+    QwtPlotPanner *panner=new QwtPlotPanner(canvas());
+    panner->setMouseButton(Qt::RightButton);
+
+    //Magnifier is set to zoom in/out on mouse wheel only
+    magnifier=new QwtPlotMagnifier(canvas());
+    //Disable magnifying with RMB+MouseMove up/down
+    magnifier->setMouseButton(Qt::NoButton);
+    magnifier->setWheelFactor(1.5);
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
@@ -86,6 +106,9 @@ void Plot::clear() {
 }
 
 void Plot::initialize() {
+    //set normal selection mode
+    selectPointsMode(false);
+
     // Clear plot from all items
     clear();
     // re-create plot grids
@@ -303,4 +326,28 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
     }
 }
 
+
+void Plot::selectPointsMode(bool select) {
+    selectPointPicker->setEnabled(select);
+    selectRangePicker->setEnabled(select);
+    appendPointPicker->setEnabled(select);
+    zoomerLeft->setEnabled(!select);
+    zoomerRight->setEnabled(!select);
+    if (select) emit message("Select mode");
+    else emit message("Normal mode");
+}
+
+void Plot::drawLastPoint(int size) {
+    //FIXME: this function should also plot curve sticks
+    //last point has index size-1
+    int from=--size;
+    int to=--from;
+    if (to<0) to=0;
+    QwtPlotDirectPainter directPainter;
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //iterate over all plot items of type PlotCurve
+    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        directPainter.drawSeries((QwtPlotCurve*)(*it),from,to);
+    }
+}
 

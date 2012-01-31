@@ -10,6 +10,9 @@
 #include "qwt_plot_picker.h"
 #include "qwt_picker_machine.h"
 #include "qwt_plot_directpainter.h"
+#include "qwt_plot_zoomer.h"
+#include "qwt_plot_panner.h"
+#include "qwt_plot_magnifier.h"
 
 #include <QDebug>
 #include <QMap>
@@ -26,6 +29,8 @@ public:
 
 public slots:
     void replot();
+    void selectPointsMode(bool select=true);
+    void drawLastPoint(int size);
 
 
 private:
@@ -35,11 +40,18 @@ private:
     QwtPlotCurve *selectedCurve;
     int selectedPoint;
     QMap<int,QPointF> selectedPoints;
+    QwtPicker *selectPointPicker;
+    QwtPicker *selectRangePicker;
+    QwtPicker *appendPointPicker;
+    QwtPlotZoomer *zoomerLeft;
+    QwtPlotZoomer *zoomerRight;
+    QwtPlotMagnifier *magnifier;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
 
     /** Receives point coordinates of plot canvas and selects nearest point of all curves that are on the plot */
+
     void selectPoint(const QPoint &point);
     /** Selects range of points on current curve between selectedPoint and nearest point of the curve to the current click position.
       If no points were selected previously then it calls selectPoint();
@@ -72,6 +84,7 @@ i.e. from=to */
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
+    void message(QString message);
 
 public slots:
     void clear(void);

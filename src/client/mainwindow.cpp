@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionReplot,SIGNAL(triggered()),plot,SLOT(replot()));
     connect(ui->actionClear_plot,SIGNAL(triggered()),plot,SLOT(clear()));
     connect(ui->actionInitialize,SIGNAL(triggered()),plot,SLOT(initialize()));
+    connect(ui->actionSelect_points,SIGNAL(triggered(bool)),plot,SLOT(selectPointsMode(bool)));
+    connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
 
 
@@ -38,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
+    connect(data,SIGNAL(pointCount(int)),plot,SLOT(drawLastPoint(int)));
+
 
 
     connectionLabel.setText("*");

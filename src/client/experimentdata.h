@@ -102,6 +102,7 @@ signals:
     void pointCount(int count);
 
 
+
 public slots:
     /// Resets dataTable and prepares to read data from file or from another server
     void resetData(void);
