@@ -64,7 +64,9 @@ GpibDevice::GpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     }
 
     channelCommand=deviceSettings->value(shortname+"/command/channel").toString();
-    qDebug()<<"Device"<<shortname<<"channel command is"<<channelCommand;
+    if (!channelCommand.isEmpty()) {
+        qDebug()<<"Device"<<shortname<<"channel command is"<<channelCommand;
+    }
 
 
 }
@@ -142,13 +144,75 @@ bool GpibDevice::ask(QByteArray command, QByteArray &reply) {
     return true;
 }
 
-/// Implementation of AbstractDevice virtual primary method for gpib deivce
-/** FIXME: This requres to read configuration for each device to know
-which commands to issue to the device. */
+/** \brief Implementation of AbstractDevice virtual primary method for gpib deivce
+
+  We try to read value from the device in this function. We must have readCommand string.
+  This can be specified in devices.ini file as command\read key in the device section.
+  Example for k2000 device:
+[k2000]
+command\read=DATA?
+
+  readCommand can also contain a special symbols like %1, %2 ... that can be substituted with the
+  value that are specified as a parameter to the device
+  Example for cc34 device:
+[cc34]
+command\read=INPUT? %1
+
+  If parameterList is not empty then %1 will be replaced with first item in paramenterList in readCommand
+  Example for experiment setup:
+[experiment-debug]
+out="utime,cc34(A)"
+
+  There's argument "A" specified in brackets for cc34 device. This would result in reading data from the cc34
+  with command:
+INPUT? A
+
+  Some devices should switch channel before reading value (like k2700). They must have
+  channelCommand. It can be specified in config file like this:
+[k2700]
+command\channel=ROUT:CLOS(@10%1)
+
+  channelCommand will have %1 substituted to the first value from parameterList. So if we have
+[experiment-debug]
+out="utime,k2700(5)"
+
+  then k2700 will get
+ROUT:CLOS(@105)
+  command before reading data from this channel
+currentChannel will be set to parameterList.at(0) on successful channel switch.
+*/
+
 bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
-    if (ask(readCommand.toAscii(),returnValue)) {
+    bool success=false;
+    //if there's no arguments for the device then just use readCommand
+    if (parametersList.isEmpty()) {
+        success=ask(readCommand.toAscii(),returnValue);
+    } else // if there's argument but no channelCommand specified - substitute %1 in readCommand with supplied parameter
+        if (parametersList.size()==1 && channelCommand.isEmpty()) {
+            qDebug()<<shortName()<<"Reading data with argument. Request:"<<readCommand.arg(parametersList.at(0));
+            success=ask(readCommand.arg(parametersList.at(0)).toAscii(),returnValue);
+        } else // if there's parameter and channelCommand specified
+            if (parametersList.size()==1 && !channelCommand.isEmpty()) {
+                if (currentChannel!=parametersList.at(0)) {
+                    QByteArray tmpanswer;
+                    bool channelSwitchSuccess=ask(channelCommand.arg(parametersList.at(0)).toAscii(),tmpanswer);
+                    if (channelSwitchSuccess) {
+                        qDebug()<<"Switched channel of device"<<shortName()<<"to"<<parametersList.at(0);
+                        currentChannel=parametersList.at(0);
+                    } else {
+                        qWarning()<<"Failed to switch channel of device"<<shortName()<<"with command"<<channelCommand.arg(parametersList.at(0));
+                        return false;
+                    }
+
+                }
+                //channel is switched or doesn't required switching. now we can read data
+                success=ask(readCommand.toAscii(),returnValue);
+            }
+
+
+    if (success) {
         returnValue=returnValue.trimmed();
-        if (getFactor() == 0 || getFactor() == 1) {
+        if (getFactor() == 0.0 || getFactor() == 1.0) {
             //qDebug()<<"No factor for"<<shortname;
         } else {
             qDebug()<<"Factor for"<<shortName()<<getFactor();
@@ -157,8 +221,11 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
 
         //qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
+    } else {
+        qWarning()<<"Failed to readValue("<<parametersList<<")";
+        return false;
     }
-    return false;
+
 }
 
 /// This function checks if device is online. Returns true on success.

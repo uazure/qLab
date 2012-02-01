@@ -42,7 +42,7 @@ private:
     short int id;
 
     /// current gpib channel
-    int channel;
+    QString currentChannel;
 
     /// handle of the device
     int handle;
@@ -53,13 +53,14 @@ private:
     QSettings *experimentSettings;
 
     /** Command that will cause gpib device to read channel
-      This string can contain %n that will be replaced with channel number (integer),
+      This string can contain %n that will be replaced with channel number or name,
       so it's possible to specify one string to read data from many channels
       */
     QString readCommand;
 
     /** Some devices (k2700 for example) needs separate command to switch to channel.
       If channelCommand is not empty than it will be triggered on device init and on every request for data from non-last channel
+      \sa currentChannel
       */
     QString channelCommand;
 
