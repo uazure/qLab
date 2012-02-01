@@ -41,6 +41,26 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     appendPointPicker->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
     connect(appendPointPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
 
+/** \brief zoomers are used to zoom by selecting rectangle on canvas
+    In general there's 4 zoomers on the canvas
+    1 and 2 - zoomerLeft and zoomerRight. They are activated by LMB w/o modificators.
+    They work simultaneously to allow adequate zooming of yLeft and yRight axes
+    3 - zoomerExclusiveLeft. It's activated with Ctrl+LMB and works for yLeft axis only
+    4 - zoomerExclusiveRight. It's activated with Shift+LMB and works for yRight axis only
+
+    All zoomers are disabled when user switches to point select mode and enabled when
+    it switches back to normal mode.
+    \sa selectPointsMode();
+
+    Normally, zoomer uses RMB to zoom out to original state and MMB to zoom out 1 step.
+    We don't want zoom out to original with RMB because it's assigned to panner.
+    But zoom out 1 step can be performed with MMB for yLeft and yRight simultaneously,
+    or by Ctrl+MMB for yLeft axis only and Shift+MMB for yRight axis only
+
+    FIXME: zoomers should set it's base zoom to current canvas view after panning and magnifying
+    Probable solution: implement signals to QwtPlotPanner and QwtPlotMagnifier and slot for QwtPlotZoomer
+  */
+
     zoomerLeft=new QwtPlotZoomer(xBottom,yLeft,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerLeft->setMousePattern(1,Qt::NoButton);
@@ -48,15 +68,16 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerRight->setMousePattern(1,Qt::NoButton);
 
+    //
     zoomerExclusiveLeft= new QwtPlotZoomer(xBottom,yLeft,canvas());
     zoomerExclusiveLeft->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
     zoomerExclusiveLeft->setMousePattern(1,Qt::NoButton);
-    zoomerExclusiveLeft->setMousePattern(2,Qt::NoButton);
+    zoomerExclusiveLeft->setMousePattern(2,Qt::MiddleButton,Qt::CTRL);
 
     zoomerExclusiveRight= new QwtPlotZoomer(xBottom,yRight,canvas());
     zoomerExclusiveRight->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
     zoomerExclusiveRight->setMousePattern(1,Qt::NoButton);
-    zoomerExclusiveRight->setMousePattern(2,Qt::NoButton);
+    zoomerExclusiveRight->setMousePattern(2,Qt::MiddleButton,Qt::SHIFT);
 
     //Panner is working with right mouse button
     QwtPlotPanner *panner=new QwtPlotPanner(canvas());
@@ -343,6 +364,8 @@ void Plot::selectPointsMode(bool select) {
     appendPointPicker->setEnabled(select);
     zoomerLeft->setEnabled(!select);
     zoomerRight->setEnabled(!select);
+    zoomerExclusiveLeft->setEnabled(!select);
+    zoomerExclusiveRight->setEnabled(!select);
     if (select) emit message("Select mode");
     else emit message("Normal mode");
 }
