@@ -48,6 +48,16 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerRight->setMousePattern(1,Qt::NoButton);
 
+    zoomerExclusiveLeft= new QwtPlotZoomer(xBottom,yLeft,canvas());
+    zoomerExclusiveLeft->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
+    zoomerExclusiveLeft->setMousePattern(1,Qt::NoButton);
+    zoomerExclusiveLeft->setMousePattern(2,Qt::NoButton);
+
+    zoomerExclusiveRight= new QwtPlotZoomer(xBottom,yRight,canvas());
+    zoomerExclusiveRight->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
+    zoomerExclusiveRight->setMousePattern(1,Qt::NoButton);
+    zoomerExclusiveRight->setMousePattern(2,Qt::NoButton);
+
     //Panner is working with right mouse button
     QwtPlotPanner *panner=new QwtPlotPanner(canvas());
     panner->setMouseButton(Qt::RightButton);

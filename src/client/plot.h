@@ -45,6 +45,8 @@ private:
     QwtPicker *appendPointPicker;
     QwtPlotZoomer *zoomerLeft;
     QwtPlotZoomer *zoomerRight;
+    QwtPlotZoomer *zoomerExclusiveLeft;
+    QwtPlotZoomer *zoomerExclusiveRight;
     QwtPlotMagnifier *magnifier;
 
 private slots:
