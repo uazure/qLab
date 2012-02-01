@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -61,6 +61,7 @@
     </property>
     <addaction name="actionSetup"/>
     <addaction name="actionSelect_points"/>
+    <addaction name="actionZoom_to_extents"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -159,6 +160,14 @@
    </property>
    <property name="shortcut">
     <string>B</string>
+   </property>
+  </action>
+  <action name="actionZoom_to_extents">
+   <property name="text">
+    <string>Zoom to extents</string>
+   </property>
+   <property name="shortcut">
+    <string>Z</string>
    </property>
   </action>
  </widget>

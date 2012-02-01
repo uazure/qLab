@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionClear_plot,SIGNAL(triggered()),plot,SLOT(clear()));
     connect(ui->actionInitialize,SIGNAL(triggered()),plot,SLOT(initialize()));
     connect(ui->actionSelect_points,SIGNAL(triggered(bool)),plot,SLOT(selectPointsMode(bool)));
+    connect(ui->actionZoom_to_extents,SIGNAL(triggered()),plot,SLOT(zoomExtents()));
+
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
 

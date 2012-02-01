@@ -90,6 +90,7 @@ signals:
 
 public slots:
     void clear(void);
+    void zoomExtents(void);
     void initialize(void);
 
 };

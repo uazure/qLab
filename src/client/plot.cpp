@@ -226,7 +226,6 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 void Plot::replot()
 {
     QwtPlot::replot();
-    QwtPlot::repaint();
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
         for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
             markCurvePoint(selectedCurve,i.key());
@@ -382,5 +381,16 @@ void Plot::drawLastPoint(int size) {
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         directPainter.drawSeries((QwtPlotCurve*)(*it),from,to);
     }
+}
+
+void Plot::zoomExtents(void)
+{
+    setAxisAutoScale(xBottom,true);
+    setAxisAutoScale(yLeft,true);
+    setAxisAutoScale(yRight,true);
+    replot();
+    setAxisAutoScale(xBottom,false);
+    setAxisAutoScale(yLeft,false);
+    setAxisAutoScale(yRight,false);
 }
 
