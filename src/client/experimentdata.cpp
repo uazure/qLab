@@ -4,6 +4,7 @@ ExperimentData::ExperimentData(QObject *parent) :
     QAbstractTableModel(parent)
 {
 //set expect variable to none (for comment parsing)
+    initialUtime=0.0;
     expect=expectNone;
 }
 
@@ -103,6 +104,11 @@ void ExperimentData::parseData(QByteArray &dataLine) {
         for (int i=0;i<valarray.size();i++) {
             tmpdoublelist.clear();
             tmpdouble=valarray.at(i).toDouble(&ok);
+            if (utimeColumn==i && ok) {
+                initialUtime=tmpdouble;
+                qDebug()<<"Initial utime is"<<initialUtime;
+                tmpdouble=0.0;
+            }
             if (ok) {
                 //QList<QList<T> > should be filled with QList<T>
                 tmpdoublelist.append(tmpdouble);
@@ -126,6 +132,12 @@ void ExperimentData::parseData(QByteArray &dataLine) {
     else if (valarray.size()==dataTable.size()) {
         for (int i=0;i<valarray.size() && i<dataTable.size();i++) {
             tmpdouble=valarray.at(i).toDouble(&ok);
+            if (utimeColumn==i && initialUtime>0) {
+                tmpdouble=tmpdouble-initialUtime;
+                if (tmpdouble<0) {
+                    qWarning()<<"Initial utime was"<<initialUtime<<"but current time is"<<valarray.at(i);
+                }
+            }
             dataTable[i].append(tmpdouble);
             if (!ok) {
                 qWarning()<<"column"<<i<<"is NaN in"<<dataLine<<". Used 0 value";
@@ -247,6 +259,9 @@ void ExperimentData::setColumnShortname(int column, QByteArray &shortname) {
     // Unfortunately, we can not check if column id exceeds dataTable size
     // because dataTable is initialized AFTER parsing comments.
     if (column<0) return;
+
+    //if column is utime then remember it for later use
+    if (shortname=="utime") utimeColumn=column;
 
 //if column index can be accessed in columnShortname
     if (column<columnShortname.size()-1) {

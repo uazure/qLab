@@ -87,9 +87,8 @@ private:
 
     static QwtPlot::Axis toAxisId(const QByteArray &axis);
 
-
-
-
+    double initialUtime;
+    int utimeColumn;
 
 signals:
     /// Emitted when initial data arrives. It's possible to create curves when we have data and headers arrived and parsed.
