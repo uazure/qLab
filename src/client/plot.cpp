@@ -6,6 +6,7 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 {
     //should be faster on platforms that support this (unix)
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+    incrementalDraw=false;
 
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
@@ -67,7 +68,7 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //disable tracker
     zoomerLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
-    zoomerRight=new QwtPlotZoomer(xBottom,yRight,canvas());
+    zoomerRight=new QwtPlotZoomer(xTop,yRight,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerRight->setMousePattern(1,Qt::NoButton);
     //disable selection rectangle for yRight
@@ -91,12 +92,14 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //Panner is working with right mouse button
     QwtPlotPanner *panner=new QwtPlotPanner(canvas());
     panner->setMouseButton(Qt::RightButton);
+    panner->setAxisEnabled(yRight,true);
 
     //Magnifier is set to zoom in/out on mouse wheel only
     magnifier=new QwtPlotMagnifier(canvas());
     //Disable magnifying with RMB+MouseMove up/down
     magnifier->setMouseButton(Qt::NoButton);
-    magnifier->setWheelFactor(1.5);
+    magnifier->setAxisEnabled(yRight,true);
+    magnifier->setWheelFactor(1.414);
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
@@ -250,18 +253,15 @@ void Plot::clearPointSelection() {
     QwtPlotCurve *curve = NULL;
     QwtPlotDirectPainter directPainter;
 
-    const QwtPlotItemList& itmList = itemList();
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
     //iterate over all plot items
     for ( QwtPlotItemIterator it = itmList.begin();
         it != itmList.end(); ++it )
     {
-        // if plot item is of type PlotCurve then find closest point
-        if ( (*it)->rtti() == QwtPlotItem::Rtti_PlotCurve)
-        {
             curve= (QwtPlotCurve*)(*it);
             if (curve->isVisible()) {
                 directPainter.drawSeries(curve,0,curve->dataSize()-1);
-            }
+
         }
     }
 }
@@ -383,16 +383,20 @@ void Plot::selectPointsMode(bool select) {
 }
 
 void Plot::drawLastPoint(int size) {
+    if (!incrementalDraw) return;
     //FIXME: this function should also plot curve sticks
     //last point has index size-1
+
     int from=--size;
-    int to=--from;
-    if (to<0) to=0;
+
     QwtPlotDirectPainter directPainter;
     const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
     //iterate over all plot items of type PlotCurve
     for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
-        directPainter.drawSeries((QwtPlotCurve*)(*it),from,to);
+        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
+        if (curve->isVisible()) {
+            directPainter.drawSeries(curve,from,-1);
+        }
     }
 }
 
@@ -405,5 +409,11 @@ void Plot::zoomExtents(void)
     setAxisAutoScale(xBottom,false);
     setAxisAutoScale(yLeft,false);
     setAxisAutoScale(yRight,false);
+}
+
+void Plot::setIncrementalDraw(bool on)
+{
+    if (on) replot();
+    incrementalDraw=on;
 }
 

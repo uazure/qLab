@@ -62,6 +62,7 @@
     <addaction name="actionSetup"/>
     <addaction name="actionSelect_points"/>
     <addaction name="actionZoom_to_extents"/>
+    <addaction name="actionDraw_incremental"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -168,6 +169,17 @@
    </property>
    <property name="shortcut">
     <string>Z</string>
+   </property>
+  </action>
+  <action name="actionDraw_incremental">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Draw incremental</string>
+   </property>
+   <property name="shortcut">
+    <string>D</string>
    </property>
   </action>
  </widget>

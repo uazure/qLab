@@ -49,6 +49,7 @@ private:
     QwtPlotZoomer *zoomerExclusiveLeft;
     QwtPlotZoomer *zoomerExclusiveRight;
     QwtPlotMagnifier *magnifier;
+    bool incrementalDraw;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
@@ -93,6 +94,7 @@ public slots:
     void clear(void);
     void zoomExtents(void);
     void initialize(void);
+    void setIncrementalDraw(bool on=true);
 
 };
 

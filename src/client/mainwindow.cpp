@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionInitialize,SIGNAL(triggered()),plot,SLOT(initialize()));
     connect(ui->actionSelect_points,SIGNAL(triggered(bool)),plot,SLOT(selectPointsMode(bool)));
     connect(ui->actionZoom_to_extents,SIGNAL(triggered()),plot,SLOT(zoomExtents()));
+    connect(ui->actionDraw_incremental,SIGNAL(triggered(bool)),plot,SLOT(setIncrementalDraw(bool)));
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
