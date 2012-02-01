@@ -64,20 +64,29 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     zoomerLeft=new QwtPlotZoomer(xBottom,yLeft,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerLeft->setMousePattern(1,Qt::NoButton);
+    //disable tracker
+    zoomerLeft->setTrackerMode(QwtPicker::AlwaysOff);
+
     zoomerRight=new QwtPlotZoomer(xBottom,yRight,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerRight->setMousePattern(1,Qt::NoButton);
+    //disable selection rectangle for yRight
+    zoomerRight->setRubberBand(QwtPicker::NoRubberBand);
+    zoomerRight->setTrackerMode(QwtPicker::AlwaysOff);
 
-    //
+    //initialization of exclusive yLeft and yRight zoomers
     zoomerExclusiveLeft= new QwtPlotZoomer(xBottom,yLeft,canvas());
     zoomerExclusiveLeft->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
     zoomerExclusiveLeft->setMousePattern(1,Qt::NoButton);
     zoomerExclusiveLeft->setMousePattern(2,Qt::MiddleButton,Qt::CTRL);
+    zoomerExclusiveLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
     zoomerExclusiveRight= new QwtPlotZoomer(xBottom,yRight,canvas());
     zoomerExclusiveRight->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
     zoomerExclusiveRight->setMousePattern(1,Qt::NoButton);
     zoomerExclusiveRight->setMousePattern(2,Qt::MiddleButton,Qt::SHIFT);
+    zoomerExclusiveRight->setTrackerMode(QwtPicker::AlwaysOff);
+
 
     //Panner is working with right mouse button
     QwtPlotPanner *panner=new QwtPlotPanner(canvas());
@@ -225,7 +234,11 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 
 void Plot::replot()
 {
+    QElapsedTimer timer;
+    timer.start();
     QwtPlot::replot();
+    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
+
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
         for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
             markCurvePoint(selectedCurve,i.key());

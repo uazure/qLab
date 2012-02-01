@@ -15,6 +15,7 @@
 #include "qwt_plot_magnifier.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QMap>
 
 class Plot : public QwtPlot
