@@ -33,13 +33,13 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 //Picker for selecting range of points (Shift+LMB)
     selectRangePicker=new QwtPicker(canvas());
     selectRangePicker->setStateMachine(new QwtPickerClickPointMachine);
-    selectRangePicker->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
+    selectRangePicker->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::SHIFT);
     connect(selectRangePicker,SIGNAL(appended(QPoint)),SLOT(selectRange(QPoint)));
 
 //Picker for append/remove additional points to/from selection (Ctrl+LMB)
     appendPointPicker=new QwtPicker(canvas());
     appendPointPicker->setStateMachine(new QwtPickerClickPointMachine);
-    appendPointPicker->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
+    appendPointPicker->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::CTRL);
     connect(appendPointPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
 
 /** \brief zoomers are used to zoom by selecting rectangle on canvas
@@ -64,28 +64,28 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 
     zoomerLeft=new QwtPlotZoomer(xBottom,yLeft,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
-    zoomerLeft->setMousePattern(1,Qt::NoButton);
+    zoomerLeft->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
     //disable tracker
     zoomerLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
     zoomerRight=new QwtPlotZoomer(xTop,yRight,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
-    zoomerRight->setMousePattern(1,Qt::NoButton);
+    zoomerRight->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
     //disable selection rectangle for yRight
     zoomerRight->setRubberBand(QwtPicker::NoRubberBand);
     zoomerRight->setTrackerMode(QwtPicker::AlwaysOff);
 
     //initialization of exclusive yLeft and yRight zoomers
     zoomerExclusiveLeft= new QwtPlotZoomer(xBottom,yLeft,canvas());
-    zoomerExclusiveLeft->setMousePattern(0,Qt::LeftButton,Qt::CTRL);
-    zoomerExclusiveLeft->setMousePattern(1,Qt::NoButton);
-    zoomerExclusiveLeft->setMousePattern(2,Qt::MiddleButton,Qt::CTRL);
+    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::CTRL);
+    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
+    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::CTRL);
     zoomerExclusiveLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
     zoomerExclusiveRight= new QwtPlotZoomer(xBottom,yRight,canvas());
-    zoomerExclusiveRight->setMousePattern(0,Qt::LeftButton,Qt::SHIFT);
-    zoomerExclusiveRight->setMousePattern(1,Qt::NoButton);
-    zoomerExclusiveRight->setMousePattern(2,Qt::MiddleButton,Qt::SHIFT);
+    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::SHIFT);
+    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
+    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::SHIFT);
     zoomerExclusiveRight->setTrackerMode(QwtPicker::AlwaysOff);
 
 
@@ -237,10 +237,10 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 
 void Plot::replot()
 {
-    QElapsedTimer timer;
-    timer.start();
+//    QElapsedTimer timer;
+//    timer.start();
     QwtPlot::replot();
-    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
+//    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
 
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
         for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
