@@ -17,6 +17,11 @@ SOURCES += main.cpp \
     experiment.cpp \
     tcpserver.cpp \
     udpserver.cpp
+
+INCLUDEPATH += ../../lib/
+win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
+win32:DEFINES += WIN32
+
 HEADERS += mainwindow.h \
     gpib-32.h \
     abstractdevice.h \
@@ -28,9 +33,7 @@ HEADERS += mainwindow.h \
     experiment.h \
     tcpserver.h \
     udpserver.h
-INCLUDEPATH += ../../lib/
-win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
-win32:DEFINES += WIN32
+
 FORMS += mainwindow.ui \
     experimentconfigurationselectdialog.ui
 OTHER_FILES += ../../README.txt \

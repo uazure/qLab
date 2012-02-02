@@ -116,18 +116,21 @@ bool GpibDevice::set(QByteArray command) {
 /// Read data from the gpib device. Returns true on success or false on failure.
 bool GpibDevice::get(QByteArray &reply) {
 #ifdef WIN32
-    char tmp[255];
-    ibrd(Handle(),tmp,254);
+    char *tmpchar=new char[255];
+    //Clear array with 0. Some devices does not write \0 to the end of the string
+    for (int i=0;i<255;i++) {
+        tmpchar[i]=0;
+    }
+    ibrd(Handle(),tmpchar,254);
     if (ibsta&ERR) {
         qWarning()<<"Gpib error: ibrd failed on device"<<shortName()<<"with id"<<Id();
         emit errorMessage("Gpib error: ibrd failed");
         return false;
     }
-    reply.clear();
-    reply.append(tmp);
+    reply=tmpchar;
     reply=reply.trimmed();
-#else
 
+#else
     reply=QByteArray::number((double) rand()/RAND_MAX*1000,'g',3);
 #endif
     return true;
