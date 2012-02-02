@@ -38,7 +38,8 @@ GpibDevice::GpibDevice(QByteArray &DeviceShortName, QObject *parent) :
     } else {
         qWarning()<<"Device"<<shortName()<<"id"<< Id() <<"is OFFLINE";
     }
-    resetDevice();
+
+    //resetDevice();
 #endif
 
     // Read init string for the device from settings object
@@ -183,6 +184,7 @@ currentChannel will be set to parameterList.at(0) on successful channel switch.
 */
 
 bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
+    qDebug()<<"Trying to read value from device"<<shortName();
     bool success=false;
     //if there's no arguments for the device then just use readCommand
     if (parametersList.isEmpty()) {
@@ -197,7 +199,8 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
                     QByteArray tmpanswer;
                     bool channelSwitchSuccess=ask(channelCommand.arg(parametersList.at(0)).toAscii(),tmpanswer);
                     if (channelSwitchSuccess) {
-                        qDebug()<<"Switched channel of device"<<shortName()<<"to"<<parametersList.at(0);
+                        qDebug()<<"Switched channel of device"<<shortName()<<"to"<<parametersList.at(0)<<
+                                  "with"<<channelCommand.arg(parametersList.at(0))<<". Answer:"<<tmpanswer;
                         currentChannel=parametersList.at(0);
                     } else {
                         qWarning()<<"Failed to switch channel of device"<<shortName()<<"with command"<<channelCommand.arg(parametersList.at(0));
@@ -211,7 +214,9 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
 
 
     if (success) {
+        qDebug()<<"Value"<<returnValue<<"read from"<<shortName();
         returnValue=returnValue.trimmed();
+        if (returnValue.isEmpty()) returnValue="-0.000";
         if (getFactor() == 0.0 || getFactor() == 1.0) {
             //qDebug()<<"No factor for"<<shortname;
         } else {
