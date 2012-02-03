@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSelect_points,SIGNAL(triggered(bool)),plot,SLOT(selectPointsMode(bool)));
     connect(ui->actionZoom_to_extents,SIGNAL(triggered()),plot,SLOT(zoomExtents()));
     connect(ui->actionDraw_incremental,SIGNAL(triggered(bool)),plot,SLOT(setIncrementalDraw(bool)));
-
+    connect(ui->actionOpen_file,SIGNAL(triggered()),SLOT(openFile()));
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
 
@@ -61,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusBar->addPermanentWidget(&bytesWrittenLabel);
     ui->statusBar->addPermanentWidget(&pointCountLabel);
     ui->statusBar->addPermanentWidget(&connectionLabel);
+
+    //if file was specified on startup - try open it
+    if (!filename.isEmpty()) openFile(filename);
 
 }
 
@@ -162,5 +165,61 @@ void MainWindow::showDataViewWindow() {
     dataView->setAscii(data->getAscii());
     dataView->setItem(data);
     dataView->show();
+}
+
+
+void MainWindow::openFile(QString filename) {
+    if (filename.isEmpty()) {
+        QFileDialog dialog(this);
+        dialog.setFileMode(QFileDialog::ExistingFile);
+        QStringList nameFilters, fileNames;
+        nameFilters.append(tr("Data files (*.dat *.txt)"));
+        nameFilters.append(tr("All files (*)"));
+        dialog.setNameFilters(nameFilters);
+        if (!dialog.exec()) {
+            qWarning()<<"No file has been selected";
+            return;
+        }
+        fileNames=dialog.selectedFiles();
+        if (fileNames.isEmpty()) return;
+        filename=fileNames.at(0);
+    }
+
+    readFile(filename);
+}
+
+void MainWindow::readFile(QString filename) {
+    if (filename.isEmpty()) {
+        qWarning()<<"Tried to read empty file"<<filename;
+        return;
+    }
+    QFile file(filename);
+
+    if (!file.exists()) {
+        qWarning()<<"File does not exists"<<file.fileName();
+        return;
+    }
+
+    if (!file.isReadable()) {
+        qWarning()<<"File is not readable"<<file.fileName();
+    }
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning()<<"Failed to open file for reading"<<file.fileName();
+    }
+
+    //prepare for new data
+    plot->clear();
+    data->resetData();
+
+    QByteArray buf;
+    while (!file.atEnd()) {
+        buf=file.readLine();
+        buf=buf.trimmed();
+        data->parseLine(buf);
+    }
+
+    qDebug()<<"Successfully read from file. Closing "<<file.fileName();
+    file.close();
 }
 

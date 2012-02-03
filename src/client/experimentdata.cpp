@@ -90,6 +90,7 @@ void ExperimentData::parseLine(QByteArray &line) {
     }
 }
 
+// Notice: This function expect trimmed dataLine
 void ExperimentData::parseData(QByteArray &dataLine) {
     asciiTable.append(dataLine);
     double tmpdouble;

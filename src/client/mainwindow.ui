@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -35,6 +35,8 @@
     </property>
     <addaction name="actionConnect_to"/>
     <addaction name="actionDisconnect"/>
+    <addaction name="actionOpen_file"/>
+    <addaction name="actionSave_as"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -180,6 +182,16 @@
    </property>
    <property name="shortcut">
     <string>D</string>
+   </property>
+  </action>
+  <action name="actionOpen_file">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as...</string>
    </property>
   </action>
  </widget>

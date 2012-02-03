@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
     MainWindow(const MainWindow &);
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString filename="",QWidget *parent = 0);
     ~MainWindow();
 
 private:
@@ -53,6 +53,8 @@ private slots:
     void socketStateChanged(QAbstractSocket::SocketState state);
     void socketDisconnect(void);
     void showDataViewWindow(void);
+    void openFile(QString filename="");
+    void readFile(QString filename);
 
 };
 
