@@ -5,7 +5,10 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
         QwtPlot(parent)
 {
     //should be faster on platforms that support this (unix)
+#ifdef Q_WS_X11
+    qDebug()<<"Enabling Qt::WA_PaintOutsidePaintEvent";
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+#endif
     incrementalDraw=false;
 
     xCol=-1;
