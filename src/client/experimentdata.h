@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QStringList>
 #include "qwt_plot.h"
+#include <QFile>
 
 class ExperimentData : public QAbstractTableModel
 {
@@ -52,6 +53,10 @@ public:
     QString getColumnUnit (int column=0) const;
     void setColumnAxis(int column, QByteArray &axis);
     QwtPlot::Axis getColumnAxis(int column=0) const;
+
+    void readFile(QString filename);
+
+    void saveFile(QString &filename);
 
 
 private:

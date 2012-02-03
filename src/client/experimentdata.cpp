@@ -235,6 +235,9 @@ void ExperimentData::resetData() {
     dataTable.clear();
     qDebug()<<"dataTable cleared";
 
+    asciiTable.clear();
+    qDebug()<<"asciiTable cleared";
+
     columnLabel.clear();
     columnShortname.clear();
     columnMax.clear();
@@ -420,4 +423,65 @@ QwtPlot::Axis ExperimentData::toAxisId(const QByteArray &axis) {
         return QwtPlot::yLeft;
     }
     return QwtPlot::xTop;
+}
+
+void ExperimentData::readFile(QString filename) {
+    if (filename.isEmpty()) {
+        qWarning()<<"Tried to read empty file"<<filename;
+        return;
+    }
+    QFile file(filename);
+
+    if (!file.exists()) {
+        qWarning()<<"File does not exists"<<file.fileName();
+        return;
+    }
+
+    if (!file.isReadable()) {
+        qWarning()<<"File is not readable"<<file.fileName();
+    }
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning()<<"Failed to open file for reading"<<file.fileName();
+    }
+
+    //prepare for new data
+    resetData();
+
+    QByteArray buf;
+    while (!file.atEnd()) {
+        buf=file.readLine();
+        buf=buf.trimmed();
+        parseLine(buf);
+    }
+
+    qDebug()<<"Successfully read from file. Closing "<<file.fileName();
+    file.close();
+}
+
+void ExperimentData::saveFile(QString &filename) {
+    if (filename.isEmpty()) {
+        qWarning("File for save is not selected");
+        return;
+    }
+
+    QFile file(filename);
+    if (!file.exists()) {
+        qDebug()<<"Will try to create file"<<file.fileName();
+    }
+
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning()<<"Failed to open file for writing"<<file.fileName();
+        return;
+    }
+
+    QByteArray buf;
+    for (int i=0;i<asciiTable.size();i++) {
+        buf=asciiTable.at(i).toUtf8();
+        buf.append("\n");
+        file.write(buf);
+        qDebug()<<"Writing to file line"<<i;
+    }
+
+    file.close();
 }

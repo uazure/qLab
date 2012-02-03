@@ -26,8 +26,10 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionZoom_to_extents,SIGNAL(triggered()),plot,SLOT(zoomExtents()));
     connect(ui->actionDraw_incremental,SIGNAL(triggered(bool)),plot,SLOT(setIncrementalDraw(bool)));
     connect(ui->actionOpen_file,SIGNAL(triggered()),SLOT(openFile()));
-    connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
+    connect(ui->actionSave_as,SIGNAL(triggered()),SLOT(saveFile()));
 
+
+    connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
@@ -185,41 +187,27 @@ void MainWindow::openFile(QString filename) {
         filename=fileNames.at(0);
     }
 
-    readFile(filename);
+    data->readFile(filename);
 }
 
-void MainWindow::readFile(QString filename) {
+void MainWindow::saveFile(QString filename) {
     if (filename.isEmpty()) {
-        qWarning()<<"Tried to read empty file"<<filename;
-        return;
-    }
-    QFile file(filename);
-
-    if (!file.exists()) {
-        qWarning()<<"File does not exists"<<file.fileName();
-        return;
-    }
-
-    if (!file.isReadable()) {
-        qWarning()<<"File is not readable"<<file.fileName();
-    }
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning()<<"Failed to open file for reading"<<file.fileName();
+        QFileDialog dialog(this);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        QStringList nameFilters, fileNames;
+        nameFilters.append(tr("Data files (*.dat *.txt)"));
+        nameFilters.append(tr("All files (*)"));
+        dialog.setNameFilters(nameFilters);
+        if (!dialog.exec()) {
+            qWarning()<<"No file has been selected";
+            return;
+        }
+        fileNames=dialog.selectedFiles();
+        if (fileNames.isEmpty()) return;
+        filename=fileNames.at(0);
     }
 
-    //prepare for new data
-    plot->clear();
-    data->resetData();
-
-    QByteArray buf;
-    while (!file.atEnd()) {
-        buf=file.readLine();
-        buf=buf.trimmed();
-        data->parseLine(buf);
-    }
-
-    qDebug()<<"Successfully read from file. Closing "<<file.fileName();
-    file.close();
+    data->saveFile(filename);
 }
+
 

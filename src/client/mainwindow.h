@@ -54,8 +54,7 @@ private slots:
     void socketDisconnect(void);
     void showDataViewWindow(void);
     void openFile(QString filename="");
-    void readFile(QString filename);
-
+    void saveFile(QString filename="");
 };
 
 #endif // MAINWINDOW_H
