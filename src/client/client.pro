@@ -14,7 +14,6 @@ SOURCES += main.cpp \
     dataviewwindow.cpp \
     seriesdata.cpp
 
-# SOURCES += ../qwt6/qwt_plot.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -22,10 +21,24 @@ HEADERS += mainwindow.h \
     dataviewwindow.h \
     seriesdata.h
 
-# HEADERS += ../qwt6/qwt_plot.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui
-INCLUDEPATH += ../qwt6/
+INCLUDEPATH += ../../../qwt/src
 
 # qwt 6.0.1 need to be compiled and installed to system path
-LIBS += -lqwt
+
+LIBS+= -L../../../qwt/lib
+#release mode and unix
+#LIBS+= -lqwt
+#debug mode for win32
+LIBS+= -lqwt
+
+#CONFIG(debug) {
+#message("Using debug mode")
+#win32:LIBS += -lqwtd
+#unix:LIBS += -lqwt
+#}
+#CONFIG(release) {
+#message("Using release mode")
+#LIBS += -lqwt
+#}
