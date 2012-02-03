@@ -23,7 +23,9 @@ HEADERS += mainwindow.h \
 
 FORMS += mainwindow.ui \
     dataviewwindow.ui
-INCLUDEPATH += ../../../qwt/src
+
+INCLUDEPATH += ../qwt6
+#INCLUDEPATH += ../../../qwt/src
 
 # qwt 6.0.1 need to be compiled and installed to system path
 
