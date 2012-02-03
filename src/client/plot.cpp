@@ -225,10 +225,10 @@ void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
 
     //if to defaulting to -1 then we want to mark just one curve point
     if (to==-1) to=from;
-    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
+    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
     directPainter.drawSeries(curve, from, to);
     symbol->setBrush(brush); // reset brush
-    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
+    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
 
 }
 
@@ -238,6 +238,23 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
     if (to==-1) to=from;
     directPainter.drawSeries(curve, from, to);
 }
+
+void Plot::markSelectedPoints()
+{
+    if (selectedCurve==NULL || selectedPoints.isEmpty()) return;
+
+    QwtSymbol *symbol = const_cast<QwtSymbol *>(selectedCurve->symbol());
+    //remember brush
+    const QBrush brush = symbol->brush();
+        symbol->setBrush(QBrush(QColor(Qt::red)));
+        QwtPlotDirectPainter directPainter;
+
+        for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
+            directPainter.drawSeries(selectedCurve,i.key(),i.key());
+        }
+    symbol->setBrush(brush); // reset brush
+}
+
 
 
 void Plot::replot()
@@ -250,15 +267,15 @@ void Plot::replot()
     QwtPlot::replot();
     canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
 
-#if QT_VERSION<<0x040700
-    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
+#if QT_VERSION >= 0x040700
+    qDebug()<<"Replot took"<<timer.restart()<<"msecs";
 #endif
-
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
-        for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
-            markCurvePoint(selectedCurve,i.key());
-        }
+        markSelectedPoints();
     }
+#if QT_VERSION >= 0x040700
+    qDebug()<<"marking selected points took"<<timer.restart()<<"msecs";
+#endif
 }
 
 void Plot::clearPointSelection() {
@@ -428,4 +445,5 @@ void Plot::setIncrementalDraw(bool on)
     if (on) replot();
     incrementalDraw=on;
 }
+
 

@@ -86,6 +86,8 @@ i.e. from=to */
     void markCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
     void unmarkCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
 
+    void markSelectedPoints();
+
 
 
 signals:
