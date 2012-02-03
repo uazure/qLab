@@ -237,10 +237,17 @@ void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
 
 void Plot::replot()
 {
-//    QElapsedTimer timer;
-//    timer.start();
+#if QT_VERSION >= 0x040700
+    QElapsedTimer timer;
+    timer.start();
+#endif
+    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
     QwtPlot::replot();
-//    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
+    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
+
+#if QT_VERSION<<0x040700
+    qDebug()<<"Replot took"<<timer.elapsed()<<"msecs";
+#endif
 
     if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
         for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
