@@ -29,9 +29,9 @@ INCLUDEPATH += ../../../qwt/src
 
 LIBS+= -L../../../qwt/lib
 #release mode and unix
-#LIBS+= -lqwt
-#debug mode for win32
 LIBS+= -lqwt
+#debug mode for win32
+#LIBS+= -lqwtd
 
 #CONFIG(debug) {
 #message("Using debug mode")

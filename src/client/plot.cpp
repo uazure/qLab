@@ -222,8 +222,10 @@ void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
 
     //if to defaulting to -1 then we want to mark just one curve point
     if (to==-1) to=from;
+    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
     directPainter.drawSeries(curve, from, to);
     symbol->setBrush(brush); // reset brush
+    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
 
 }
 
