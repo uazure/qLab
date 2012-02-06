@@ -104,12 +104,30 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     magnifier->setAxisEnabled(yRight,true);
     magnifier->setWheelFactor(1.414);
 
+    /*Special magnifiers that can be used to scale one axis only
+      and that are activated with mouse over selected axis widget
+      */
+
     yLeftMagnifier=new ScalePlotMagnifier(canvas());
     yLeftMagnifier->setAxisEnabled(xBottom,false);
     yLeftMagnifier->setAxisEnabled(xTop,false);
     yLeftMagnifier->setAxisEnabled(yRight,false);
     axisWidget(yLeft)->installEventFilter(yLeftMagnifier);
     canvas()->removeEventFilter(yLeftMagnifier);
+
+    yRightMagnifier=new ScalePlotMagnifier(canvas());
+    yRightMagnifier->setAxisEnabled(xBottom,false);
+    yRightMagnifier->setAxisEnabled(xTop,false);
+    yRightMagnifier->setAxisEnabled(yLeft,false);
+    axisWidget(yRight)->installEventFilter(yRightMagnifier);
+    canvas()->removeEventFilter(yRightMagnifier);
+
+    xBottomMagnifier=new ScalePlotMagnifier(canvas());
+    xBottomMagnifier->setAxisEnabled(yRight,false);
+    xBottomMagnifier->setAxisEnabled(xTop,false);
+    xBottomMagnifier->setAxisEnabled(yLeft,false);
+    axisWidget(xBottom)->installEventFilter(xBottomMagnifier);
+    canvas()->removeEventFilter(xBottomMagnifier);
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.

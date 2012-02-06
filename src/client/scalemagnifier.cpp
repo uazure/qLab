@@ -3,6 +3,9 @@
 ScaleMagnifier::ScaleMagnifier(QWidget *parent) :
     QwtMagnifier(parent)
 {
+    setMouseButton(Qt::LeftButton);
+    setMouseFactor(1.05);
+    setWheelFactor(1.414);
 }
 
 bool ScaleMagnifier::eventFilter(QObject *object, QEvent *event) {

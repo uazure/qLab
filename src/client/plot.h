@@ -55,6 +55,8 @@ private:
     QwtPlotZoomer *zoomerExclusiveRight;
     QwtPlotMagnifier *magnifier;
     ScalePlotMagnifier *yLeftMagnifier;
+    ScalePlotMagnifier *yRightMagnifier;
+    ScalePlotMagnifier *xBottomMagnifier;
     bool incrementalDraw;
 
 private slots:
