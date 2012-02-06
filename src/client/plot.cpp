@@ -104,6 +104,13 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     magnifier->setAxisEnabled(yRight,true);
     magnifier->setWheelFactor(1.414);
 
+    yLeftMagnifier=new ScalePlotMagnifier(canvas());
+    yLeftMagnifier->setAxisEnabled(xBottom,false);
+    yLeftMagnifier->setAxisEnabled(xTop,false);
+    yLeftMagnifier->setAxisEnabled(yRight,false);
+    axisWidget(yLeft)->installEventFilter(yLeftMagnifier);
+    canvas()->removeEventFilter(yLeftMagnifier);
+
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
     initialize();

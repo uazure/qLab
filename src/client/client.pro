@@ -12,14 +12,18 @@ SOURCES += main.cpp \
     tcpclient.cpp \
     experimentdata.cpp \
     dataviewwindow.cpp \
-    seriesdata.cpp
+    seriesdata.cpp \
+    scalemagnifier.cpp \
+    scaleplotmagnifier.cpp
 
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
     experimentdata.h \
     dataviewwindow.h \
-    seriesdata.h
+    seriesdata.h \
+    scalemagnifier.h \
+    scaleplotmagnifier.h
 
 FORMS += mainwindow.ui \
     dataviewwindow.ui
