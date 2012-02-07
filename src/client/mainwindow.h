@@ -17,6 +17,7 @@
 #include "tcpclient.h"
 #include "experimentdata.h"
 #include "dataviewwindow.h"
+#include "setupcurvesdialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -53,9 +54,11 @@ private slots:
     void socketStateChanged(QAbstractSocket::SocketState state);
     void socketDisconnect(void);
     void showDataViewWindow(void);
+    void showSetupCurvesDialog(void);
     void setMonitoringInterval(void);
     void openFile(QString filename="");
     void saveFile(QString filename="");
+
 };
 
 #endif // MAINWINDOW_H

@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     dataviewwindow.cpp \
     seriesdata.cpp \
     scalemagnifier.cpp \
-    scaleplotmagnifier.cpp
+    scaleplotmagnifier.cpp \
+    setupcurvesdialog.cpp
 
 HEADERS += mainwindow.h \
     plot.h \
@@ -23,10 +24,12 @@ HEADERS += mainwindow.h \
     dataviewwindow.h \
     seriesdata.h \
     scalemagnifier.h \
-    scaleplotmagnifier.h
+    scaleplotmagnifier.h \
+    setupcurvesdialog.h
 
 FORMS += mainwindow.ui \
-    dataviewwindow.ui
+    dataviewwindow.ui \
+    setupcurvesdialog.ui
 
 INCLUDEPATH += ../qwt6
 #INCLUDEPATH += ../../../qwt/src

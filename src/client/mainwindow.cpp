@@ -28,6 +28,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionOpen_file,SIGNAL(triggered()),SLOT(openFile()));
     connect(ui->actionSave_as,SIGNAL(triggered()),SLOT(saveFile()));
     connect(ui->actionMonitoring_interval,SIGNAL(triggered()),SLOT(setMonitoringInterval()));
+    connect(ui->actionSetup,SIGNAL(triggered()),SLOT(showSetupCurvesDialog()));
 
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
@@ -222,6 +223,12 @@ void MainWindow::setMonitoringInterval(void)
     } else {
         qWarning()<<"Monitoring interval not set";
     }
+}
+
+void MainWindow::showSetupCurvesDialog(void)
+{
+    SetupCurvesDialog * dialog=new SetupCurvesDialog(this,plot,data);
+    dialog->show();
 }
 
 
