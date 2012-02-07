@@ -3,9 +3,13 @@
 
 #include <QDialog>
 #include <QAbstractItemModel>
+#include <QList>
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
+#include "qwt_symbol.h"
+#include "ColorBox.h"
 #include "experimentdata.h"
+
 
 
 namespace Ui {
@@ -20,10 +24,18 @@ public:
     explicit SetupCurvesDialog(QWidget *parent, QwtPlot *plot, ExperimentData *experimentData);
     ~SetupCurvesDialog();
 
+public slots:
+    void curveSelected(int index);
+    void setCurveColor(void);
+
 private:
     Ui::SetupCurvesDialog *ui;
     QwtPlot *plot;
     ExperimentData *data;
+    QList<QwtPlotCurve *> curveList;
+    QwtPlotCurve *currentCurve;
+    ColorBox *colorSelect;
+
 };
 
 #endif // SETUPCURVESDIALOG_H
