@@ -10,6 +10,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
 #endif
     incrementalDraw=false;
+    //set default monitoring time to 1 hour (3600 seconds)
+    monitoringInterval=3600;
 
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
@@ -438,20 +440,37 @@ void Plot::selectPointsMode(bool select) {
 
 void Plot::drawLastPoint(int size) {
     if (!incrementalDraw) return;
+    int lastPoint=--size;
+    double maxXValue=0.0;
+    double tmp;
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //iterate over all plot items of type PlotCurve
+    for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
+        tmp=curve->boundingRect().right();
+        if (tmp>maxXValue) {
+            maxXValue=tmp;
+        }
+    }
+    qDebug()<<"Max X values is"<<tmp;
+    setAxisScale(xBottom,maxXValue-monitoringInterval,maxXValue);
+    QwtPlot::replot();
+
+
     //FIXME: this function should also plot curve sticks
     //last point has index size-1
 
-    int from=--size;
+//    int from=--size;
 
-    QwtPlotDirectPainter directPainter;
-    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
-    //iterate over all plot items of type PlotCurve
-    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
-        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
-        if (curve->isVisible()) {
-            directPainter.drawSeries(curve,from,-1);
-        }
-    }
+//    QwtPlotDirectPainter directPainter;
+//    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+//    //iterate over all plot items of type PlotCurve
+//    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+//        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
+//        if (curve->isVisible()) {
+//            directPainter.drawSeries(curve,from,-1);
+//        }
+//    }
 }
 
 void Plot::zoomExtents(void)
@@ -469,6 +488,20 @@ void Plot::setIncrementalDraw(bool on)
 {
     if (on) replot();
     incrementalDraw=on;
+}
+
+void Plot::setMonitoringInterval(double interval)
+{
+    if (interval > 30)  monitoringInterval=interval;
+    else {
+        qDebug()<<"Failed to set monitoring interval less than 30 seconds:"<<interval;
+        emit message("Failed to set interval less than 30 seconds");
+    }
+}
+
+double Plot::getMonitoringInterval(void) const
+{
+    return monitoringInterval;
 }
 
 

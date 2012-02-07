@@ -27,6 +27,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionDraw_incremental,SIGNAL(triggered(bool)),plot,SLOT(setIncrementalDraw(bool)));
     connect(ui->actionOpen_file,SIGNAL(triggered()),SLOT(openFile()));
     connect(ui->actionSave_as,SIGNAL(triggered()),SLOT(saveFile()));
+    connect(ui->actionMonitoring_interval,SIGNAL(triggered()),SLOT(setMonitoringInterval()));
 
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
@@ -208,6 +209,19 @@ void MainWindow::saveFile(QString filename) {
     }
 
     data->saveFile(filename);
+}
+
+void MainWindow::setMonitoringInterval(void)
+{
+    bool ok;
+    double interval = QInputDialog::getDouble(this, tr("Input monitoring interval in msec"),
+                                        tr("Monitoring interval:"),plot->getMonitoringInterval(),30,86400,0, &ok);
+    if (ok) {
+        plot->setMonitoringInterval(interval);
+        qDebug()<<"Monitoring interval set to"<<interval;
+    } else {
+        qWarning()<<"Monitoring interval not set";
+    }
 }
 
 

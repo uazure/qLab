@@ -53,6 +53,7 @@ private slots:
     void socketStateChanged(QAbstractSocket::SocketState state);
     void socketDisconnect(void);
     void showDataViewWindow(void);
+    void setMonitoringInterval(void);
     void openFile(QString filename="");
     void saveFile(QString filename="");
 };

@@ -32,11 +32,21 @@ public:
     explicit Plot(QWidget *parent, ExperimentData* data);
     ~Plot();
     void addCurve(int yColumn, int xColumn=-1);
+    double getMonitoringInterval(void) const;
 
 public slots:
     void replot();
     void selectPointsMode(bool select=true);
     void drawLastPoint(int size);
+    void clear(void);
+    void zoomExtents(void);
+    void initialize(void);
+    void setIncrementalDraw(bool on=true);
+    void setMonitoringInterval(double interval);
+
+signals:
+    void curvePointClicked(QwtPlotCurve *curve,int index);
+    void message(QString message);
 
 
 private:
@@ -58,6 +68,7 @@ private:
     ScalePlotMagnifier *yRightMagnifier;
     ScalePlotMagnifier *xBottomMagnifier;
     bool incrementalDraw;
+    double monitoringInterval;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
@@ -96,15 +107,7 @@ i.e. from=to */
 
 
 
-signals:
-    void curvePointClicked(QwtPlotCurve *curve,int index);
-    void message(QString message);
 
-public slots:
-    void clear(void);
-    void zoomExtents(void);
-    void initialize(void);
-    void setIncrementalDraw(bool on=true);
 
 };
 
