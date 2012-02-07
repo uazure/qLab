@@ -32,7 +32,9 @@ SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,QwtPlot *qwtplot,Experiment
 
     connect(ui->curvesListWidget,SIGNAL(currentRowChanged(int)),SLOT(curveSelected(int)));
     connect(colorSelect,SIGNAL(currentIndexChanged(int)),SLOT(setCurveColor()));
-
+    connect(ui->widthDoubleSpinBox,SIGNAL(valueChanged(double)),SLOT(setCurveWidth(double)));
+    connect(ui->drawLinesCheckBox,SIGNAL(toggled(bool)),SLOT(setCurveLine(bool)));
+    connect(ui->sizeSpinBox,SIGNAL(valueChanged(int)),SLOT(setCurveSymbolSize(int)));
 }
 
 SetupCurvesDialog::~SetupCurvesDialog()
@@ -61,6 +63,8 @@ void SetupCurvesDialog::curveSelected(int index)
     //set size (width) of symbol to spinbox
     ui->sizeSpinBox->setValue(curve->symbol()->size().width());
 
+    ui->widthDoubleSpinBox->setValue(curve->pen().widthF());
+
     //set drawLinesCheckBox according to curve settings
     if (curve->style()==QwtPlotCurve::NoCurve) {
         ui->drawLinesCheckBox->setChecked(false);
@@ -83,5 +87,33 @@ void SetupCurvesDialog::setCurveColor()
     QPen pen=const_cast<QPen&>(currentCurve->pen());
     pen.setColor(color);
     currentCurve->setPen(pen);
+}
 
+void SetupCurvesDialog::setCurveWidth(double width)
+{
+    if (!currentCurve) return;
+
+    QPen pen=const_cast<QPen&>(currentCurve->pen());
+    pen.setWidthF((qreal)width);
+    currentCurve->setPen(pen);
+}
+
+void SetupCurvesDialog::setCurveLine(bool on)
+{
+    if (!currentCurve) return;
+
+    if (on) {
+        currentCurve->setStyle(QwtPlotCurve::Lines);
+    } else {
+        currentCurve->setStyle(QwtPlotCurve::NoCurve);
+    }
+}
+
+void SetupCurvesDialog::setCurveSymbolSize(int size)
+{
+    if (!currentCurve) return;
+
+    QwtSymbol *symbol=const_cast<QwtSymbol *> (currentCurve->symbol());
+    symbol->setSize(size);
+    currentCurve->setSymbol(symbol);
 }

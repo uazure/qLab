@@ -27,6 +27,9 @@ public:
 public slots:
     void curveSelected(int index);
     void setCurveColor(void);
+    void setCurveWidth(double width);
+    void setCurveLine(bool on);
+    void setCurveSymbolSize(int size);
 
 private:
     Ui::SetupCurvesDialog *ui;
