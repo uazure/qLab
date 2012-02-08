@@ -4,7 +4,8 @@
 #include <QDialog>
 #include <QAbstractItemModel>
 #include <QList>
-#include "qwt_plot.h"
+#include <QInputDialog>
+#include "plot.h"
 #include "qwt_plot_curve.h"
 #include "qwt_symbol.h"
 #include "ColorBox.h"
@@ -21,7 +22,7 @@ class SetupCurvesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SetupCurvesDialog(QWidget *parent, QwtPlot *plot, ExperimentData *experimentData);
+    explicit SetupCurvesDialog(QWidget *parent, Plot *plot, ExperimentData *experimentData);
     ~SetupCurvesDialog();
 
 public slots:
@@ -31,14 +32,17 @@ public slots:
     void setCurveLine(bool on);
     void setCurveSymbolSize(int size);
     void setCurveYAxis(int index);
+    void deleteCurrentCurve();
+    void addCurveDialog();
 
 private:
     Ui::SetupCurvesDialog *ui;
-    QwtPlot *plot;
+    Plot *plot;
     ExperimentData *data;
     QList<QwtPlotCurve *> curveList;
     QwtPlotCurve *currentCurve;
     ColorBox *colorSelect;
+    void init(void);
 
 };
 

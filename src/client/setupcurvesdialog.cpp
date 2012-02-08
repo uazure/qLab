@@ -1,7 +1,7 @@
 #include "setupcurvesdialog.h"
 #include "ui_setupcurvesdialog.h"
 
-SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,QwtPlot *qwtplot,ExperimentData *experimentData) :
+SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,Plot *qwtplot,ExperimentData *experimentData) :
     QDialog(parent),
     ui(new Ui::SetupCurvesDialog)
 {
@@ -14,6 +14,27 @@ SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,QwtPlot *qwtplot,Experiment
     colorSelect=new ColorBox(this);
     ui->colorSelectLayout->addWidget(colorSelect);
 
+    init();
+
+    connect(ui->curvesListWidget,SIGNAL(currentRowChanged(int)),SLOT(curveSelected(int)));
+    connect(colorSelect,SIGNAL(currentIndexChanged(int)),SLOT(setCurveColor()));
+    connect(ui->widthDoubleSpinBox,SIGNAL(valueChanged(double)),SLOT(setCurveWidth(double)));
+    connect(ui->drawLinesCheckBox,SIGNAL(toggled(bool)),SLOT(setCurveLine(bool)));
+    connect(ui->sizeSpinBox,SIGNAL(valueChanged(int)),SLOT(setCurveSymbolSize(int)));
+    connect(ui->yAxisComboBox,SIGNAL(currentIndexChanged(int)),SLOT(setCurveYAxis(int)));
+    connect(ui->deleteCurveButton,SIGNAL(clicked()),SLOT(deleteCurrentCurve()));
+    connect(ui->addCurveButton,SIGNAL(clicked()),SLOT(addCurveDialog()));
+}
+
+SetupCurvesDialog::~SetupCurvesDialog()
+{
+    delete colorSelect;
+    delete ui;
+}
+
+void SetupCurvesDialog::init() {
+    ui->curvesListWidget->clear();
+    curveList.clear();
     //populate curevesListWidget with current curves on the plot
     const QwtPlotItemList& itmList = plot->itemList(QwtPlotItem::Rtti_PlotCurve);
     //iterate over all plot items of type PlotCurve
@@ -25,23 +46,12 @@ SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,QwtPlot *qwtplot,Experiment
 
     if (curveList.isEmpty()) {
         ui->curvesGroupBox->setEnabled(false);
+    } else {
+        ui->curvesGroupBox->setEnabled(true);
     }
 
     ui->propertiesGroupBox->setVisible(false);
     currentCurve=NULL;
-
-    connect(ui->curvesListWidget,SIGNAL(currentRowChanged(int)),SLOT(curveSelected(int)));
-    connect(colorSelect,SIGNAL(currentIndexChanged(int)),SLOT(setCurveColor()));
-    connect(ui->widthDoubleSpinBox,SIGNAL(valueChanged(double)),SLOT(setCurveWidth(double)));
-    connect(ui->drawLinesCheckBox,SIGNAL(toggled(bool)),SLOT(setCurveLine(bool)));
-    connect(ui->sizeSpinBox,SIGNAL(valueChanged(int)),SLOT(setCurveSymbolSize(int)));
-    connect(ui->yAxisComboBox,SIGNAL(currentIndexChanged(int)),SLOT(setCurveYAxis(int)));
-}
-
-SetupCurvesDialog::~SetupCurvesDialog()
-{
-    delete colorSelect;
-    delete ui;
 }
 
 void SetupCurvesDialog::curveSelected(int index)
@@ -135,6 +145,36 @@ void SetupCurvesDialog::setCurveYAxis(int index) {
         if (!plot->axisEnabled(QwtPlot::yRight)) {
             plot->enableAxis(QwtPlot::yRight);
         }
+    }
+}
+
+void SetupCurvesDialog::deleteCurrentCurve() {
+    if (!currentCurve) return;
+    //remove curve from curveList;
+    for (int i=0;i<curveList.size();i++) {
+        if (curveList.at(i)==currentCurve) {
+            curveList.removeAt(i);
+            break;
+        }
+    }
+    currentCurve->detach();
+    delete currentCurve;
+
+    init();
+    plot->replot();
+}
+
+void SetupCurvesDialog::addCurveDialog() {
+    int maxColumn=data->columnCount(QModelIndex())-1;
+    bool ok;
+    int yCol = QInputDialog::getInt (this, tr("Select column to show"), tr("Select column"), 0, 0, maxColumn, 1, &ok);
+    if (ok) {
+        qDebug()<<"Adding curve assigned to col"<<yCol;
+        plot->addCurve(yCol);
+        init();
+        plot->replot();
+    } else {
+        qWarning()<<"Would not add curve, column not selected";
     }
 }
 
