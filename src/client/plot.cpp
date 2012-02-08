@@ -197,7 +197,6 @@ void Plot::addCurve(int yColumn, int xColumn) {
         plotCurve->setPen(QPen(Qt::blue));
     }
 
-
     plotCurve->setSymbol(symbol);
     plotCurve->attach(this);
 }
