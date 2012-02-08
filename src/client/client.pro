@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     scalemagnifier.cpp \
     scaleplotmagnifier.cpp \
     setupcurvesdialog.cpp \
-    ColorBox.cpp
+    ColorBox.cpp \
+    scaleplotpanner.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -26,7 +27,8 @@ HEADERS += mainwindow.h \
     scalemagnifier.h \
     scaleplotmagnifier.h \
     setupcurvesdialog.h \
-    ColorBox.h
+    ColorBox.h \
+    scaleplotpanner.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui

@@ -99,6 +99,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     panner->setMouseButton(Qt::RightButton);
     panner->setAxisEnabled(yRight,true);
 
+
+
     //Magnifier is set to zoom in/out on mouse wheel only
     magnifier=new QwtPlotMagnifier(canvas());
     //Disable magnifying with RMB+MouseMove up/down
@@ -130,6 +132,31 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     xBottomMagnifier->setAxisEnabled(yLeft,false);
     axisWidget(xBottom)->installEventFilter(xBottomMagnifier);
     canvas()->removeEventFilter(xBottomMagnifier);
+
+    xBottomPanner=new ScalePlotPanner(canvas());
+    xBottomPanner->setAxisEnabled(QwtPlot::yLeft,false);
+    xBottomPanner->setAxisEnabled(QwtPlot::yRight,false);
+    xBottomPanner->setAxisEnabled(QwtPlot::xTop,false);
+    xBottomPanner->setMouseButton(Qt::RightButton);
+    axisWidget(xBottom)->installEventFilter(xBottomPanner);
+    canvas()->removeEventFilter(xBottomPanner);
+
+    yLeftPanner=new ScalePlotPanner(canvas());
+    yLeftPanner->setAxisEnabled(QwtPlot::xBottom,false);
+    yLeftPanner->setAxisEnabled(QwtPlot::yRight,false);
+    yLeftPanner->setAxisEnabled(QwtPlot::xTop,false);
+    yLeftPanner->setMouseButton(Qt::RightButton);
+    axisWidget(yLeft)->installEventFilter(yLeftPanner);
+    canvas()->removeEventFilter(yLeftPanner);
+
+    yRightPanner=new ScalePlotPanner(canvas());
+    yRightPanner->setAxisEnabled(QwtPlot::xBottom,false);
+    yRightPanner->setAxisEnabled(QwtPlot::yLeft,false);
+    yRightPanner->setAxisEnabled(QwtPlot::xTop,false);
+    yRightPanner->setMouseButton(Qt::RightButton);
+    axisWidget(yRight)->installEventFilter(yRightPanner);
+    canvas()->removeEventFilter(yRightPanner);
+
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.

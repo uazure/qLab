@@ -10,6 +10,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
     data=new ExperimentData(this);
     plot=new Plot(this,data);
+    plot->setAxisTitle(QwtPlot::xBottom,tr("t, sec"));
 
 
     ui->plotLayout->addWidget(plot);

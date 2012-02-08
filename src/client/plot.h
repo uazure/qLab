@@ -16,6 +16,7 @@
 #include "qwt_scale_widget.h"
 #include "scalemagnifier.h"
 #include "scaleplotmagnifier.h"
+#include "scaleplotpanner.h"
 
 #include <QDebug>
 #include <QMap>
@@ -67,6 +68,10 @@ private:
     ScalePlotMagnifier *yLeftMagnifier;
     ScalePlotMagnifier *yRightMagnifier;
     ScalePlotMagnifier *xBottomMagnifier;
+    ScalePlotPanner *yLeftPanner;
+    ScalePlotPanner *yRightPanner;
+    ScalePlotPanner *xBottomPanner;
+
     bool incrementalDraw;
     double monitoringInterval;
 
