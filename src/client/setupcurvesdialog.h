@@ -30,6 +30,7 @@ public slots:
     void setCurveWidth(double width);
     void setCurveLine(bool on);
     void setCurveSymbolSize(int size);
+    void setCurveYAxis(int index);
 
 private:
     Ui::SetupCurvesDialog *ui;

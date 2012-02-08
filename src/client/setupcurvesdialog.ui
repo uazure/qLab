@@ -154,6 +154,23 @@
              </widget>
             </item>
             <item>
+             <widget class="QComboBox" name="yAxisComboBox">
+              <property name="toolTip">
+               <string>Axis</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>yLeft</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>yRight</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>

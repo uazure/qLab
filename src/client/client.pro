@@ -17,7 +17,6 @@ SOURCES += main.cpp \
     scaleplotmagnifier.cpp \
     setupcurvesdialog.cpp \
     ColorBox.cpp
-
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -28,28 +27,14 @@ HEADERS += mainwindow.h \
     scaleplotmagnifier.h \
     setupcurvesdialog.h \
     ColorBox.h
-
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui
-
 INCLUDEPATH += ../qwt6
-#INCLUDEPATH += ../../../qwt/src
 
+# INCLUDEPATH += ../../../qwt/src
 # qwt 6.0.1 need to be compiled and installed to system path
+LIBS += -L../../../qwt/lib
 
-LIBS+= -L../../../qwt/lib
-#release mode and unix
-LIBS+= -lqwt
-#debug mode for win32
-#LIBS+= -lqwtd
-
-#CONFIG(debug) {
-#message("Using debug mode")
-#win32:LIBS += -lqwtd
-#unix:LIBS += -lqwt
-#}
-#CONFIG(release) {
-#message("Using release mode")
-#LIBS += -lqwt
-#}
+# release mode and unix
+LIBS += -lqwt

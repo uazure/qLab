@@ -35,6 +35,7 @@ SetupCurvesDialog::SetupCurvesDialog(QWidget *parent,QwtPlot *qwtplot,Experiment
     connect(ui->widthDoubleSpinBox,SIGNAL(valueChanged(double)),SLOT(setCurveWidth(double)));
     connect(ui->drawLinesCheckBox,SIGNAL(toggled(bool)),SLOT(setCurveLine(bool)));
     connect(ui->sizeSpinBox,SIGNAL(valueChanged(int)),SLOT(setCurveSymbolSize(int)));
+    connect(ui->yAxisComboBox,SIGNAL(currentIndexChanged(int)),SLOT(setCurveYAxis(int)));
 }
 
 SetupCurvesDialog::~SetupCurvesDialog()
@@ -70,6 +71,12 @@ void SetupCurvesDialog::curveSelected(int index)
         ui->drawLinesCheckBox->setChecked(false);
     } else {
         ui->drawLinesCheckBox->setChecked(true);
+    }
+
+    if (curve->yAxis()==QwtPlot::yLeft) {
+        ui->yAxisComboBox->setCurrentIndex(0);
+    } else {
+        ui->yAxisComboBox->setCurrentIndex(1);
     }
 
 
@@ -117,3 +124,17 @@ void SetupCurvesDialog::setCurveSymbolSize(int size)
     symbol->setSize(size);
     currentCurve->setSymbol(symbol);
 }
+
+void SetupCurvesDialog::setCurveYAxis(int index) {
+    if (!currentCurve) return;
+
+    if (0==index) {
+        currentCurve->setYAxis(QwtPlot::yLeft);
+    } else {
+        currentCurve->setYAxis(QwtPlot::yRight);
+        if (!plot->axisEnabled(QwtPlot::yRight)) {
+            plot->enableAxis(QwtPlot::yRight);
+        }
+    }
+}
+

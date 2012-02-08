@@ -81,10 +81,11 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::setFullscreen(bool a) {
-    if (a)
-     setWindowState(Qt::WindowFullScreen);
-    else
-     setWindowState(windowState() ^ Qt::WindowFullScreen);
+    if (a) {
+        setWindowState(Qt::WindowFullScreen);
+    } else {
+        setWindowState(windowState() ^ Qt::WindowFullScreen);
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -228,7 +229,8 @@ void MainWindow::setMonitoringInterval(void)
 void MainWindow::showSetupCurvesDialog(void)
 {
     SetupCurvesDialog * dialog=new SetupCurvesDialog(this,plot,data);
-    dialog->show();
+    dialog->exec();
+    delete dialog;
 }
 
 
