@@ -45,7 +45,7 @@ void TableView::copy() {
 void TableView::keyPressEvent(QKeyEvent *event) {
     if (event->matches(QKeySequence::Copy)) {
         copy();
-        event->accept();
+        return;
     }
     QTableView::keyPressEvent(event);
 }
