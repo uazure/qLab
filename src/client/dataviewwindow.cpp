@@ -6,6 +6,8 @@ DataViewWindow::DataViewWindow(QWidget *parent) :
     ui(new Ui::DataViewWindow)
 {
     ui->setupUi(this);
+
+
 }
 
 DataViewWindow::~DataViewWindow()
