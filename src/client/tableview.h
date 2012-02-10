@@ -6,6 +6,7 @@
 #include <QClipboard>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QMenu>
 
 class TableView : public QTableView
 {
@@ -20,6 +21,9 @@ signals:
 
 public slots:
     void copy();
+
+private slots:
+    void showContextMenu(const QPoint &point);
 
 };
 

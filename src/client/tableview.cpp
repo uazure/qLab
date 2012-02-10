@@ -3,6 +3,8 @@
 TableView::TableView(QWidget *parent) :
     QTableView(parent)
 {
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this,SIGNAL(customContextMenuRequested(QPoint)),SLOT(showContextMenu(QPoint)));
 
 }
 
@@ -48,4 +50,29 @@ void TableView::keyPressEvent(QKeyEvent *event) {
         return;
     }
     QTableView::keyPressEvent(event);
+}
+
+void TableView::showContextMenu(const QPoint &point) {
+    // for most widgets
+    QPoint globalPos = mapToGlobal(point);
+    // for QAbstractScrollArea and derived classes you would use:
+    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos);
+
+    QMenu myMenu;
+    myMenu.addAction("Copy");
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos,myMenu.actions().at(0));
+    if (selectedItem)
+    {
+        if (selectedItem->text()=="Copy") {
+            this->copy();
+        }
+
+        // something was chosen, do stuff
+    }
+    else
+    {
+        // nothing was chosen
+    }
 }
