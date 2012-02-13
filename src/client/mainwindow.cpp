@@ -217,10 +217,10 @@ void MainWindow::saveFile(QString filename) {
 void MainWindow::setMonitoringInterval(void)
 {
     bool ok;
-    double interval = QInputDialog::getDouble(this, tr("Input monitoring interval in msec"),
-                                        tr("Monitoring interval:"),plot->getMonitoringInterval(),30,86400,0, &ok);
+    double interval = QInputDialog::getDouble(this, tr("Input monitoring interval in sec"),
+                                        tr("Monitoring interval:"),plot->getMonitoringInterval()/60,0.5,1440,1, &ok);
     if (ok) {
-        plot->setMonitoringInterval(interval);
+        plot->setMonitoringInterval(interval*60);
         qDebug()<<"Monitoring interval set to"<<interval;
     } else {
         qWarning()<<"Monitoring interval not set";

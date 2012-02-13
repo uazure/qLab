@@ -285,12 +285,21 @@ void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
 }
 
 void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
+    int darkfactor=0;
     QwtSymbol *symbol = const_cast<QwtSymbol *>(curve->symbol());
     //remember brush
     const QBrush brush = symbol->brush();
-        symbol->setBrush(QBrush(QColor(Qt::red)));
-        selectedCurve=curve;
-        selectedPoint=from;
+    int light=brush.color().lightness();
+
+    if (brush.color().lightness()>64) {
+        symbol->setBrush(QBrush(brush.color().darker()));
+    } else {
+        symbol->setBrush(QBrush(brush.color().lighter()));
+    }
+
+
+    selectedCurve=curve;
+    selectedPoint=from;
 
     QwtPlotDirectPainter directPainter;
 
@@ -317,12 +326,17 @@ void Plot::markSelectedPoints()
     QwtSymbol *symbol = const_cast<QwtSymbol *>(selectedCurve->symbol());
     //remember brush
     const QBrush brush = symbol->brush();
-        symbol->setBrush(QBrush(QColor(Qt::red)));
-        QwtPlotDirectPainter directPainter;
+    if (brush.color().lightness()>64) {
+        symbol->setBrush(QBrush(brush.color().darker()));
+    } else {
+        symbol->setBrush(QBrush(brush.color().lighter()));
+    }
 
-        for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
-            directPainter.drawSeries(selectedCurve,i.key(),i.key());
-        }
+    QwtPlotDirectPainter directPainter;
+
+    for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
+        directPainter.drawSeries(selectedCurve,i.key(),i.key());
+    }
     symbol->setBrush(brush); // reset brush
 }
 
