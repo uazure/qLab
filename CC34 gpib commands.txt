@@ -1,0 +1,61 @@
+Режим работы термоконтроллера
+STOP - выключить лупы
+CONTROL - включить лупы
+CONTROL? - ответит в каком сейчас состоянии, OFF или ON
+
+SYSTEM:LOOP? - ON OFF
+SYSTEM:HTRREAD? - Ток цепи нагревателя. Ответ - 33%
+
+Чтение данных с измерительных каналов:
+INPUT? A (INPUT? CHA) (INPUT? 0)
+INPUT? D (INPUT? CHD) (INPUT? 3)
+
+Устновить\прочитать строку с названием канала:
+INPUT A:NAME? - имя канала А
+INPUT A:NAME Title - установить имя канала A
+
+Входной канал для лупа:
+LOOP <no>:SOURCE <chan> - <no> - 1 или 2, <chan> - канал (CHA, A, 0)
+LOOP <no>:SOURCE? - в ответ получим CHA, CHB ....
+
+Установить контрольную точку:
+LOOP <no>::SETPT <temp> - <no> - 1 или 2, <temp> - температура в текущих единицах
+LOOP 1:SETPT? - в ответ получим число 
+
+Тип управления лупом:
+LOOP <no>:TYPE <type> - <no> - 1 или 2, <type> - Off, PID, Man, Table, RampP, RampT
+LOOP <no>:TYPE? - TABLE
+
+Предел мощности на лупе:
+LOOP <no>:RANGE? - 50W, 5.0W, 0.5W, 0.05W (для 50 Ом)
+LOOP <no>:RANGE 5.0W - установить мощность
+
+Имя лупа
+LOOP <no>:NAME?
+LOOP <no>:NAME Title
+
+P
+LOOP <no>:PGAIN?
+LOOP <no>:PGAIN 123
+
+I
+LOOP <no>:IGAIN?
+LOOP <no>:IGAIN 123
+
+D
+LOOP <no>:DGAIN?
+LOOP <no>:DGAIN 123
+
+Loop heater power in percent
+LOOP <no>:HTRREAD?
+
+Manual power percent
+LOOP <no>:PMANUAL?
+LOOP <no>:PMANUAL 50 - set manual power output to 50%
+
+
+
+
+
+
+

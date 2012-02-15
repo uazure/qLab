@@ -15,7 +15,7 @@ enum deviceBusType {
     Multi
 };
 
-class AbstractDevice : public QObject
+class AbstractDevice : virtual public QObject
 {
     Q_OBJECT
 public:
@@ -26,7 +26,6 @@ public:
 
     /** The MAIN function of the deivce :)
       */
-    //virtual bool readValue(QByteArray &returnValue,int channel=0)=0;
     virtual bool readValue(QByteArray &returnValue, QStringList parameters=QStringList())=0;
 
     /// Second main function :)

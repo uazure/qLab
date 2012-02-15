@@ -7,7 +7,7 @@ class AbstractThermocontrollerDevice : public AbstractDevice
 {
     Q_OBJECT
 public:
-    explicit AbstractThermocontrollerDevice(QObject *parent);
+    explicit AbstractThermocontrollerDevice(QObject *parent=0);
 
     /** \brief Set target temperature of control loop
       \sa setControlChannel(), getTargetValue()
@@ -65,6 +65,7 @@ protected:
 
     QVector<QString> controlChannel;
     QVector<QString> targetValue;
+
 };
 
 #endif // ABSTRACTTHERMOCONTROLLERDEVICE_H

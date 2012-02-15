@@ -1,4 +1,4 @@
-#ifndef QGPIBDEVICE_H
+#ifndef QGPIBSe_H
 #define QGPIBDEVICE_H
 
 #ifdef WIN32
@@ -47,10 +47,6 @@ private:
     /// handle of the device
     int handle;
 
-    /// device-specific settings object
-    QSettings *deviceSettings;
-    /// experiment specific settings object
-    QSettings *experimentSettings;
 
     /** Command that will cause gpib device to read channel
       This string can contain %n that will be replaced with channel number or name,
@@ -69,6 +65,12 @@ private:
     bool get (QByteArray &reply);
     bool ask (QByteArray command, QByteArray &reply);
     bool getIdn(void);
+
+protected:
+    /// device-specific settings object
+    QSettings *deviceSettings;
+    /// experiment specific settings object
+    QSettings *experimentSettings;
 
 signals:
 
