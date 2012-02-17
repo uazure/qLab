@@ -80,7 +80,7 @@ void AbstractThermocontrollerDevice::setControlLoopNum(int loops) {
     D.resize(loops);
     D.fill(0);
     controlChannel.resize(loops);
-    controlChannel.fill("");
     targetValue.resize(loops);
-    targetValue.fill("");
+    loopName.resize(loops);
+    channelName.resize(loops);
 }

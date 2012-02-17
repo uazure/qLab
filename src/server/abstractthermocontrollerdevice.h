@@ -69,6 +69,8 @@ protected:
 
     QVector<QString> controlChannel;
     QVector<QString> targetValue;
+    QVector<QString> loopName;
+    QVector<QString> channelName;
 };
 
 #endif // ABSTRACTTHERMOCONTROLLERDEVICE_H

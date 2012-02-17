@@ -61,16 +61,18 @@ private:
     QString channelCommand;
 
 
-    bool set (QByteArray command);
-    bool get (QByteArray &reply);
-    bool ask (QByteArray command, QByteArray &reply);
-    bool getIdn(void);
+
 
 protected:
     /// device-specific settings object
     QSettings *deviceSettings;
     /// experiment specific settings object
     QSettings *experimentSettings;
+
+    bool set (QByteArray command);
+    bool get (QByteArray &reply);
+    bool ask (QByteArray command, QByteArray &reply);
+    bool getIdn(void);
 
 signals:
 
