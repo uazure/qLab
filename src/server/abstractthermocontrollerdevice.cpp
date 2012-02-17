@@ -1,7 +1,7 @@
 #include "abstractthermocontrollerdevice.h"
 
-AbstractThermocontrollerDevice::AbstractThermocontrollerDevice(QObject *parent):
-        AbstractDevice(parent)
+AbstractThermocontrollerDevice::AbstractThermocontrollerDevice()
+
 {
     setControlLoopNum(1);
 
@@ -72,9 +72,15 @@ void AbstractThermocontrollerDevice::setControlLoopNum(int loops) {
     if (loops<1) return;
     controlLoopNum=loops;
     controlEngaged.resize(loops);
+    controlEngaged.fill(false);
     P.resize(loops);
+    P.fill(0);
     I.resize(loops);
+    I.fill(0);
     D.resize(loops);
+    D.fill(0);
     controlChannel.resize(loops);
+    controlChannel.fill("");
     targetValue.resize(loops);
+    targetValue.fill("");
 }

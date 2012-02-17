@@ -1,13 +1,16 @@
 #ifndef ABSTRACTTHERMOCONTROLLERDEVICE_H
 #define ABSTRACTTHERMOCONTROLLERDEVICE_H
 
-#include "abstractdevice.h"
+#include <QString>
+#include <QVector>
+#include <QDebug>
 
-class AbstractThermocontrollerDevice : public AbstractDevice
+class AbstractThermocontrollerDevice
 {
-    Q_OBJECT
+// Q_OBJECT
+
 public:
-    explicit AbstractThermocontrollerDevice(QObject *parent=0);
+    explicit AbstractThermocontrollerDevice();
 
     /** \brief Set target temperature of control loop
       \sa setControlChannel(), getTargetValue()
@@ -43,6 +46,7 @@ public:
       */
     virtual void engageControl(bool engage,int controlLoop=0);
 
+
     // PID access functions
     double getP(int controlLoop=0) const;
     double getI(int controlLoop=0) const;
@@ -65,7 +69,6 @@ protected:
 
     QVector<QString> controlChannel;
     QVector<QString> targetValue;
-
 };
 
 #endif // ABSTRACTTHERMOCONTROLLERDEVICE_H
