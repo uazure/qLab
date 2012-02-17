@@ -16,14 +16,23 @@ DeviceFarm::DeviceFarm()
     }
 
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");
-    QString request=shortname;
-    QByteArray bus=settings->value(request.append("/bus")).toByteArray();
+    settings->beginGroup(QString(shortname));
+    QByteArray bus=settings->value("bus").toByteArray();
+    bool isThermocontroller=settings->value("thermocontroller").toBool();
+
     delete settings;
     qDebug()<<"Device:"<<shortname<<"bus:"<<bus;
 
+    GpibDevice *device;
+
     if (bus=="gpib") {
-        GpibDevice *device=new GpibDevice(shortname);
-        return device;
+        if (isThermocontroller) {
+            device=new GpibThermocontrollerDevice(shortname);
+        } else {
+            device=new GpibDevice(shortname);
+        }
+    return device;
+
     }
 
     // if no device was created - return null pointer

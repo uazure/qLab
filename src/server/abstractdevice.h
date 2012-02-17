@@ -73,6 +73,9 @@ public:
     const QString getLabel(void) const;
     void setLabel(QString label);
 
+    const bool capable(QString capability) const;
+    void setCapability(QString capability);
+
 
 private:
     /// Number of the instances of this class
@@ -126,9 +129,6 @@ private:
     QString label;
 
 
-
-
-
 protected:
     /// Device bus type
     int bus;
@@ -142,6 +142,8 @@ protected:
       Ex. Device identification can be obtained by 'IDN?' command for GPIB interface
       */
     QByteArray idn;
+
+    QStringList capabilities;
 
 
 

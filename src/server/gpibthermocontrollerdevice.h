@@ -4,15 +4,19 @@
 #include "abstractthermocontrollerdevice.h"
 #include "gpibdevice.h"
 #include <QStringList>
+#include <QByteArray>
 
-class gpibthermocontrollerdevice : public GpibDevice,
+class GpibThermocontrollerDevice : public GpibDevice,
 public AbstractThermocontrollerDevice
 
 {
     Q_OBJECT
 
 public:
-    gpibthermocontrollerdevice(QByteArray shortName, QObject *parent);
+    GpibThermocontrollerDevice(QByteArray &shortName, QObject *parent=0);
+    virtual bool setTargetValue(QString value, int controlLoop=0);
+    virtual bool setControlChannel(QString channel, int controlLoop=0);
+    virtual QString getControlChannel(int controlLoop=0);
 
 private:
     QString engageControlsCommand,
@@ -20,6 +24,7 @@ private:
     statusControlsCommand,
     statusControlsEngegedResponse,
     setTypeControlCommand,
+    getTypeControlCommand,
     typesOfControl,
     offControlCommand,
     pidControlCommand,
@@ -28,7 +33,9 @@ private:
     getDControlCommand,
     setPControlCommand,
     setIControlCommand,
-    setDControlCommand;
+    setDControlCommand,
+    getControlTarget,
+    setControlTarget;
 
 };
 

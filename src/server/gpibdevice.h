@@ -1,4 +1,4 @@
-#ifndef QGPIBSe_H
+#ifndef QGPIBDEVICE_H
 #define QGPIBDEVICE_H
 
 #ifdef WIN32

@@ -91,3 +91,18 @@ const QString AbstractDevice::getUnit() const {
 void AbstractDevice::resetDevice() {
     return;
 }
+
+const bool AbstractDevice::capable(QString capability) const {
+    if (capabilities.contains(capability,Qt::CaseSensitive)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void AbstractDevice::setCapability(QString capability) {
+    if (!capable(capability)) {
+        qDebug()<<shortname<<"adding capability"<<capability;
+        capabilities.append(capability);
+    }
+}

@@ -2,6 +2,7 @@
 #define DEVICEFARM_H
 #include "abstractdevice.h"
 #include "gpibdevice.h"
+#include "gpibthermocontrollerdevice.h"
 #include "timedevice.h"
 #include "utimedevice.h"
 #include <QByteArray>
