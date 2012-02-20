@@ -303,5 +303,10 @@ void Experiment::updateProgress(void) {
     //qWarning()<<"update progress issued"<<progress;
     if (progress>100) qWarning()<<"Progress:"<<progress;
     else
-    emit updateProgress(progress);
+        emit updateProgress(progress);
+}
+
+void Experiment::setTarget(QString value, int channel)
+{
+
 }

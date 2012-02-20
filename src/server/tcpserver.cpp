@@ -111,8 +111,8 @@ void TcpServer::readCommand() {
                       "get all - get initial experimental data with header\n"
                       "monitor on - set monitoring mode on\n"
                       "monitor off - set monitoring mode off\n"
-                      ""
-                      ""
+                      "set target CHANNEL=NUMBER - set target for specific channel\n"
+                      "set target=NUMBER - set target for default channel\n"
                       "");
         return;
     }
@@ -131,6 +131,17 @@ void TcpServer::readCommand() {
             socket->write("\n400 Bad request\nInterval should be specified as a number");
         }
         return;
+    }
+
+    if (buf.startsWith("set target=")) {
+        bool ok=false;
+        double target=buf.remove(0,11).trimmed().toDouble(&ok);
+        if (ok) {
+
+        } else {
+            qWarning()<<"Failed to recognize target value (NaN) of"<<buf;
+            socket->write("\n400 Bad request\nTarget should be specified as a number");
+        }
     }
 
     if (buf=="get latest") {

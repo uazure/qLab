@@ -92,6 +92,8 @@ public slots:
     void stop(void);
     /// set the measuring interval
     void setInterval(int msec);
+    /// set target value for specific control loop
+    void setTarget(QString value,int channel);
     /// Saves data to active file
     void saveFile();
 
