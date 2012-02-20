@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QFile>
 #include "devicefarm.h"
+#include "controllabledevicelist.h"
 
 // minimal interval is 100 msec
 #define EXPERIMENT_MIN_INTERVAL 100
@@ -56,6 +57,7 @@ public:
     QDateTime startedOn;
     QStringList dataStringList;
     QString currentFileName;
+    ControllableDeviceList controlList;
 
 
 private slots:

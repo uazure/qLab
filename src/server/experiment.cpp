@@ -92,6 +92,10 @@ void Experiment::initDevices() {
             qDebug()<<"deviceNameWithParameters"<<deviceNameWithParameters;
         }
         deviceList.append(DeviceFarm::getDeviceObject(deviceName));
+        if (deviceList[i]->capable("thermocontroller")) {
+            //FIXME: controlList should ask for controlled channels from device
+            controlList.appendControl(dynamic_cast <AbstractThermocontrollerDevice *> (deviceList[i]),0);
+        }
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
         deviceList[i]->setFactor(settings->value(name+"/"+deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble());
         deviceList[i]->setMinValue(settings->value(name+"/"+deviceNameWithParameters+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
@@ -308,5 +312,7 @@ void Experiment::updateProgress(void) {
 
 void Experiment::setTarget(QString value, int channel)
 {
-
+    for (int i=0;i<deviceList.size();++i) {
+        deviceList.at(i)->capable("thermocontroller");
+    }
 }
