@@ -50,6 +50,9 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, QO
     setDControlCommand=deviceSettings->value("control-set/D").toString();
     getControlChannelCommand=deviceSettings->value("control/channel").toString();
     setControlChannelCommand=deviceSettings->value("control-set/channel").toString();
+
+//    QStringList expControls=experimentSettings->value("controls").toString().split(",",QString::SkipEmptyParts);
+
 }
 
 bool GpibThermocontrollerDevice::setTargetValue(QString value, int controlLoop) {

@@ -3,6 +3,19 @@
 
 #include "abstractthermocontrollerdevice.h"
 
+/** Terminology:
+    CONTROL - part of experiment. Experiment can have 0 or more controls.
+    Control is defined by AbstractThermocontroller pointer and it's LOOP
+    index
+
+    LOOP - part of thermocontroller device. Loop has name and index.
+
+    LOOP NAME - it's used when issueing commands to the thermocontroller
+    device
+
+    LOOP INDEX - it's used to reference LOOP.
+  */
+
 class ControllableDeviceList
 {
 public:

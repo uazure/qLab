@@ -92,9 +92,11 @@ void Experiment::initControllers() {
     for (int i=0;i<controls.size();i++) {
         QString deviceNameAndLoopName=controls.at(i).trimmed();
         //interpret string befor '.' as device name
-        QString deviceName=deviceNameAndLoopName.section('.',0,0);
-        //and string after dot as channel name
-        QString loopName=deviceNameAndLoopName.section('.',-1,-1);
+        QString deviceName=deviceNameAndLoopName.section('.',0,0).trimmed();
+        //and string after dot as loop name name
+        QString loopName=deviceNameAndLoopName.section('.',1,1).trimmed();
+        //and second string after dot as input channel name for the loop
+        QString channelName=deviceNameAndLoopName.section('.',2,2).trimmed();
 
         //set device as pointer to AbstractDevice
         AbstractDevice* device=findDevice(deviceName);
@@ -109,6 +111,15 @@ void Experiment::initControllers() {
                 dynamic_cast<AbstractThermocontrollerDevice *> (device);
 
         int loopIndex=thermocontrollerDevice->getLoopIndex(loopName);
+        if (loopIndex<0) {
+            qWarning()<<"Failed to init controllers. No loop"<<loopName;
+            return;
+        }
+
+
+        thermocontrollerDevice->setControlChannel(channelName,loopIndex);
+
+
         qDebug()<<"Appending control:"<<deviceName<<"loop name"<<loopName<<"loop index"<<loopIndex;
         appendControl(thermocontrollerDevice,loopIndex);
     }
@@ -370,7 +381,7 @@ void Experiment::setTarget(QString value, int control)
     //defining device pointer of the requested control
     AbstractThermocontrollerDevice *device=ControllableDeviceList::getControlDevice(control);
     if (device==NULL) {
-        qWarning()<<"Failed to get control"<<control;
+        qWarning()<<"Failed to get setTarget of control index"<<control;
         return;
     }
 
