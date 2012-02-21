@@ -90,28 +90,28 @@ void Experiment::initControllers() {
 
     //Go thru controls list and initiate them
     for (int i=0;i<controls.size();i++) {
-        QString nameAndChannel=controls.at(i).trimmed();
+        QString deviceNameAndLoopName=controls.at(i).trimmed();
         //interpret string befor '.' as device name
-        QString name=nameAndChannel.section('.',0,0);
+        QString deviceName=deviceNameAndLoopName.section('.',0,0);
         //and string after dot as channel name
-        QString channel=nameAndChannel.section('.',-1,-1);
+        QString loopName=deviceNameAndLoopName.section('.',-1,-1);
 
         //set device as pointer to AbstractDevice
-        AbstractDevice* device=findDevice(name);
+        AbstractDevice* device=findDevice(deviceName);
 
         //continue if no device found
         if (device==NULL) {
             continue;
         }
 
-        qDebug()<<"Converting AbstractDevice"<<name<<"to AbstractThermocontrollerDevice";
+        qDebug()<<"Converting AbstractDevice"<<deviceName<<"to AbstractThermocontrollerDevice";
         AbstractThermocontrollerDevice *thermocontrollerDevice =
                 dynamic_cast<AbstractThermocontrollerDevice *> (device);
-        int loopIndex=thermocontrollerDevice->getLoopIndex(channel);
-        qDebug()<<"Appending control of"<<name<<"with channel"<<channel<<"index"<<loopIndex;
+
+        int loopIndex=thermocontrollerDevice->getLoopIndex(loopName);
+        qDebug()<<"Appending control:"<<deviceName<<"loop name"<<loopName<<"loop index"<<loopIndex;
         appendControl(thermocontrollerDevice,loopIndex);
     }
-
 }
 
 AbstractDevice * Experiment::findDevice(QString deviceName) const {
@@ -375,9 +375,9 @@ void Experiment::setTarget(QString value, int control)
     }
 
     //defining channel index of the requested control
-    int deviceChannelIndex=ControllableDeviceList::getControlChannel(control);
+    int loopIndex=ControllableDeviceList::getControlLoopIndex(control);
 
     //setting target of the thermocontroller loop with index deviceChannelIndex
-    qDebug()<<"Setting target of"<<device<<"with loop index"<<deviceChannelIndex<< "to"<<value;
-    device->setTargetValue(value,deviceChannelIndex);
+    qDebug()<<"Setting target of"<<device<<"with loop index"<<loopIndex<< "to"<<value;
+    device->setTargetValue(value,loopIndex);
 }

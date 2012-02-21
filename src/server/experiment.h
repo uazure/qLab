@@ -26,7 +26,9 @@ public:
     ~Experiment();
 
     void initDevices();
+
     void initControllers();
+
     bool isActive(void) const;
     void setFileName(QString filename);
     QString getCurrentFileName() const;
