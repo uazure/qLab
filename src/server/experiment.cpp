@@ -365,9 +365,19 @@ void Experiment::updateProgress(void) {
         emit updateProgress(progress);
 }
 
-void Experiment::setTarget(QString value, int channel)
+void Experiment::setTarget(QString value, int control)
 {
-    for (int i=0;i<deviceList.size();++i) {
-        deviceList.at(i)->capable("thermocontroller");
+    //defining device pointer of the requested control
+    AbstractThermocontrollerDevice *device=ControllableDeviceList::getControlDevice(control);
+    if (device==NULL) {
+        qWarning()<<"Failed to get control"<<control;
+        return;
     }
+
+    //defining channel index of the requested control
+    int deviceChannelIndex=ControllableDeviceList::getControlChannel(control);
+
+    //setting target of the thermocontroller loop with index deviceChannelIndex
+    qDebug()<<"Setting target of"<<device<<"with loop index"<<deviceChannelIndex<< "to"<<value;
+    device->setTargetValue(value,deviceChannelIndex);
 }

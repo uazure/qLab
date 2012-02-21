@@ -10,6 +10,9 @@ public:
     void appendControl(AbstractThermocontrollerDevice * device,int channel=0);
     void removeControl(AbstractThermocontrollerDevice * device,int channel=-1);
     void clear();
+    AbstractThermocontrollerDevice * getControlDevice(int index);
+    int getControlChannel(int index) const;
+
 
 private:
     QList<AbstractThermocontrollerDevice *> deviceList;

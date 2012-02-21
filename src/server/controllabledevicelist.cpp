@@ -45,3 +45,14 @@ void ControllableDeviceList::removeControl(AbstractThermocontrollerDevice *devic
 }
 
 
+AbstractThermocontrollerDevice * ControllableDeviceList::getControlDevice(int index) {
+    if (index<0 || index>=deviceList.size()) {
+        qWarning()<<"Failed to getDevice with index"<<index;
+        return NULL;
+    }
+    return deviceList.at(index);
+}
+
+int ControllableDeviceList::getControlChannel(int index) const {
+    return deviceControlMap.value(index);
+}
