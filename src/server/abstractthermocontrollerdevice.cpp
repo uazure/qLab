@@ -68,6 +68,16 @@ int AbstractThermocontrollerDevice::getControlLoopNum() const {
     return controlLoopNum;
 }
 
+QString AbstractThermocontrollerDevice::getLoopName(int num) const {
+    return loopName.at(num);
+}
+
+int AbstractThermocontrollerDevice::getLoopIndex(QString name) const {
+    return loopName.indexOf(name);
+}
+
+
+
 void AbstractThermocontrollerDevice::setControlLoopNum(int loops) {
     if (loops<1) return;
     controlLoopNum=loops;

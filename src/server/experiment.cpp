@@ -1,10 +1,12 @@
 #include "experiment.h"
 
 Experiment::Experiment(QString name, QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    ControllableDeviceList()
 {
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
+    settings->beginGroup(name);
     timer.connect (&timer,SIGNAL(timeout()),this,SLOT(doMeasure()));
     currentFileName="test.dat";
     saveTimer.setInterval(10000);
@@ -25,11 +27,16 @@ Experiment::~Experiment() {
 void Experiment::setExperiment(QString experiment) {
     stop();
     setName(experiment);
+
+    //set settings object to read from new experiment name section
+    settings->endGroup();
+    settings->beginGroup(name);
+
     dataStringList.clear();
     if (! name.isEmpty()) {
         startedOn=QDateTime().currentDateTime();
     }
-    QString out=settings->value(experiment+"/out").toString();
+    QString out=settings->value("out").toString();
     qDebug()<<"Output read from"<<experiment<<"config:"<<out;
     QStringList outList=out.split(",",QString::SkipEmptyParts);
     QString tmp;
@@ -55,19 +62,66 @@ void Experiment::setExperiment(QString experiment) {
         }
     }
     qDebug()<<"Config read:\nDevices:"<<deviceStringList<<"\nParameters:"<<parametersList;
+
     //initialize devices
     initDevices();
 
+    //init controllers
+    initControllers();
+
     // Define axis hint from config file (if available)
-    axisStringList=settings->value(experiment+"/axis").toString().split(',',QString::KeepEmptyParts);
+    axisStringList=settings->value("axis").toString().split(',',QString::KeepEmptyParts);
+
     //trim each entry
     for (int i=0;i<axisStringList.size();i++) {
         axisStringList[i]=axisStringList.at(i).trimmed();
     }
     setFileName(startedOn.toString("yyyy-MM-dd ")+name+".dat");
-    //getHeader();
-    //doMeasure();
+
     start();
+}
+
+void Experiment::initControllers() {
+    //read controllers from experiment settings
+    QStringList controls=settings->value("controls").toString().split(",",QString::SkipEmptyParts);
+
+    //Clean the controlers
+    ControllableDeviceList::clear();
+
+    //Go thru controls list and initiate them
+    for (int i=0;i<controls.size();i++) {
+        QString nameAndChannel=controls.at(i).trimmed();
+        //interpret string befor '.' as device name
+        QString name=nameAndChannel.section('.',0,0);
+        //and string after dot as channel name
+        QString channel=nameAndChannel.section('.',-1,-1);
+
+        //set device as pointer to AbstractDevice
+        AbstractDevice* device=findDevice(name);
+
+        //continue if no device found
+        if (device==NULL) {
+            continue;
+        }
+
+        qDebug()<<"Converting AbstractDevice"<<name<<"to AbstractThermocontrollerDevice";
+        AbstractThermocontrollerDevice *thermocontrollerDevice =
+                dynamic_cast<AbstractThermocontrollerDevice *> (device);
+        int loopIndex=thermocontrollerDevice->getLoopIndex(channel);
+        qDebug()<<"Appending control of"<<name<<"with channel"<<channel<<"index"<<loopIndex;
+        appendControl(thermocontrollerDevice,loopIndex);
+    }
+
+}
+
+AbstractDevice * Experiment::findDevice(QString deviceName) const {
+    for (int i=0;i<deviceList.size();++i) {
+        if (deviceList.at(i)->shortName()==deviceName) {
+            return deviceList.at(i);
+        }
+    }
+    qWarning()<<"Failed to find device"<<deviceName;
+    return NULL;
 }
 
 void Experiment::initDevices() {
@@ -92,17 +146,18 @@ void Experiment::initDevices() {
             qDebug()<<"deviceNameWithParameters"<<deviceNameWithParameters;
         }
         deviceList.append(DeviceFarm::getDeviceObject(deviceName));
-        if (deviceList[i]->capable("thermocontroller")) {
-            //FIXME: controlList should ask for controlled channels from device
-            controlList.appendControl(dynamic_cast <AbstractThermocontrollerDevice *> (deviceList[i]),0);
-        }
+//        if (deviceList[i]->capable("thermocontroller")) {
+//            //FIXME: controlList should ask for controlled channels from device
+//            appendControl(dynamic_cast <AbstractThermocontrollerDevice *> (deviceList[i]),0);
+//        }
+
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
-        deviceList[i]->setFactor(settings->value(name+"/"+deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble());
-        deviceList[i]->setMinValue(settings->value(name+"/"+deviceNameWithParameters+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
-        deviceList[i]->setMaxValue(settings->value(name+"/"+deviceNameWithParameters+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
-        deviceList[i]->setScaleHint(settings->value(name+"/"+deviceNameWithParameters+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
-        deviceList[i]->setUnit(settings->value(name+"/"+deviceNameWithParameters+"/unit",deviceList.at(i)->getUnit()).toString());
-        deviceList[i]->setLabel(settings->value(name+"/"+deviceNameWithParameters+"/label",deviceList.at(i)->getLabel()).toString());
+        deviceList[i]->setFactor(settings->value(deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble());
+        deviceList[i]->setMinValue(settings->value(deviceNameWithParameters+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
+        deviceList[i]->setMaxValue(settings->value(deviceNameWithParameters+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
+        deviceList[i]->setScaleHint(settings->value(deviceNameWithParameters+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
+        deviceList[i]->setUnit(settings->value(deviceNameWithParameters+"/unit",deviceList.at(i)->getUnit()).toString());
+        deviceList[i]->setLabel(settings->value(deviceNameWithParameters+"/label",deviceList.at(i)->getLabel()).toString());
     }
 }
 

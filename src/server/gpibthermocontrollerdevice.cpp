@@ -7,7 +7,9 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, QO
 {
     setCapability("thermocontroller");
     //entering device options group to read values
-    deviceSettings->beginGroup(shortname);
+    qDebug()<<deviceSettings->group();
+    deviceSettings->beginGroup(shortName);
+    qDebug()<<deviceSettings->group();
     //reading channels string
     QString channels=deviceSettings->value("channels").toString();
     //reading controls string
@@ -26,7 +28,7 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, QO
 
     //setting loop names as they should appear in gpib commands
     for (int i=0;i<controlList.size();++i) {
-        loopName[i]=controlList.at(i);
+        loopName[i]=controlList.at(i).trimmed();
     }
 
     //initializing gpib commands from config

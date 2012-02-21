@@ -17,7 +17,7 @@
 #define EXPERIMENT_MIN_INTERVAL 100
 #define EXPERIMENT_MAX_INTERVAL 60000
 
-class Experiment : public QObject
+class Experiment : public QObject, public ControllableDeviceList
 {
 Q_OBJECT
 
@@ -26,6 +26,7 @@ public:
     ~Experiment();
 
     void initDevices();
+    void initControllers();
     bool isActive(void) const;
     void setFileName(QString filename);
     QString getCurrentFileName() const;
@@ -57,7 +58,7 @@ public:
     QDateTime startedOn;
     QStringList dataStringList;
     QString currentFileName;
-    ControllableDeviceList controlList;
+    AbstractDevice * findDevice (QString deviceName) const;
 
 
 private slots:

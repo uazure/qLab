@@ -60,6 +60,9 @@ public:
     void setControlLoopNum(int loops);
     int getControlLoopNum(void) const;
 
+    QString getLoopName(int num) const;
+    int getLoopIndex(QString name) const;
+
 
 protected:
     int controlLoopNum;
@@ -71,6 +74,7 @@ protected:
     QVector<QString> targetValue;
     QVector<QString> loopName;
     QVector<QString> channelName;
+
 };
 
 #endif // ABSTRACTTHERMOCONTROLLERDEVICE_H
