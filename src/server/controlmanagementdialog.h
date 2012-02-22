@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include "experiment.h"
+#include "abstractthermocontrollerdevice.h"
+#include "abstractdevice.h"
 
 namespace Ui {
     class ControlManagementDialog;
@@ -20,6 +22,10 @@ protected:
 private:
     Ui::ControlManagementDialog *ui;
     Experiment *experiment;
+
+private slots:
+    void updateControlInfo(int index);
+    void changeTarget(int controlIndex);
 };
 
 #endif // CONTROLMANAGEMENTDIALOG_H
