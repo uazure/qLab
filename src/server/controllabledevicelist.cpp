@@ -56,3 +56,22 @@ AbstractThermocontrollerDevice * ControllableDeviceList::getControlDevice(int co
 int ControllableDeviceList::getControlLoopIndex(int controlIndex) const{
     return deviceLoopIndexMap.value(controlIndex);
 }
+
+int ControllableDeviceList::size() const {
+    return deviceList.size();
+}
+
+QStringList ControllableDeviceList::getControlList() {
+    QStringList reply;
+    for (int i=0;i<deviceList.size();i++) {
+        AbstractThermocontrollerDevice *tcdevice=deviceList.at(i);
+        AbstractDevice *device=dynamic_cast<AbstractDevice *> (tcdevice);
+
+        if (device==NULL) {
+            qWarning()<<"Failed to convert to AbstractDevice control"<<i;
+            continue;
+        }
+        reply.append(QString(device->shortName()));
+    }
+    return reply;
+}

@@ -390,5 +390,21 @@ void Experiment::setTarget(QString value, int control)
 
     //setting target of the thermocontroller loop with index deviceChannelIndex
     qDebug()<<"Setting target of"<<device<<"with loop index"<<loopIndex<< "to"<<value;
-    device->setTargetValue(value,loopIndex);
+    if (device->setTargetValue(value,loopIndex)) {
+        qDebug()<<"Target of control"<<control<<"set to"<<value;
+        emit targetChanged(value);
+    } else {
+        qWarning()<<"Failed to set target"<<value<<"of control with index"<<control;
+    }
+}
+
+QString Experiment::getTarget(int control) {
+    /// thermocontroller device asiciated with control
+    AbstractThermocontrollerDevice *device=ControllableDeviceList::getControlDevice(control);
+
+    /// loop index associated with control
+    int loop=ControllableDeviceList::getControlLoopIndex(control);
+
+    QString retval=device->getTargetValue(loop);
+    return retval;
 }

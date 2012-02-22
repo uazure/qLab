@@ -73,7 +73,7 @@ public:
     const QString getLabel(void) const;
     void setLabel(QString label);
 
-    const bool capable(QString capability) const;
+    bool capable(QString capability) const;
     void setCapability(QString capability);
 
 

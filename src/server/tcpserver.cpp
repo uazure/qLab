@@ -111,8 +111,9 @@ void TcpServer::readCommand() {
                       "get all - get initial experimental data with header\n"
                       "monitor on - set monitoring mode on\n"
                       "monitor off - set monitoring mode off\n"
-                      "set target CHANNEL=NUMBER - set target for specific channel\n"
-                      "set target=NUMBER - set target for default channel\n"
+                      "set target CONTROL=NUMBER - set target for specific CONTROL\n"
+                      "set target=NUMBER - set target for default CONTROL\n"
+
                       "");
         return;
     }
@@ -135,17 +136,60 @@ void TcpServer::readCommand() {
 
     if (buf.startsWith("set target=")) {
         bool ok=false;
-        double target=buf.remove(0,11).trimmed().toDouble(&ok);
+        buf.remove(0,11).trimmed().toDouble(&ok);
         if (ok) {
-
+            experiment->setTarget(buf.remove(0,11).trimmed());
+            socket->write("\nTarget for control 0 set");
+            return;
         } else {
             qWarning()<<"Failed to recognize target value (NaN) of"<<buf;
             socket->write("\n400 Bad request\nTarget should be specified as a number");
+            return;
         }
+    }
+
+    if (buf.startsWith("set target ")) {
+        QList<QByteArray> tmp=buf.remove(0,11).split('=');
+        if (tmp.size()!=2) {
+            qWarning()<<"Failed to parse"<<buf;
+            return;
+        }
+        bool ok=false;
+        int controlIndex=tmp.at(0).trimmed().toInt(&ok);
+        qDebug()<<tmp;
+        if (!ok) {
+            qWarning()<<"Failed to parse"<<buf<<": control index NaN";
+            socket->write("\n400 Bad request\nCONTROL index should be integer");
+            return;
+        }
+        if (controlIndex>=experiment->ControllableDeviceList::size() || controlIndex<0) {
+            qWarning()<<"Control index is not correct"<<controlIndex;
+            socket->write("\n400 Bad request\nControl index incorrect");
+            return;
+        }
+
+        double value=tmp.at(1).trimmed().toDouble(&ok);
+        if (!ok) {
+            qWarning()<<"Failed to parse"<<buf<<": target value NaN";
+            socket->write("\n400 Bad request\nTarget value should be double");
+            return;
+        }
+        experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
+        QByteArray reply="\nTarget for control ";
+        reply+=controlIndex;
+        reply+="set";
+
+        socket->write(reply);
+
     }
 
     if (buf=="get latest") {
         //socket->write(experiment->dataStringList)
+    }
+
+    if (buf=="get controls") {
+
+        socket->write("\n200 Controls\n");
     }
 
     if (buf=="get all") {

@@ -84,6 +84,8 @@ signals:
     void TcpForbidden(QString message);
     /// says to update progress-meter for interval. progress is from 0 to 100;
     void updateProgress(int progress);
+    /// informs that target value has changed
+    void targetChanged(QString target);
 
 public slots:
     /// set experiment name (configuration)
@@ -97,8 +99,13 @@ public slots:
     void stop(void);
     /// set the measuring interval
     void setInterval(int msec);
+
     /// set target value for specific control loop
-    void setTarget(QString value,int control);
+    void setTarget(QString value,int control=0);
+
+    /// get target value for specific control loop
+    QString getTarget(int control=0);
+
     /// Saves data to active file
     void saveFile();
 

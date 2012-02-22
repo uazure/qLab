@@ -1,7 +1,9 @@
 #ifndef CONTROLLABLEDEVICELIST_H
 #define CONTROLLABLEDEVICELIST_H
 
+#include <QStringList>
 #include "abstractthermocontrollerdevice.h"
+#include "abstractdevice.h"
 
 /** Terminology:
     CONTROL - part of experiment. Experiment can have 0 or more controls.
@@ -25,6 +27,8 @@ public:
     void clear();
     AbstractThermocontrollerDevice * getControlDevice(int controlIndex);
     int getControlLoopIndex(int controlIndex) const;
+    int size() const;
+    QStringList getControlList();
 
 
 private:

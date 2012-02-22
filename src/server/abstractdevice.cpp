@@ -92,7 +92,7 @@ void AbstractDevice::resetDevice() {
     return;
 }
 
-const bool AbstractDevice::capable(QString capability) const {
+bool AbstractDevice::capable(QString capability) const {
     if (capabilities.contains(capability,Qt::CaseSensitive)) {
         return true;
     } else {
