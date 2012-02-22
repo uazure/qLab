@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave_as,SIGNAL(triggered()),this,SLOT(getFile()));
     connect(ui->actionStartMeasure,SIGNAL(toggled(bool)),experiment,SLOT(start(bool)));
     connect(ui->actionMeasuring_interval,SIGNAL(triggered()),this,SLOT(changeMeasureIntervalDialog()));
+    connect(ui->actionControls,SIGNAL(triggered()),SLOT(showExperimentControlMangement()));
 
     connect(experiment,SIGNAL(statusChanged(bool)),ui->actionStartMeasure,SLOT(setChecked(bool)));
     connect(experiment,SIGNAL(statusChanged(bool)),this,SLOT(statusChanged(bool)));
@@ -165,4 +166,9 @@ void MainWindow::changeMeasureIntervalDialog() {
         this->setMeasureInterval(interval);
         qDebug()<<"Interval set to"<<interval;
     }
+}
+
+void MainWindow::showExperimentControlMangement() {
+    ControlManagementDialog *dialog=new ControlManagementDialog(experiment,this);
+    dialog->exec();
 }

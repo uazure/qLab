@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "devicefarm.h"
 #include "experimentconfigurationselectdialog.h"
+#include "controlmanagementdialog.h"
 #include "experiment.h"
 #include "tcpserver.h"
 #include "udpserver.h"
@@ -47,6 +48,7 @@ private:
 private slots:
     void setFullscreen(bool isFullscreen);
     void getExperiment();
+    void showExperimentControlMangement();
     void showAboutQt();
 
 public slots:

@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     udpserver.cpp \
     abstractthermocontrollerdevice.cpp \
     gpibthermocontrollerdevice.cpp \
-    controllabledevicelist.cpp
+    controllabledevicelist.cpp \
+    controlmanagementdialog.cpp
 INCLUDEPATH += ../../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32
@@ -36,9 +37,11 @@ HEADERS += mainwindow.h \
     udpserver.h \
     abstractthermocontrollerdevice.h \
     gpibthermocontrollerdevice.h \
-    controllabledevicelist.h
+    controllabledevicelist.h \
+    controlmanagementdialog.h
 FORMS += mainwindow.ui \
-    experimentconfigurationselectdialog.ui
+    experimentconfigurationselectdialog.ui \
+    controlmanagementdialog.ui
 OTHER_FILES += ../../README.txt \
     ../../lib/gpib-32.dll \
     ../../lib/gpib-32.obj

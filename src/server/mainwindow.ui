@@ -154,10 +154,11 @@
    </widget>
    <widget class="QMenu" name="menuControl">
     <property name="title">
-     <string>Control</string>
+     <string>Experiment</string>
     </property>
     <addaction name="actionStartMeasure"/>
     <addaction name="actionMeasuring_interval"/>
+    <addaction name="actionControls"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -223,7 +224,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Start</string>
+    <string>Start/Pause</string>
    </property>
    <property name="shortcut">
     <string>Space</string>
@@ -235,6 +236,11 @@
    </property>
    <property name="toolTip">
     <string>Change measuring interval</string>
+   </property>
+  </action>
+  <action name="actionControls">
+   <property name="text">
+    <string>Controls</string>
    </property>
   </action>
  </widget>
