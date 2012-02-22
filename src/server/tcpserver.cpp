@@ -188,8 +188,9 @@ void TcpServer::readCommand() {
     }
 
     if (buf=="get controls") {
-
         socket->write("\n200 Controls\n");
+        socket->write(experiment->getControlList().join("\n").toAscii().append("\n"));
+        return;
     }
 
     if (buf=="get all") {

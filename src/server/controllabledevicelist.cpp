@@ -12,12 +12,13 @@ void ControllableDeviceList::clear()
 
 void ControllableDeviceList::appendControl(AbstractThermocontrollerDevice *device, int loopIndex)
 {
-    if (deviceList.contains(device) || loopIndex<0 || device==NULL) {
+    if (loopIndex<0 || device==NULL) {
         return;
     }
-
     deviceList.append(device);
     deviceLoopIndexMap.insert(deviceList.size()-1,loopIndex);
+    AbstractDevice *adev=dynamic_cast<AbstractDevice*> (device);
+    deviceNameList.append(adev->shortName());
 }
 
 // if channel <0 then we should delete all channels of the specified device
@@ -31,11 +32,13 @@ void ControllableDeviceList::removeControl(AbstractThermocontrollerDevice *devic
                 index=deviceList.indexOf(device);
                 deviceList.removeAt(index);
                 deviceLoopIndexMap.remove(index);
+                deviceNameList.removeAt(index);
             }
         } else {
             for (int i=0;i<deviceList.size();++i) {
                 if (deviceLoopIndexMap.value(i)==loopIndex) {
                     deviceList.removeAt(i);
+                    deviceNameList.removeAt(i);
                     deviceLoopIndexMap.remove(i);
                     break;
                 }
@@ -74,4 +77,8 @@ QStringList ControllableDeviceList::getControlList() {
         reply.append(QString(device->shortName()));
     }
     return reply;
+}
+
+QString ControllableDeviceList::getControlName(int index) const {
+    return deviceNameList.at(index);
 }

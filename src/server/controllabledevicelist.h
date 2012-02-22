@@ -27,12 +27,14 @@ public:
     void clear();
     AbstractThermocontrollerDevice * getControlDevice(int controlIndex);
     int getControlLoopIndex(int controlIndex) const;
+    QString getControlName(int index) const;
     int size() const;
     QStringList getControlList();
 
 
 private:
     QList<AbstractThermocontrollerDevice *> deviceList;
+    QStringList deviceNameList;
     QMap<int, int> deviceLoopIndexMap;
 
 };
