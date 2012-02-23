@@ -28,6 +28,7 @@ private:
 private slots:
     void updateControlInfo(int index);
     void changeTarget();
+    void changeControlType(int typeIndex);
 };
 
 #endif // CONTROLMANAGEMENTDIALOG_H

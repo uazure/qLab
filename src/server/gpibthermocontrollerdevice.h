@@ -14,9 +14,10 @@ public AbstractThermocontrollerDevice
 
 public:
     GpibThermocontrollerDevice(QByteArray &shortName, QObject *parent=0);
-    virtual bool setTargetValue(QString value, int controlLoop=0);
-    virtual bool setControlChannel(QString channel, int controlLoop=0);
-    virtual QString getControlChannel(int controlLoop=0);
+    virtual bool setTargetValue(QString value, int loopIndex=0);
+    virtual bool setControlChannel(QString channel, int loopIndex=0);
+    virtual QString getControlChannel(int loopIndex=0);
+    virtual bool setCurrentControlTypeIndex(int typeIndex, int loopIndex);
 
 private:
     QString engageControlsCommand,
@@ -27,7 +28,6 @@ private:
     getControlChannelCommand,
     setTypeControlCommand,
     getTypeControlCommand,
-    typesOfControl,
     offControlCommand,
     pidControlCommand,
     getPControlCommand,

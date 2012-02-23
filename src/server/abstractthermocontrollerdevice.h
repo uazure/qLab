@@ -1,7 +1,7 @@
 #ifndef ABSTRACTTHERMOCONTROLLERDEVICE_H
 #define ABSTRACTTHERMOCONTROLLERDEVICE_H
 
-#include <QString>
+#include <QStringList>
 #include <QVector>
 #include <QDebug>
 
@@ -47,6 +47,7 @@ public:
     virtual void engageControl(bool engage,int controlLoop=0);
 
 
+
     // PID access functions
     double getP(int controlLoop=0) const;
     double getI(int controlLoop=0) const;
@@ -62,6 +63,9 @@ public:
 
     QString getLoopName(int num) const;
     int getLoopIndex(QString name) const;
+    virtual QStringList getControlTypesList() const;
+    virtual int getCurrentControlTypeIndex(int loopIndex) const;
+    virtual bool setCurrentControlTypeIndex(int typeIndex, int loopIndex)=0;
 
 
 protected:
@@ -70,10 +74,15 @@ protected:
     //PID coefficients
     QVector <double> P,I,D;
 
+    QString controlTypes;
+    QStringList controlTypeList;
+
+
     QVector<QString> controlChannel;
     QVector<QString> targetValue;
     QVector<QString> loopName;
     QVector<QString> channelName;
+    QVector<int> currentControlType;
 
 };
 

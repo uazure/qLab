@@ -13,6 +13,7 @@ ControlManagementDialog::ControlManagementDialog(Experiment *experiment, QWidget
     }
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateControlInfo(int)));
     connect(ui->targetLabel,SIGNAL(doubleClicked()),SLOT(changeTarget()));
+    connect(ui->controlTypeBox,SIGNAL(activated(int)),SLOT(changeControlType(int)));
 
     //set larger font for targetLabel
     QFont font=QWidget::font();
@@ -47,11 +48,17 @@ void ControlManagementDialog::updateControlInfo(int index) {
     QString value=tcdevice->getTargetValue(loopIndex);
     QString loopName=tcdevice->getLoopName(loopIndex);
     QString channel=tcdevice->getControlChannel(loopIndex);
+    if (value.isEmpty()) value="NOT SET";
 
     ui->targetLabel->setText(value);
     ui->loopNameLabel->setText(loopName);
     ui->loopNameLabel->setToolTip(QString::number(loopIndex));
     ui->channelLabel->setText(channel);
+    ui->controlTypeBox->clear();
+    QStringList controlTypeList=tcdevice->getControlTypesList();
+    ui->controlTypeBox->addItems(controlTypeList);
+    ui->controlTypeBox->setCurrentIndex(tcdevice->getCurrentControlTypeIndex(loopIndex));
+
 }
 
 void ControlManagementDialog::changeTarget() {
@@ -74,4 +81,17 @@ void ControlManagementDialog::changeTarget() {
         qWarning()<<"Failed to setTargetValue";
     }
     ui->targetLabel->setText(tcdevice->getTargetValue(loopIndex));
+}
+
+void ControlManagementDialog::changeControlType(int typeIndex) {
+    int index=ui->listWidget->currentRow();
+    AbstractThermocontrollerDevice *tcdevice=experiment->getControlDevice(index);
+    int loopIndex=experiment->getControlLoopIndex(index);
+    bool ok;
+    ok=tcdevice->setCurrentControlTypeIndex(typeIndex,loopIndex);
+    if (!ok) {
+        QMessageBox::warning(this,"Type not set","Failed to change control type");
+        ui->controlTypeBox->setCurrentIndex(tcdevice->getCurrentControlTypeIndex(loopIndex));
+        return;
+    }
 }

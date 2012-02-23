@@ -76,6 +76,20 @@ int AbstractThermocontrollerDevice::getLoopIndex(QString name) const {
     return loopName.indexOf(name);
 }
 
+QStringList AbstractThermocontrollerDevice::getControlTypesList() const {
+    return controlTypeList;
+}
+
+int AbstractThermocontrollerDevice::getCurrentControlTypeIndex(int loopIndex) const {
+    return currentControlType.at(loopIndex);
+}
+
+bool AbstractThermocontrollerDevice::setCurrentControlTypeIndex(int typeIndex, int loopIndex) {
+    qDebug()<<"Using dummy setCurrentControlTypeIndex implementation of AbstractThermocontrollerDevice";
+    currentControlType[loopIndex]=typeIndex;
+    return true;
+}
+
 
 
 void AbstractThermocontrollerDevice::setControlLoopNum(int loops) {
@@ -93,4 +107,6 @@ void AbstractThermocontrollerDevice::setControlLoopNum(int loops) {
     targetValue.resize(loops);
     loopName.resize(loops);
     channelName.resize(loops);
+    currentControlType.resize(loops);
+    currentControlType.fill(0);
 }
