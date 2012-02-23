@@ -50,7 +50,8 @@
         <item>
          <widget class="ClickableLabel" name="targetLabel">
           <property name="toolTip">
-           <string>Target value</string>
+           <string>Target value
+Double click to change</string>
           </property>
           <property name="statusTip">
            <string>Target value</string>

@@ -13,6 +13,13 @@ ControlManagementDialog::ControlManagementDialog(Experiment *experiment, QWidget
     }
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateControlInfo(int)));
     connect(ui->targetLabel,SIGNAL(doubleClicked()),SLOT(changeTarget()));
+
+    //set larger font for targetLabel
+    QFont font=QWidget::font();
+    //enlarge font for 30%
+    font.setPointSizeF(font.pointSizeF()*1.3);
+    font.setBold(true);
+    ui->targetLabel->setFont(font);
 }
 
 ControlManagementDialog::~ControlManagementDialog()
