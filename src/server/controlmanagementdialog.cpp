@@ -12,6 +12,7 @@ ControlManagementDialog::ControlManagementDialog(Experiment *experiment, QWidget
         ui->groupBox->setEnabled(true);
     }
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateControlInfo(int)));
+    connect(ui->targetLabel,SIGNAL(doubleClicked()),SLOT(changeTarget()));
 }
 
 ControlManagementDialog::~ControlManagementDialog()
@@ -46,6 +47,24 @@ void ControlManagementDialog::updateControlInfo(int index) {
     ui->channelLabel->setText(channel);
 }
 
-void ControlManagementDialog::changeTarget(int controlIndex) {
-    //FIXME
+void ControlManagementDialog::changeTarget() {
+    int index=ui->listWidget->currentRow();
+    AbstractThermocontrollerDevice *tcdevice=experiment->getControlDevice(index);
+    int loopIndex=experiment->getControlLoopIndex(index);
+    QString currentTarget=tcdevice->getTargetValue(loopIndex);
+    double curTarget=currentTarget.toDouble();
+    bool ok=false;
+    double newTarget=QInputDialog::getDouble(this,tr("Set target"),tr("Set target value"),curTarget,-2147483647,2147483647,2,&ok);
+    if (!ok) {
+        qWarning("Target not set");
+        return;
+    }
+
+    qDebug()<<"Setting target value of control"<<index<<"loop"<<loopIndex<<"to"<<newTarget;
+    ok=tcdevice->setTargetValue(QString::number(newTarget),loopIndex);
+    if (!ok) {
+        QMessageBox::warning(this,"Value not set","Failed to set target value");
+        qWarning()<<"Failed to setTargetValue";
+    }
+    ui->targetLabel->setText(tcdevice->getTargetValue(loopIndex));
 }

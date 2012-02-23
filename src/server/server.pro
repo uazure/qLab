@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     abstractthermocontrollerdevice.cpp \
     gpibthermocontrollerdevice.cpp \
     controllabledevicelist.cpp \
-    controlmanagementdialog.cpp
+    controlmanagementdialog.cpp \
+    clickablelabel.cpp
 INCLUDEPATH += ../../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32
@@ -38,7 +39,8 @@ HEADERS += mainwindow.h \
     abstractthermocontrollerdevice.h \
     gpibthermocontrollerdevice.h \
     controllabledevicelist.h \
-    controlmanagementdialog.h
+    controlmanagementdialog.h \
+    clickablelabel.h
 FORMS += mainwindow.ui \
     experimentconfigurationselectdialog.ui \
     controlmanagementdialog.ui

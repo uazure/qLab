@@ -2,6 +2,8 @@
 #define CONTROLMANAGEMENTDIALOG_H
 
 #include <QDialog>
+#include <QInputDialog>
+#include <QMessageBox>
 #include "experiment.h"
 #include "abstractthermocontrollerdevice.h"
 #include "abstractdevice.h"
@@ -25,7 +27,7 @@ private:
 
 private slots:
     void updateControlInfo(int index);
-    void changeTarget(int controlIndex);
+    void changeTarget();
 };
 
 #endif // CONTROLMANAGEMENTDIALOG_H
