@@ -63,6 +63,7 @@ void ControlManagementDialog::updateControlInfo(int index) {
 
 void ControlManagementDialog::changeTarget() {
     int index=ui->listWidget->currentRow();
+
     AbstractThermocontrollerDevice *tcdevice=experiment->getControlDevice(index);
     int loopIndex=experiment->getControlLoopIndex(index);
     QString currentTarget=tcdevice->getTargetValue(loopIndex);
@@ -74,8 +75,8 @@ void ControlManagementDialog::changeTarget() {
         return;
     }
 
-    qDebug()<<"Setting target value of control"<<index<<"loop"<<loopIndex<<"to"<<newTarget;
-    ok=tcdevice->setTargetValue(QString::number(newTarget),loopIndex);
+    //qDebug()<<"Setting target value of control"<<index<<"loop"<<loopIndex<<"to"<<newTarget;
+    ok=experiment->setTarget(QString::number(newTarget),index);
     if (!ok) {
         QMessageBox::warning(this,"Value not set","Failed to set target value");
         qWarning()<<"Failed to setTargetValue";

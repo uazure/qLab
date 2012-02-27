@@ -104,7 +104,7 @@ public slots:
     void setInterval(int msec);
 
     /// set target value for specific control loop
-    void setTarget(QString value,int control=0);
+    bool setTarget(QString value,int control=0);
 
     /// get target value for specific control loop
     QString getTarget(int control=0);

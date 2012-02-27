@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionStartMeasure,SIGNAL(toggled(bool)),experiment,SLOT(start(bool)));
     connect(ui->actionMeasuring_interval,SIGNAL(triggered()),this,SLOT(changeMeasureIntervalDialog()));
     connect(ui->actionControls,SIGNAL(triggered()),SLOT(showExperimentControlMangement()));
+    connect(ui->actionData,SIGNAL(triggered()),SLOT(showData()));
 
     connect(experiment,SIGNAL(statusChanged(bool)),ui->actionStartMeasure,SLOT(setChecked(bool)));
     connect(experiment,SIGNAL(statusChanged(bool)),this,SLOT(statusChanged(bool)));
@@ -170,5 +171,11 @@ void MainWindow::changeMeasureIntervalDialog() {
 
 void MainWindow::showExperimentControlMangement() {
     ControlManagementDialog *dialog=new ControlManagementDialog(experiment,this);
+    dialog->exec();
+}
+
+void MainWindow::showData()
+{
+    ViewDataDialog *dialog=new ViewDataDialog(experiment,this);
     dialog->exec();
 }

@@ -378,13 +378,13 @@ void Experiment::updateProgress(void) {
         emit updateProgress(progress);
 }
 
-void Experiment::setTarget(QString value, int control)
+bool Experiment::setTarget(QString value, int control)
 {
     //defining device pointer of the requested control
     AbstractThermocontrollerDevice *device=ControllableDeviceList::getControlDevice(control);
     if (device==NULL) {
         qWarning()<<"Failed to get setTarget of control index"<<control;
-        return;
+        return false;
     }
 
     //defining channel index of the requested control
@@ -397,8 +397,10 @@ void Experiment::setTarget(QString value, int control)
         //save target change to history
         addHistoryEntry(value,control);
         emit targetChanged(value);
+        return true;
     } else {
         qWarning()<<"Failed to set target"<<value<<"of control with index"<<control;
+        return false;
     }
 }
 

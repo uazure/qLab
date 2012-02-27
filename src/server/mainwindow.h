@@ -8,6 +8,7 @@
 #include "experiment.h"
 #include "tcpserver.h"
 #include "udpserver.h"
+#include "viewdatadialog.h"
 
 #include <QSettings>
 #include <QLabel>
@@ -53,6 +54,7 @@ private slots:
 
 public slots:
     void setExperiment(QString experiment);
+    void showData();
     void setFile(QString filename);
     void getFile(void);
     void Notify(QString message);
