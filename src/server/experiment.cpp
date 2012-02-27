@@ -2,7 +2,8 @@
 
 Experiment::Experiment(QString name, QObject *parent) :
     QObject(parent),
-    ControllableDeviceList()
+    ControllableDeviceList(),
+    ExperimentHistory()
 {
     this->name=name;
     settings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
@@ -177,6 +178,7 @@ void Experiment::setName(QString name) {
         this->name=name;
         stop();
         dataStringList.clear();
+        ExperimentHistory::clear();
         if (! name.isEmpty()) {
             emit experimentChanged(name);
         }
@@ -392,6 +394,8 @@ void Experiment::setTarget(QString value, int control)
     qDebug()<<"Setting target of"<<device<<"with loop index"<<loopIndex<< "to"<<value;
     if (device->setTargetValue(value,loopIndex)) {
         qDebug()<<"Target of control"<<control<<"set to"<<value;
+        //save target change to history
+        addHistoryEntry(value,control);
         emit targetChanged(value);
     } else {
         qWarning()<<"Failed to set target"<<value<<"of control with index"<<control;

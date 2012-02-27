@@ -12,12 +12,15 @@
 #include <QFile>
 #include "devicefarm.h"
 #include "controllabledevicelist.h"
+#include "experimenthistory.h"
 
 // minimal interval is 100 msec
 #define EXPERIMENT_MIN_INTERVAL 100
 #define EXPERIMENT_MAX_INTERVAL 60000
 
-class Experiment : public QObject, public ControllableDeviceList
+class Experiment : public QObject,
+        public ControllableDeviceList,
+        public ExperimentHistory
 {
 Q_OBJECT
 
@@ -45,6 +48,7 @@ public:
     static const int max_interval=EXPERIMENT_MAX_INTERVAL;
 
     private:
+
     QString name;
     void setName(QString name);
     int timer_progress;
@@ -61,7 +65,6 @@ public:
     QStringList dataStringList;
     QString currentFileName;
     AbstractDevice * findDevice (QString deviceName) const;
-
 
 private slots:
     void updateProgress(void);

@@ -56,6 +56,7 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, QO
 //    QStringList expControls=experimentSettings->value("controls").toString().split(",",QString::SkipEmptyParts);
 
     deviceSettings->endGroup();
+
 }
 
 bool GpibThermocontrollerDevice::setTargetValue(QString value, int loopIndex) {
