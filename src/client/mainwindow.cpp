@@ -9,6 +9,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
     data=new ExperimentData(this);
+    experiment=new Experiment(&tcpClient,this);
     plot=new Plot(this,data);
     plot->setAxisTitle(QwtPlot::xBottom,tr("t, sec"));
 
@@ -30,6 +31,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSave_as,SIGNAL(triggered()),SLOT(saveFile()));
     connect(ui->actionMonitoring_interval,SIGNAL(triggered()),SLOT(setMonitoringInterval()));
     connect(ui->actionSetup,SIGNAL(triggered()),SLOT(showSetupCurvesDialog()));
+    connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
+
 
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
@@ -45,6 +48,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 //FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
     connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
     connect(&tcpClient,SIGNAL(bytesRead(int)),&bytesReadLabel,SLOT(setNum(int)));
+    connect(&tcpClient,SIGNAL(serverInterval(int)),experiment,SLOT(setInterval(int)));
 
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
@@ -235,3 +239,23 @@ void MainWindow::showSetupCurvesDialog(void)
 }
 
 
+void MainWindow::setInterval() {
+    if (!experiment->getInterval()) {
+        qDebug()<<"No measuring interval set. Asking server";
+        connect(&tcpClient,SIGNAL(serverInterval(int)),SLOT(setInterval()));
+        tcpClient.getMeasureInterval();
+        return;
+    }
+
+    disconnect(&tcpClient,SIGNAL(serverInterval(int)),this,SLOT(setInterval()));
+
+    bool ok=false;
+    double currentValue=experiment->getInterval();
+    currentValue=currentValue/1000;
+
+    double interval=QInputDialog::getDouble(this,tr("Input experiment measure interval in sec"),tr("Measure interval, sec"),currentValue,0.1,3600,2,&ok);
+    if (!ok) {
+        return;
+    }
+    tcpClient.setMeasureInterval((int) interval*1000);
+}

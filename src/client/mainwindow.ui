@@ -67,9 +67,17 @@
     <addaction name="actionDraw_incremental"/>
     <addaction name="actionMonitoring_interval"/>
    </widget>
+   <widget class="QMenu" name="menuExperiment">
+    <property name="title">
+     <string>Experiment</string>
+    </property>
+    <addaction name="actionSet_interval"/>
+    <addaction name="actionControl"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuPlot"/>
+   <addaction name="menuExperiment"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -204,6 +212,16 @@
    </property>
    <property name="shortcut">
     <string>M</string>
+   </property>
+  </action>
+  <action name="actionSet_interval">
+   <property name="text">
+    <string>Set interval</string>
+   </property>
+  </action>
+  <action name="actionControl">
+   <property name="text">
+    <string>Control</string>
    </property>
   </action>
  </widget>

@@ -70,12 +70,16 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     zoomerLeft=new QwtPlotZoomer(xBottom,yLeft,canvas());
     //disable zoom to base with RMB (RMB is used by panner)
     zoomerLeft->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
+    //disable zoom one step back with [MouseSelect3] (MMB)
+    zoomerLeft->setMousePattern(QwtPicker::MouseSelect3,Qt::NoButton);
     //disable tracker
     zoomerLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
     zoomerRight=new QwtPlotZoomer(xTop,yRight,canvas());
-    //disable zoom to base with RMB (RMB is used by panner)
+    //disable zoom to base with RMB [MouseSelect2] (RMB is used by panner)
     zoomerRight->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
+    //disable zoom one step back with [MouseSelect3] (MMB)
+    zoomerRight->setMousePattern(QwtPicker::MouseSelect3,Qt::NoButton);
     //disable selection rectangle for yRight
     zoomerRight->setRubberBand(QwtPicker::NoRubberBand);
     zoomerRight->setTrackerMode(QwtPicker::AlwaysOff);

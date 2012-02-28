@@ -50,6 +50,8 @@ public slots:
       Or it can emit other signals to update app information about the server (i.e. interval change or status change)
       */
     void protocolParser(QByteArray& line);
+    void getMeasureInterval(void);
+    void setMeasureInterval(int interval);
 
 private slots:
     void bytesWritten(qint64 bytes);

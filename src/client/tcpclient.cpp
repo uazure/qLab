@@ -90,3 +90,13 @@ void TcpClient::bytesWritten(qint64 bytes)
 {
     emit bytesWritten((int) bytes);
 }
+
+void TcpClient::getMeasureInterval() {
+    write("get interval\n");
+}
+
+void TcpClient::setMeasureInterval(int interval) {
+    QByteArray request("set interval=");
+    request.append(QByteArray::number(interval)).append("\n");
+    write(request);
+}

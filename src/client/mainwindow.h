@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QSettings>
+#include <QTimer>
 
 #include "plot.h"
 #include "qwt_plot_curve.h"
@@ -18,6 +19,7 @@
 #include "experimentdata.h"
 #include "dataviewwindow.h"
 #include "setupcurvesdialog.h"
+#include "experiment.h"
 
 namespace Ui {
     class MainWindow;
@@ -44,6 +46,7 @@ private:
     QLabel bytesWrittenLabel;
     QLabel bytesReadLabel;
     QSettings *appSettings;
+    Experiment *experiment;
 
 
 private slots:
@@ -58,6 +61,7 @@ private slots:
     void setMonitoringInterval(void);
     void openFile(QString filename="");
     void saveFile(QString filename="");
+    void setInterval(void);
 
 };
 

@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     setupcurvesdialog.cpp \
     ColorBox.cpp \
     scaleplotpanner.cpp \
-    tableview.cpp
+    tableview.cpp \
+    experiment.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -30,7 +31,8 @@ HEADERS += mainwindow.h \
     setupcurvesdialog.h \
     ColorBox.h \
     scaleplotpanner.h \
-    tableview.h
+    tableview.h \
+    experiment.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui
