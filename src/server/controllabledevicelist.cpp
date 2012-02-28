@@ -10,15 +10,16 @@ void ControllableDeviceList::clear()
     deviceLoopIndexMap.clear();
 }
 
-void ControllableDeviceList::appendControl(AbstractThermocontrollerDevice *device, int loopIndex)
+void ControllableDeviceList::appendControl(QString &name, AbstractThermocontrollerDevice *device, int loopIndex)
 {
     if (loopIndex<0 || device==NULL) {
         return;
     }
     deviceList.append(device);
     deviceLoopIndexMap.insert(deviceList.size()-1,loopIndex);
-    AbstractDevice *adev=dynamic_cast<AbstractDevice*> (device);
-    deviceNameList.append(adev->shortName());
+    deviceNameList.append(name);
+//    AbstractDevice *adev=dynamic_cast<AbstractDevice*> (device);
+//    deviceNameList.append(adev->shortName());
 }
 
 // if channel <0 then we should delete all channels of the specified device
@@ -67,18 +68,15 @@ int ControllableDeviceList::size() const {
 QStringList ControllableDeviceList::getControlList() {
     QStringList reply;
     for (int i=0;i<deviceList.size();i++) {
-        AbstractThermocontrollerDevice *tcdevice=deviceList.at(i);
-        AbstractDevice *device=dynamic_cast<AbstractDevice *> (tcdevice);
-
-        if (device==NULL) {
-            qWarning()<<"Failed to convert to AbstractDevice control"<<i;
-            continue;
-        }
-        reply.append(QString(device->shortName()));
+        reply.append(getControlName(i));
     }
     return reply;
 }
 
 QString ControllableDeviceList::getControlName(int index) const {
+    if (deviceNameList.size()<=index || index <0) {
+        qWarning()<<"Can't getControlName for control index"<<index;
+        return "Error";
+    }
     return deviceNameList.at(index);
 }

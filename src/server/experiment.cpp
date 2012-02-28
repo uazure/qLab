@@ -85,6 +85,12 @@ void Experiment::setExperiment(QString experiment) {
 void Experiment::initControllers() {
     //read controllers from experiment settings
     QStringList controls=settings->value("controls").toString().split(",",QString::SkipEmptyParts);
+    QStringList names=settings->value("controls/name").toString().split(",",QString::KeepEmptyParts);
+
+    //Fill names list if it's lesser that controls list
+    while (names.size()<controls.size()) {
+        names.append(tr("Unnamed control"));
+    }
 
     //Clean the controlers
     ControllableDeviceList::clear();
@@ -122,7 +128,8 @@ void Experiment::initControllers() {
 
 
         qDebug()<<"Appending control:"<<deviceName<<"loop name"<<loopName<<"loop index"<<loopIndex;
-        appendControl(thermocontrollerDevice,loopIndex);
+        QString controlName=names.at(i).trimmed();
+        appendControl(controlName,thermocontrollerDevice,loopIndex);
     }
 }
 

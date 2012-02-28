@@ -22,7 +22,7 @@ class ControllableDeviceList
 {
 public:
     ControllableDeviceList();
-    void appendControl(AbstractThermocontrollerDevice * device,int loopIndex=0);
+    void appendControl(QString &name,AbstractThermocontrollerDevice * device,int loopIndex=0);
     void removeControl(AbstractThermocontrollerDevice * device,int loopIndex=-1);
     void clear();
     AbstractThermocontrollerDevice * getControlDevice(int controlIndex);
