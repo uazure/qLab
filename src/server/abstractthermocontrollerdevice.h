@@ -17,7 +17,7 @@ public:
       */
     virtual bool setTargetValue(QString value,int controlLoop=0)=0;
 
-    QString getTargetValue(int controlLoop=0) const;
+    virtual QString getTargetValue(int controlLoop=0);
 
     /** \brief Set control channel for coltrol loop.
 

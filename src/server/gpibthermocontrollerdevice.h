@@ -39,6 +39,8 @@ private:
     getControlTarget,
     setControlTarget;
 
+    QString getTargetValue(int controlLoop);
+
 };
 
 #endif // GPIBTHERMOCONTROLLERDEVICE_H

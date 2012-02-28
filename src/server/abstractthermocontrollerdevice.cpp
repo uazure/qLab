@@ -60,7 +60,7 @@ void AbstractThermocontrollerDevice::setD(double d, int controlLoop) {
     }
 }
 
-QString AbstractThermocontrollerDevice::getTargetValue(int controlLoop) const {
+QString AbstractThermocontrollerDevice::getTargetValue(int controlLoop) {
     return targetValue.at(controlLoop);
 }
 

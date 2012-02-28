@@ -114,3 +114,18 @@ bool GpibThermocontrollerDevice::setCurrentControlTypeIndex(int typeIndex, int l
         return false;
     }
 }
+
+QString GpibThermocontrollerDevice::getTargetValue(int controlLoop) {
+    QString target=AbstractThermocontrollerDevice::getTargetValue(controlLoop);
+    if (!target.isEmpty()) {
+        return target;
+    }
+    QString loopName=getLoopName(controlLoop);
+    QByteArray reply;
+    if (ask(getControlTarget.arg(loopName).toAscii(),reply)) {
+        return QString(reply);
+    } else {
+        qWarning()<<"Failed to get target value of loop"<<loopName;
+    }
+    return "Error";
+}

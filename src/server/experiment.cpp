@@ -114,22 +114,22 @@ void Experiment::initControllers() {
         }
 
         qDebug()<<"Converting AbstractDevice"<<deviceName<<"to AbstractThermocontrollerDevice";
-        AbstractThermocontrollerDevice *thermocontrollerDevice =
+        AbstractThermocontrollerDevice *tcdevice =
                 dynamic_cast<AbstractThermocontrollerDevice *> (device);
 
-        int loopIndex=thermocontrollerDevice->getLoopIndex(loopName);
+        int loopIndex=tcdevice->getLoopIndex(loopName);
         if (loopIndex<0) {
             qWarning()<<"Failed to init controllers. No loop"<<loopName;
             return;
         }
 
 
-        thermocontrollerDevice->setControlChannel(channelName,loopIndex);
+        tcdevice->setControlChannel(channelName,loopIndex);
 
 
         qDebug()<<"Appending control:"<<deviceName<<"loop name"<<loopName<<"loop index"<<loopIndex;
         QString controlName=names.at(i).trimmed();
-        appendControl(controlName,thermocontrollerDevice,loopIndex);
+        appendControl(controlName,tcdevice,loopIndex);
     }
 }
 
