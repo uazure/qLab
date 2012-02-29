@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     ColorBox.cpp \
     scaleplotpanner.cpp \
     tableview.cpp \
-    experiment.cpp
+    experiment.cpp \
+    experimentcontroldialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -32,10 +33,12 @@ HEADERS += mainwindow.h \
     ColorBox.h \
     scaleplotpanner.h \
     tableview.h \
-    experiment.h
+    experiment.h \
+    experimentcontroldialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
-    setupcurvesdialog.ui
+    setupcurvesdialog.ui \
+    experimentcontroldialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src

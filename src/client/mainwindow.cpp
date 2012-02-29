@@ -32,7 +32,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionMonitoring_interval,SIGNAL(triggered()),SLOT(setMonitoringInterval()));
     connect(ui->actionSetup,SIGNAL(triggered()),SLOT(showSetupCurvesDialog()));
     connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
-
+    connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
 
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
@@ -258,4 +258,11 @@ void MainWindow::setInterval() {
         return;
     }
     tcpClient.setMeasureInterval((int) interval*1000);
+}
+
+void MainWindow::viewExperimentControlDialog() {
+    ExperimentControlDialog *dialog=new ExperimentControlDialog(experiment,&tcpClient,this);
+
+    dialog->exec();
+
 }

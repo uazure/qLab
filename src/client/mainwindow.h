@@ -20,6 +20,7 @@
 #include "dataviewwindow.h"
 #include "setupcurvesdialog.h"
 #include "experiment.h"
+#include "experimentcontroldialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -62,6 +63,7 @@ private slots:
     void openFile(QString filename="");
     void saveFile(QString filename="");
     void setInterval(void);
+    void viewExperimentControlDialog(void);
 
 };
 
