@@ -23,6 +23,8 @@ private:
     Ui::ExperimentControlDialog *ui;
     TcpClient *tcpClient;
     Experiment *experiment;
+private slots:
+    void controlIndexChanged(int index);
 };
 
 #endif // EXPERIMENTCONTROLDIALOG_H

@@ -243,7 +243,7 @@ void MainWindow::setInterval() {
     if (!experiment->getInterval()) {
         qDebug()<<"No measuring interval set. Asking server";
         connect(&tcpClient,SIGNAL(serverInterval(int)),SLOT(setInterval()));
-        tcpClient.getMeasureInterval();
+        tcpClient.query(TcpClient::queryInterval);
         return;
     }
 

@@ -19,6 +19,7 @@ public slots:
 
     QStringList getControl() const;
     void setControl(QStringList controls);
+    void initialize();
 
 private:
     int interval;

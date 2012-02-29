@@ -17,6 +17,13 @@ public:
         expectInterval,
     };
 
+    enum QueryRequest {
+        queryInitialData,
+        queryInterval,
+        queryControls,
+        queryStatus,
+    };
+
 private:
     QByteArray buffer;
     Expect expect;
@@ -43,14 +50,16 @@ signals:
 
 public slots:
 
-    void askInitialData();
+    inline void askInitialData() {query(queryInitialData);}
+
     void getData();
     /** Slot gets the line from network and process it.
       It can emit dataLine signal to ExperimentData if it's comment or data line.
       Or it can emit other signals to update app information about the server (i.e. interval change or status change)
       */
     void protocolParser(QByteArray& line);
-    void getMeasureInterval(void);
+    void query(QueryRequest q);
+
     void setMeasureInterval(int interval);
 
 private slots:

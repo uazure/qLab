@@ -89,11 +89,77 @@ void TcpServer::readCommand() {
         return;
     }
 
-    buf=socket->read(bufsize);
-    if (buf.size()!=bufsize) {
-        qWarning()<<"Read"<<buf.size()<<"bytes of"<<bufsize;
-        qDebug()<<"Buffer:"<<buf;
+    while (socket->canReadLine()) {
+        buf=socket->readLine();
+        protocolParser(buf,socket);
     }
+
+
+
+}
+
+void TcpServer::experimentStatusChanged(bool running) {
+    QByteArray message;
+    if (running) {
+        message="\n200 Running\n";
+    } else {
+        message="\n200 Idle\n";
+    }
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write(message);
+    }
+}
+
+void TcpServer::experimentIntervalChanged(int msec) {
+    if (msec<100) {
+        qWarning()<<"Interval is too low!"<<msec;
+        return;
+    }
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write("\n200 Interval:\n"+QByteArray::number(msec)+'\n');
+    }
+}
+
+void TcpServer::experimentForbidden(QString message) {
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write("\n403 "+message.toUtf8()+'\n');
+    }
+}
+
+void TcpServer::disconnectClients() {
+    foreach (QTcpSocket *socket, clientSocket) {
+        socket->write("\n200 You are about to be disconnected. Bye!\n");
+        socket->disconnectFromHost();
+    }
+}
+
+void TcpServer::setClientMonitoringMode(QTcpSocket *socket, bool on) {
+    if (!socket) {
+        qWarning()<<"Empty socket to set monitoring mode on";
+        return;
+    }
+    clientSocketMonitorMode.insert(socket,on);
+}
+
+bool TcpServer::getClientMonitoringMode(QTcpSocket *socket) const {
+    if (!socket) {
+        qWarning()<<"Empty socket to get monitoring mode from";
+        return false;
+    }
+    return clientSocketMonitorMode.value(socket);
+}
+
+void TcpServer::measured(QString dataLine) {
+    QHashIterator<QTcpSocket *, bool> i(clientSocketMonitorMode);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value()) {
+            i.key()->write("\n200 Data:\n"+dataLine.toUtf8().append("\n"));
+        }
+    }
+}
+
+void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
     //here we gonna recognize request and send an answer
     buf=buf.trimmed();
     if (buf=="ping") {
@@ -113,7 +179,7 @@ void TcpServer::readCommand() {
                       "monitor off - set monitoring mode off\n"
                       "set target CONTROL=NUMBER - set target for specific CONTROL\n"
                       "set target=NUMBER - set target for default CONTROL\n"
-
+                      "get target CONTROL - get target of specified control id\n"
                       "");
         return;
     }
@@ -139,13 +205,14 @@ void TcpServer::readCommand() {
         buf.remove(0,11).trimmed().toDouble(&ok);
         if (ok) {
             experiment->setTarget(buf.remove(0,11).trimmed());
-            socket->write("\nTarget for control 0 set");
+            socket->write("\n200 Target for control 0 set");
             return;
         } else {
             qWarning()<<"Failed to recognize target value (NaN) of"<<buf;
             socket->write("\n400 Bad request\nTarget should be specified as a number");
             return;
         }
+        return;
     }
 
     if (buf.startsWith("set target ")) {
@@ -175,12 +242,34 @@ void TcpServer::readCommand() {
             return;
         }
         experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
-        QByteArray reply="\nTarget for control ";
+        QByteArray reply="\n200 Target for control ";
         reply+=controlIndex;
         reply+="set";
 
         socket->write(reply);
+        return;
 
+    }
+
+    if (buf.startsWith("get target")) {
+        buf=buf.remove(0,10);
+        buf=buf.trimmed();
+        bool ok;
+        int index;
+        index=buf.toInt(&ok);
+        if (!ok) {
+            index=0;
+        }
+        if (index>=experiment->size()) {
+            socket->write("400 Bad request\nTarget with such index does not exists");
+            qWarning("Target index larger than number of controls");
+            return;
+        }
+        QString target="200 Target of control ";
+        target.append(QString::number(index)).append(":\n");
+        target.append(experiment->getTarget(index));
+        socket->write(target.toAscii());
+        return;
     }
 
     if (buf=="get latest") {
@@ -256,66 +345,5 @@ void TcpServer::readCommand() {
 
     //if we did not recogized request
         socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n");
-}
 
-void TcpServer::experimentStatusChanged(bool running) {
-    QByteArray message;
-    if (running) {
-        message="\n200 Running\n";
-    } else {
-        message="\n200 Idle\n";
-    }
-    foreach (QTcpSocket *socket, clientSocket) {
-        socket->write(message);
-    }
 }
-
-void TcpServer::experimentIntervalChanged(int msec) {
-    if (msec<100) {
-        qWarning()<<"Interval is too low!"<<msec;
-        return;
-    }
-    foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("\n200 Interval:\n"+QByteArray::number(msec)+'\n');
-    }
-}
-
-void TcpServer::experimentForbidden(QString message) {
-    foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("\n403 "+message.toUtf8()+'\n');
-    }
-}
-
-void TcpServer::disconnectClients() {
-    foreach (QTcpSocket *socket, clientSocket) {
-        socket->write("\n200 You are about to be disconnected. Bye!\n");
-        socket->disconnectFromHost();
-    }
-}
-
-void TcpServer::setClientMonitoringMode(QTcpSocket *socket, bool on) {
-    if (!socket) {
-        qWarning()<<"Empty socket to set monitoring mode on";
-        return;
-    }
-    clientSocketMonitorMode.insert(socket,on);
-}
-
-bool TcpServer::getClientMonitoringMode(QTcpSocket *socket) const {
-    if (!socket) {
-        qWarning()<<"Empty socket to get monitoring mode from";
-        return false;
-    }
-    return clientSocketMonitorMode.value(socket);
-}
-
-void TcpServer::measured(QString dataLine) {
-    QHashIterator<QTcpSocket *, bool> i(clientSocketMonitorMode);
-    while (i.hasNext()) {
-        i.next();
-        if (i.value()) {
-            i.key()->write("\n200 Data:\n"+dataLine.toUtf8().append("\n"));
-        }
-    }
-}
-

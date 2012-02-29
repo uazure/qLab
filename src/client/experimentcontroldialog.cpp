@@ -15,6 +15,9 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
     font.setPointSizeF(font.pointSizeF()*1.3);
     font.setBold(true);
     ui->targetValueLabel->setFont(font);
+    QStringList ctrl=experiment->getControl();
+
+    connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
 
 
 }
@@ -34,4 +37,8 @@ void ExperimentControlDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void ExperimentControlDialog::controlIndexChanged(int index) {
+
 }

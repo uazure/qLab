@@ -3,15 +3,10 @@
 TcpClient::TcpClient(QObject *parent) :
     QTcpSocket(parent)
 {
-    connect(this,SIGNAL(connected()),this,SLOT(askInitialData()));
+    //connect(this,SIGNAL(connected()),this,SLOT(askInitialData()));
     connect(this,SIGNAL(readyRead()),this,SLOT(getData()));
     connect(this,SIGNAL(bytesWritten(qint64)),SLOT(bytesWritten(qint64)));
     expect=expectCommand;
-}
-
-void TcpClient::askInitialData()
-{
-    write("get all\n");
 }
 
 void TcpClient::getData()
@@ -91,8 +86,18 @@ void TcpClient::bytesWritten(qint64 bytes)
     emit bytesWritten((int) bytes);
 }
 
-void TcpClient::getMeasureInterval() {
-    write("get interval\n");
+void TcpClient::query(QueryRequest q) {
+    switch (q) {
+    case queryInterval:
+        write("get interval\n");
+        break;
+    case queryInitialData:
+        write("get all\n");
+        break;
+    case queryControls:
+        write("get controls\n");
+        break;
+    }
 }
 
 void TcpClient::setMeasureInterval(int interval) {
