@@ -265,8 +265,8 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
             qWarning("Target index larger than number of controls");
             return;
         }
-        QString target="200 Target of control ";
-        target.append(QString::number(index)).append(":\n");
+        QString target="200 Target of control:\n";
+        target.append(QString::number(index)).append("\t");
         target.append(experiment->getTarget(index));
         socket->write(target.toAscii());
         return;

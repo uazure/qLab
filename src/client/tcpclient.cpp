@@ -39,7 +39,6 @@ void TcpClient::protocolParser(QByteArray &line) {
         return;
     }
 
-
     if (getExpect()==expectData && !line.startsWith("200 ")) {
         emit dataLine(line);
         return;
@@ -57,6 +56,27 @@ void TcpClient::protocolParser(QByteArray &line) {
         return;
     }
 
+    if (getExpect()==expectTarget) {
+        QStringList tmp=QString(line).split("\t");
+        int controlIndex;
+        bool ok;
+        if (tmp.size()<2) {
+            qWarning()<<"Got lesser that 2 parameters as target";
+            return;
+        }
+
+        controlIndex=tmp.at(0).toInt(&ok);
+        if (!ok) {
+            qWarning()<<"First paramtere expected to be control index:\n"
+                    <<tmp.at(0);
+            return;
+        }
+        if (tmp.at(1).trimmed().isEmpty()) {
+            qWarning()<<"Target value is empty for control"<<controlIndex;
+        }
+        emit serverControlTarget(controlIndex,tmp.at(1).trimmed());
+    }
+
     if (line.startsWith("200 Initial data:")) {
         emit initialData();
         setExpect(expectData);
@@ -64,6 +84,8 @@ void TcpClient::protocolParser(QByteArray &line) {
         setExpect(expectData);
     } else if (line.startsWith("200 Interval:")) {
         setExpect(expectInterval);
+    } else if (line.startsWith("200 Target of control")) {
+        setExpect(expectTarget);
     } else if (line.startsWith("200 Idle")) {
         emit serverStatus(false);
         setExpect(expectCommand);

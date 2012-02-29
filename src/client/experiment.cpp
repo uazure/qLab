@@ -6,6 +6,7 @@ Experiment::Experiment(TcpClient* tcp, QObject *parent) :
     interval=0;
     tcpClient=tcp;
     connect(tcpClient,SIGNAL(connected()),SLOT(initialize()));
+    connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
 }
 
 void Experiment::initialize() {
@@ -16,11 +17,11 @@ void Experiment::initialize() {
 }
 
 QStringList Experiment::getControl() const {
-    return control;
+    return controlList;
 }
 
 void Experiment::setControl(QStringList controls) {
-    control=controls;
+    controlList=controls;
 }
 
 int Experiment::getInterval() const {
@@ -30,3 +31,22 @@ int Experiment::getInterval() const {
 void Experiment::setInterval(int newInterval) {
     interval=newInterval;
 }
+
+QString Experiment::getControlTarget(int controlIndex) const {
+    if (controlIndex>=targetList.size()) {
+        qWarning()<<"Control index larger that targets array";
+        return "Error";
+    }
+    return targetList.at(controlIndex);
+}
+
+void Experiment::setControlTarget(int controlIndex, QString target) {
+    if (targetList.size()<controlIndex) {
+        qWarning()<<"Control index larger than targets array. Appending";
+        while (targetList.size()<=controlIndex) {
+            targetList.append(QString());
+        }
+    }
+    targetList[controlIndex]=target;
+}
+

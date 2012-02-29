@@ -19,11 +19,15 @@ public slots:
 
     QStringList getControl() const;
     void setControl(QStringList controls);
+
+    void setControlTarget(int controlIndex,QString target);
+    QString getControlTarget(int controlIndex) const;
     void initialize();
 
 private:
     int interval;
-    QStringList control;
+    QStringList controlList;
+    QStringList targetList;
     TcpClient *tcpClient;
 
 };

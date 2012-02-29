@@ -3,6 +3,7 @@
 
 #include <QTcpSocket>
 #include <QBuffer>
+#include <QStringList>
 
 class TcpClient : public QTcpSocket
 {
@@ -15,6 +16,8 @@ public:
         expectCommand,
         expectData,
         expectInterval,
+        expectControls,
+        expectTarget,
     };
 
     enum QueryRequest {
@@ -47,6 +50,7 @@ signals:
 
     void bytesWritten(int bytes);
     void bytesRead(int bytes);
+    void serverControlTarget(int controlIndex, QString target);
 
 public slots:
 
