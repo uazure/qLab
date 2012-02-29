@@ -16,6 +16,7 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
     font.setBold(true);
     ui->targetValueLabel->setFont(font);
     QStringList ctrl=experiment->getControl();
+    ui->controlListWidget->addItems(ctrl);
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
 
@@ -40,5 +41,6 @@ void ExperimentControlDialog::changeEvent(QEvent *e)
 }
 
 void ExperimentControlDialog::controlIndexChanged(int index) {
-
+    QString target=experiment->getControlTarget(index);
+    ui->targetValueLabel->setText(target);
 }

@@ -56,6 +56,10 @@ void TcpClient::protocolParser(QByteArray &line) {
         return;
     }
 
+    if (getExpect()==expectControls) {
+        //FIXME
+    }
+
     if (getExpect()==expectTarget) {
         QStringList tmp=QString(line).split("\t");
         int controlIndex;
