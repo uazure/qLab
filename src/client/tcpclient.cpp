@@ -88,6 +88,7 @@ void TcpClient::protocolParser(QByteArray &line) {
             qWarning()<<"Target value is empty for control"<<controlIndex;
         }
         emit serverControlTarget(controlIndex,tmp.at(1).trimmed());
+        return;
     }
 
     if (line.startsWith("200 Initial data:")) {

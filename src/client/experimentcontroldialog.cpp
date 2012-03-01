@@ -17,7 +17,7 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
     ui->targetValueLabel->setFont(font);
     QStringList ctrl=experiment->getControl();
     ui->controlListWidget->addItems(ctrl);
-    ui->formLayout->setEnabled(false);
+
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
     connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
@@ -43,7 +43,7 @@ void ExperimentControlDialog::changeEvent(QEvent *e)
 }
 
 void ExperimentControlDialog::controlIndexChanged(int index) {
-    ui->targetValueLabel->setText("Fetching...");
+    ui->targetValueLabel->setText("...");
     tcpClient->query(TcpClient::queryTarget,QString::number(index));
 }
 
