@@ -1,5 +1,7 @@
 #include "tcpclient.h"
 
+int TcpClient::readLineCount=0;
+
 TcpClient::TcpClient(QObject *parent) :
     QTcpSocket(parent)
 {
@@ -35,6 +37,11 @@ void TcpClient::protocolParser(QByteArray &line) {
     //If line is empty after trimming it means it was just empty!
     //And empty lines prepends the commands from server :)
     if (line.isEmpty()) {
+        //if we was receiving controls list previously
+        if (getExpect()==expectControls) {
+            emit serverControlList(tmpStringList);
+        }
+        TcpClient::readLineCount=0;
         setExpect(expectCommand);
         return;
     }
@@ -57,7 +64,9 @@ void TcpClient::protocolParser(QByteArray &line) {
     }
 
     if (getExpect()==expectControls) {
-        //FIXME
+        tmpStringList.append(line);
+        ++TcpClient::readLineCount;
+        return;
     }
 
     if (getExpect()==expectTarget) {
@@ -90,6 +99,9 @@ void TcpClient::protocolParser(QByteArray &line) {
         setExpect(expectInterval);
     } else if (line.startsWith("200 Target of control")) {
         setExpect(expectTarget);
+    } else if (line.startsWith("200 Controls:")) {
+        tmpStringList.clear();
+        setExpect(expectControls);
     } else if (line.startsWith("200 Idle")) {
         emit serverStatus(false);
         setExpect(expectCommand);

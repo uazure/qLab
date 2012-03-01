@@ -5,6 +5,8 @@
 #include <QBuffer>
 #include <QStringList>
 
+
+
 class TcpClient : public QTcpSocket
 {
     Q_OBJECT
@@ -32,6 +34,8 @@ private:
     Expect expect;
     void setExpect(Expect Expectation);
     Expect getExpect(void) const;
+    static int readLineCount;
+    QStringList tmpStringList;
 
 
 signals:
@@ -51,6 +55,7 @@ signals:
     void bytesWritten(int bytes);
     void bytesRead(int bytes);
     void serverControlTarget(int controlIndex, QString target);
+    void serverControlList(QStringList controlList);
 
 public slots:
 
@@ -71,5 +76,6 @@ private slots:
 
 
 };
+
 
 #endif // TCPCLIENT_H

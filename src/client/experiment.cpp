@@ -7,6 +7,7 @@ Experiment::Experiment(TcpClient* tcp, QObject *parent) :
     tcpClient=tcp;
     connect(tcpClient,SIGNAL(connected()),SLOT(initialize()));
     connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
+    connect(tcpClient,SIGNAL(serverControlList(QStringList)),SLOT(setControl(QStringList)));
 }
 
 void Experiment::initialize() {
