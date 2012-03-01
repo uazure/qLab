@@ -42,7 +42,7 @@ QString Experiment::getControlTarget(int controlIndex) const {
 }
 
 void Experiment::setControlTarget(int controlIndex, QString target) {
-    if (targetList.size()<controlIndex) {
+    if (targetList.size()<=controlIndex) {
         qWarning()<<"Control index larger than targets array. Appending";
         while (targetList.size()<=controlIndex) {
             targetList.append(QString());

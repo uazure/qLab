@@ -124,7 +124,7 @@ void TcpClient::bytesWritten(qint64 bytes)
     emit bytesWritten((int) bytes);
 }
 
-void TcpClient::query(QueryRequest q) {
+void TcpClient::query(QueryRequest q,QString param1) {
     switch (q) {
     case queryInterval:
         write("get interval\n");
@@ -134,6 +134,12 @@ void TcpClient::query(QueryRequest q) {
         break;
     case queryControls:
         write("get controls\n");
+        break;
+    case queryTarget:
+//        if (param1.isEmpty()) {
+//            param1="0";
+//        }
+        write("get target "+param1.toAscii()+"\n");
         break;
     }
 }

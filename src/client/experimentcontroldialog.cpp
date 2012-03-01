@@ -17,8 +17,10 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
     ui->targetValueLabel->setFont(font);
     QStringList ctrl=experiment->getControl();
     ui->controlListWidget->addItems(ctrl);
+    ui->formLayout->setEnabled(false);
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
+    connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
 
 
 }
@@ -41,6 +43,14 @@ void ExperimentControlDialog::changeEvent(QEvent *e)
 }
 
 void ExperimentControlDialog::controlIndexChanged(int index) {
-    QString target=experiment->getControlTarget(index);
-    ui->targetValueLabel->setText(target);
+    ui->targetValueLabel->setText("Fetching...");
+    tcpClient->query(TcpClient::queryTarget,QString::number(index));
+}
+
+void ExperimentControlDialog::setControlTarget(int control, QString value) {
+    if (control!=ui->controlListWidget->currentRow()) {
+        qWarning()<<"Can't update target value. Different control is selected.";
+        return;
+    }
+    ui->targetValueLabel->setText(value);
 }

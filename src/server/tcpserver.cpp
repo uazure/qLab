@@ -185,7 +185,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
     }
 
     if (buf=="get interval") {
-        socket->write("\n200 Interval:\n"+QByteArray::number(experiment->getInterval())+'\n');
+        socket->write("\n200 Interval:\n"+QByteArray::number(experiment->getInterval())+"\n\n");
         return;
     }
     if (buf.startsWith("set interval=")) {
@@ -195,7 +195,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
             experiment->setInterval(interval);
         } else {
             qWarning()<<"Failed to get interval from request:\n"<<buf;
-            socket->write("\n400 Bad request\nInterval should be specified as a number");
+            socket->write("\n400 Bad request\nInterval should be specified as a number\n\n");
         }
         return;
     }
@@ -205,11 +205,11 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         buf.remove(0,11).trimmed().toDouble(&ok);
         if (ok) {
             experiment->setTarget(buf.remove(0,11).trimmed());
-            socket->write("\n200 Target for control 0 set");
+            socket->write("\n200 Target for control 0 set\n");
             return;
         } else {
             qWarning()<<"Failed to recognize target value (NaN) of"<<buf;
-            socket->write("\n400 Bad request\nTarget should be specified as a number");
+            socket->write("\n400 Bad request\nTarget should be specified as a number\n\n");
             return;
         }
         return;
@@ -242,7 +242,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
             return;
         }
         experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
-        QByteArray reply="\n200 Target for control ";
+        QByteArray reply="\n200 Target of control ";
         reply+=controlIndex;
         reply+="set";
 
@@ -267,7 +267,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         }
         QString target="200 Target of control:\n";
         target.append(QString::number(index)).append("\t");
-        target.append(experiment->getTarget(index));
+        target.append(experiment->getTarget(index).append("\n\n"));
         socket->write(target.toAscii());
         return;
     }
@@ -278,7 +278,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
 
     if (buf=="get controls") {
         socket->write("\n200 Controls:\n");
-        socket->write(experiment->getControlList().join("\n").toAscii().append("\n"));
+        socket->write(experiment->getControlList().join("\n").toAscii().append("\n\n"));
         return;
     }
 
@@ -286,28 +286,28 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         socket->write("\n200 Initial data:\n");
         socket->write(experiment->getHeader().toUtf8 ());
         socket->write(experiment->getData().toUtf8());
-        socket->write("\n");
+        socket->write("\n\n");
         setClientMonitoringMode(socket, true);
         return;
     }
 
     if (buf=="monitor on") {
         setClientMonitoringMode(socket,true);
-        socket->write("\n200 Monitoring on\n");
+        socket->write("\n200 Monitoring on\n\n");
         return;
     }
 
     if (buf=="monitor off") {
         setClientMonitoringMode(socket,false);
-        socket->write("\n200 Monitoring off\n");
+        socket->write("\n200 Monitoring off\n\n");
         return;
     }
 
     if (buf=="get monitor") {
         if (getClientMonitoringMode(socket)) {
-            socket->write("\n200 Monitoring on\n");
+            socket->write("\n200 Monitoring on\n\n");
         } else {
-            socket->write("\n200 Monitoring off\n");
+            socket->write("\n200 Monitoring off\n\n");
         }
         return;
     }
@@ -324,26 +324,26 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
 
     if (buf=="status") {
         if (experiment->isActive())
-           socket->write("\n200 Running\n");
+           socket->write("\n200 Running\n\n");
         else
-           socket->write("\n200 Idle\n");
+           socket->write("\n200 Idle\n\n");
         return;
     }
 
 
     if (buf=="version") {
-        socket->write(QCoreApplication::applicationName().toUtf8()+" version "+QCoreApplication::applicationVersion().toUtf8()+'\n');
+        socket->write(QCoreApplication::applicationName().toUtf8()+" version "+QCoreApplication::applicationVersion().toUtf8()+"\n\n");
         return;
     }
 
     if (buf=="quit" || buf=="exit") {
-        socket->write("\n200 Bye!\n");
+        socket->write("\n200 Bye!\n\n");
         socket->disconnectFromHost();
         return;
     }
 
 
     //if we did not recogized request
-        socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n");
+        socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n\n");
 
 }

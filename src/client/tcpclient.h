@@ -27,6 +27,7 @@ public:
         queryInterval,
         queryControls,
         queryStatus,
+        queryTarget,
     };
 
 private:
@@ -67,7 +68,7 @@ public slots:
       Or it can emit other signals to update app information about the server (i.e. interval change or status change)
       */
     void protocolParser(QByteArray& line);
-    void query(QueryRequest q);
+    void query(QueryRequest q,QString param1="");
 
     void setMeasureInterval(int interval);
 

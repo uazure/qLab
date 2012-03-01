@@ -71,8 +71,8 @@
     <property name="title">
      <string>Experiment</string>
     </property>
-    <addaction name="actionSet_interval"/>
     <addaction name="actionControl"/>
+    <addaction name="actionSet_interval"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -216,7 +216,7 @@
   </action>
   <action name="actionSet_interval">
    <property name="text">
-    <string>Set interval</string>
+    <string>Measure interval</string>
    </property>
   </action>
   <action name="actionControl">
