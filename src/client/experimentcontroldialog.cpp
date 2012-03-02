@@ -18,6 +18,10 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
     QStringList ctrl=experiment->getControl();
     ui->controlListWidget->addItems(ctrl);
 
+//    if (ctrl.size()>0) {
+//        ui->controlListWidget->setCurrentRow(0);
+//    }
+
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
     connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
@@ -27,6 +31,7 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
 ExperimentControlDialog::~ExperimentControlDialog()
 {
     delete ui;
+    qDebug()<<"ExperimentControlDialog deleted";
 }
 
 void ExperimentControlDialog::changeEvent(QEvent *e)
@@ -47,8 +52,9 @@ void ExperimentControlDialog::controlIndexChanged(int index) {
 }
 
 void ExperimentControlDialog::setControlTarget(int control, QString value) {
-    if (control!=ui->controlListWidget->currentRow()) {
-        qWarning()<<"Can't update target value. Different control is selected.";
+    int currentRow=ui->controlListWidget->currentRow();
+    if (control!=currentRow) {
+        qWarning()<<"Current row is"<<currentRow<<"Different control is selected:"<<control;
         return;
     }
     ui->targetValueLabel->setText(value);

@@ -18,20 +18,18 @@ void ExperimentHistory::clear()
     timestamps.clear();
 }
 
-QStringList ExperimentHistory::getHistory(int controlIndex=-1) const
+QStringList ExperimentHistory::getHistory(int controlIndex) const
 {
-    if (controlIndex<0) {
     QStringList retval;
+
+
     for (int i=0;i<targetValues.size();++i) {
-        QString tmp=QString::number(timestamps.at(i).toTime_t());
-        tmp.append(".");
-        tmp.append(timestamps.at(i).toString("zzz"));
-        tmp.append("\t");
-        tmp.append(targetValues.at(i)).append("\t");
-        tmp.append("control").append(" ").append(QString::number(controlIndicies.at(i)));
-        retval.append(tmp);
+        if (controlIndex<0 || controlIndicies.at(i)==controlIndex) {
+            QString tmp;
+            tmp.append(QString::number(controlIndicies.at(i))).append("\t");
+            tmp.append(targetValues.at(i));
+            retval.append(tmp);
+        }
     }
     return retval;
-    }
-
 }

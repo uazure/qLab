@@ -16,7 +16,7 @@ public:
     ExperimentHistory();
     void addHistoryEntry(QString value, int controlIndex=0);
     void clear();
-    QStringList getHistory() const;
+    QStringList getHistory(int controlIndex=-1) const;
 
 private:
     QList<QString> targetValues;

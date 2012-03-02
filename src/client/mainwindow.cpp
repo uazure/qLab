@@ -262,7 +262,6 @@ void MainWindow::setInterval() {
 
 void MainWindow::viewExperimentControlDialog() {
     ExperimentControlDialog *dialog=new ExperimentControlDialog(experiment,&tcpClient,this);
-
     dialog->exec();
-
+    delete dialog;
 }
