@@ -145,8 +145,17 @@ void TcpClient::query(QueryRequest q,QString param1) {
     }
 }
 
+
 void TcpClient::setMeasureInterval(int interval) {
     QByteArray request("set interval=");
     request.append(QByteArray::number(interval)).append("\n");
+    write(request);
+}
+
+void TcpClient::setControlTarget(int controlIndex, QString target)
+{
+    QByteArray request("set target ");
+    request.append(QByteArray::number(controlIndex)).append("=");
+    request.append(target.toAscii()).append("\n");
     write(request);
 }

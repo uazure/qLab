@@ -21,8 +21,7 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
     connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
-
-
+    connect(ui->targetValueLabel,SIGNAL(doubleClicked()),SLOT(setControlTarget()));
 }
 
 ExperimentControlDialog::~ExperimentControlDialog()
@@ -53,4 +52,23 @@ void ExperimentControlDialog::setControlTarget(int control, QString value) {
         return;
     }
     ui->targetValueLabel->setText(value);
+}
+
+/** this slot is used to ask user new target value for currently selected control
+  */
+void ExperimentControlDialog::setControlTarget() {
+    int controlIndex=ui->controlListWidget->currentRow();
+    if (controlIndex<0) {
+        return;
+    }
+
+    QString currentTarget=ui->targetValueLabel->text();
+    bool ok=false;
+    double newTarget=QInputDialog::getDouble(this,tr("New target"),tr("Specify new target"),currentTarget.toDouble(),-2147483647,2147483647,2,&ok);
+    if (!ok) {
+        return;
+    }
+    qDebug()<<"Setting new target"<<newTarget<<"for control"<<controlIndex;
+    tcpClient->setControlTarget(controlIndex,QString::number(newTarget));
+    controlIndexChanged(controlIndex);
 }

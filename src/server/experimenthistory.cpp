@@ -18,8 +18,9 @@ void ExperimentHistory::clear()
     timestamps.clear();
 }
 
-QStringList ExperimentHistory::getHistory() const
+QStringList ExperimentHistory::getHistory(int controlIndex=-1) const
 {
+    if (controlIndex<0) {
     QStringList retval;
     for (int i=0;i<targetValues.size();++i) {
         QString tmp=QString::number(timestamps.at(i).toTime_t());
@@ -31,4 +32,6 @@ QStringList ExperimentHistory::getHistory() const
         retval.append(tmp);
     }
     return retval;
+    }
+
 }

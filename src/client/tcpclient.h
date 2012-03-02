@@ -71,6 +71,7 @@ public slots:
     void query(QueryRequest q,QString param1="");
 
     void setMeasureInterval(int interval);
+    void setControlTarget(int controlIndex,QString target);
 
 private slots:
     void bytesWritten(qint64 bytes);

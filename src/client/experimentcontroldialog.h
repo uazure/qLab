@@ -2,6 +2,7 @@
 #define EXPERIMENTCONTROLDIALOG_H
 
 #include <QDialog>
+#include <QInputDialog>
 #include "experiment.h"
 #include "tcpclient.h"
 
@@ -27,6 +28,8 @@ private:
 private slots:
     void controlIndexChanged(int index);
     void setControlTarget(int control,QString value);
+    void setControlTarget(void);
+
 };
 
 #endif // EXPERIMENTCONTROLDIALOG_H

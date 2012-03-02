@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     scaleplotpanner.cpp \
     tableview.cpp \
     experiment.cpp \
-    experimentcontroldialog.cpp
+    experimentcontroldialog.cpp \
+    ../server/clickablelabel.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -34,7 +35,8 @@ HEADERS += mainwindow.h \
     scaleplotpanner.h \
     tableview.h \
     experiment.h \
-    experimentcontroldialog.h
+    experimentcontroldialog.h \
+    ../server/clickablelabel.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \

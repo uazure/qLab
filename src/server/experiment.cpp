@@ -85,7 +85,8 @@ void Experiment::setExperiment(QString experiment) {
 void Experiment::initControllers() {
     //read controllers from experiment settings
     QStringList controls=settings->value("controls").toString().split(",",QString::SkipEmptyParts);
-    QStringList names=settings->value("controls/name").toString().split(",",QString::KeepEmptyParts);
+    QStringList names=settings->value("controls/name").toString().split(",",QString::SkipEmptyParts);
+
 
     //Fill names list if it's lesser that controls list
     while (names.size()<controls.size()) {
