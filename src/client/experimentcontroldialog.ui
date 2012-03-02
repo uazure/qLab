@@ -79,6 +79,12 @@ Double click to change</string>
             </property>
             <item>
              <widget class="QListWidget" name="historyListWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="toolTip">
                <string>Latest values at top</string>
               </property>
