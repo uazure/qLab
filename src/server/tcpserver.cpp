@@ -180,7 +180,9 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
                       "set target CONTROL=NUMBER - set target for specific CONTROL\n"
                       "set target=NUMBER - set target for default CONTROL\n"
                       "get target CONTROL - get target of specified control id\n"
-                      "");
+                      "get history - get history for all devices\n"
+                      "get history CONTROL - get history for CONTROL only\n"
+                      "\n");
         return;
     }
 
@@ -226,19 +228,19 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         qDebug()<<tmp;
         if (!ok) {
             qWarning()<<"Failed to parse"<<buf<<": control index NaN";
-            socket->write("\n400 Bad request\nCONTROL index should be integer");
+            socket->write("\n400 Bad request\nCONTROL index should be integer\n\n");
             return;
         }
         if (controlIndex>=experiment->ControllableDeviceList::size() || controlIndex<0) {
             qWarning()<<"Control index is not correct"<<controlIndex;
-            socket->write("\n400 Bad request\nControl index incorrect");
+            socket->write("\n400 Bad request\nControl index incorrect\n\n");
             return;
         }
 
         double value=tmp.at(1).trimmed().toDouble(&ok);
         if (!ok) {
             qWarning()<<"Failed to parse"<<buf<<": target value NaN";
-            socket->write("\n400 Bad request\nTarget value should be double");
+            socket->write("\n400 Bad request\nTarget value should be double\n\n");
             return;
         }
         experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
@@ -246,9 +248,18 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         reply+=controlIndex;
         reply+="set";
 
-        socket->write(reply);
+        socket->write(reply.append("\n\n"));
         return;
 
+    }
+
+    if (buf.startsWith("get history")) {
+        buf=buf.remove(0,12);
+        buf=buf.trimmed();
+        QByteArray reply="200 History:\n";
+        reply.append(experiment->getHistory().join("\n").toAscii()).append("\n\n");
+        socket->write(reply);
+        return;
     }
 
     if (buf.startsWith("get target")) {
@@ -262,7 +273,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         }
         if (index>=experiment->size()) {
             socket->write("400 Bad request\nTarget with such index does not exists");
-            qWarning("Target index larger than number of controls");
+            qWarning("Target index larger than number of controls\n\n");
             return;
         }
         QString target="200 Target of control:\n";
@@ -344,6 +355,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
 
 
     //if we did not recogized request
+        qWarning()<<"Failed to recognize request:\n"<<buf;
         socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n\n");
 
 }

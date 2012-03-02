@@ -51,3 +51,14 @@ void Experiment::setControlTarget(int controlIndex, QString target) {
     targetList[controlIndex]=target;
 }
 
+QStringList Experiment::getHistory() const {
+    if (historyList.isEmpty()) {
+        tcpClient->query(TcpClient::queryHistory);
+    }
+    return historyList;
+}
+
+void Experiment::setHistory(QStringList &history) {
+    qDebug()<<"History updated\n"<<history;
+    historyList=history;
+}

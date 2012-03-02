@@ -24,8 +24,10 @@ ExperimentControlDialog::ExperimentControlDialog(Experiment *experimentPointer, 
 
 
     connect(ui->controlListWidget,SIGNAL(currentRowChanged(int)),SLOT(controlIndexChanged(int)));
-    connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
     connect(ui->targetValueLabel,SIGNAL(doubleClicked()),SLOT(setControlTarget()));
+
+    connect(tcpClient,SIGNAL(serverControlTarget(int,QString)),SLOT(setControlTarget(int,QString)));
+    connect(tcpClient,SIGNAL(serverHistory(QStringList)),SLOT(setHistory(QStringList)));
 }
 
 ExperimentControlDialog::~ExperimentControlDialog()
@@ -49,6 +51,7 @@ void ExperimentControlDialog::changeEvent(QEvent *e)
 void ExperimentControlDialog::controlIndexChanged(int index) {
     ui->targetValueLabel->setText("...");
     tcpClient->query(TcpClient::queryTarget,QString::number(index));
+    tcpClient->query(TcpClient::queryHistory);
 }
 
 void ExperimentControlDialog::setControlTarget(int control, QString value) {
@@ -63,7 +66,7 @@ void ExperimentControlDialog::setControlTarget(int control, QString value) {
 /** this slot is used to ask user new target value for currently selected control
   */
 void ExperimentControlDialog::setControlTarget() {
-    int controlIndex=ui->controlListWidget->currentRow();
+    const int controlIndex=ui->controlListWidget->currentRow();
     if (controlIndex<0) {
         return;
     }
@@ -77,4 +80,32 @@ void ExperimentControlDialog::setControlTarget() {
     qDebug()<<"Setting new target"<<newTarget<<"for control"<<controlIndex;
     tcpClient->setControlTarget(controlIndex,QString::number(newTarget));
     controlIndexChanged(controlIndex);
+}
+
+void ExperimentControlDialog::setHistory(QStringList history) {
+    ui->historyListWidget->clear();
+    if (history.isEmpty()) {
+        return;
+    }
+    const int controlIndex=ui->controlListWidget->currentRow();
+    QStringList controlHistory;
+    for (int i=0;i<history.size();++i) {
+        QStringList cols=history.at(i).split("\t");
+        if (cols.at(0).isEmpty() || cols.at(1).isEmpty()) {
+            continue;
+        }
+        bool ok=false;
+        if (controlIndex==cols.at(0).toInt(&ok) && ok) {
+            controlHistory.append(cols.at(1));
+        }
+    }
+
+    //reverse stringList
+    QStringList reversedHistory;
+    for (int i=controlHistory.size()-1;i>=0;--i) {
+        reversedHistory.append(controlHistory.at(i));
+    }
+
+    //update history widget with history items
+    ui->historyListWidget->addItems(reversedHistory);
 }

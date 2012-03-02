@@ -24,10 +24,14 @@ public slots:
     QString getControlTarget(int controlIndex) const;
     void initialize();
 
+    void setHistory(QStringList &history);
+    QStringList getHistory() const;
+
 private:
     int interval;
     QStringList controlList;
     QStringList targetList;
+    QStringList historyList;
     TcpClient *tcpClient;
 
 };

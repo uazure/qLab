@@ -39,8 +39,13 @@ void TcpClient::protocolParser(QByteArray &line) {
     if (line.isEmpty()) {
         //if we was receiving controls list previously
         if (getExpect()==expectControls) {
+            qDebug()<<"Read"<<TcpClient::readLineCount<<"lines of controls";
             emit serverControlList(tmpStringList);
+        } else if (getExpect()==expectHistory) {
+            qDebug()<<"Read"<<TcpClient::readLineCount<<"lines of history";
+            emit serverHistory(tmpStringList);
         }
+
         TcpClient::readLineCount=0;
         setExpect(expectCommand);
         return;
@@ -60,6 +65,12 @@ void TcpClient::protocolParser(QByteArray &line) {
         } else {
             qWarning()<<"Failed to get interval integer from string"<<line;
         }
+        return;
+    }
+
+    if (getExpect()==expectHistory) {
+        tmpStringList.append(line);
+        ++TcpClient::readLineCount;
         return;
     }
 
@@ -109,6 +120,9 @@ void TcpClient::protocolParser(QByteArray &line) {
     } else if (line.startsWith("200 Running")) {
         emit serverStatus(true);
         setExpect(expectCommand);
+    } else if (line.startsWith("200 History:")) {
+        tmpStringList.clear();
+        setExpect(expectHistory);
     }
 }
 
@@ -141,6 +155,9 @@ void TcpClient::query(QueryRequest q,QString param1) {
 //            param1="0";
 //        }
         write("get target "+param1.toAscii()+"\n");
+        break;
+    case queryHistory:
+        write("get history\n");
         break;
     }
 }

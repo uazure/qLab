@@ -20,6 +20,7 @@ public:
         expectInterval,
         expectControls,
         expectTarget,
+        expectHistory,
     };
 
     enum QueryRequest {
@@ -28,6 +29,7 @@ public:
         queryControls,
         queryStatus,
         queryTarget,
+        queryHistory,
     };
 
 private:
@@ -57,6 +59,7 @@ signals:
     void bytesRead(int bytes);
     void serverControlTarget(int controlIndex, QString target);
     void serverControlList(QStringList controlList);
+    void serverHistory(QStringList history);
 
 public slots:
 

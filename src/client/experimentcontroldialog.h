@@ -27,8 +27,12 @@ private:
 
 private slots:
     void controlIndexChanged(int index);
+    //updates ui with target for specified control
     void setControlTarget(int control,QString value);
+    //shows dialog for setting new target for current control
     void setControlTarget(void);
+
+    void setHistory(QStringList history);
 
 };
 
