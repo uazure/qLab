@@ -15,6 +15,7 @@ public:
     void setExperiment(Experiment *experiment);
     void setClientMonitoringMode(QTcpSocket * socket, bool on);
     bool getClientMonitoringMode(QTcpSocket * socket) const;
+    void bind(quint16 port=25050);
 
 private:
     QSet<QTcpSocket *> clientSocket;
@@ -27,11 +28,14 @@ private slots:
     void removeConnection();
     void readCommand(void);
     void measured(QString dataLine);
+    void targetChanged(int controlIndex, QString target);
     void protocolParser(QByteArray &line, QTcpSocket *socket);
 
 
 signals:
     void clientCountChanged(int count);
+    void warning(QString message);
+    void notify(QString message);
 
 public slots:
     void experimentStatusChanged(bool running);

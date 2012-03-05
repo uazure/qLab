@@ -57,11 +57,12 @@ public slots:
     void showData();
     void setFile(QString filename);
     void getFile(void);
-    void Notify(QString message);
     void statusChanged(bool status);
     //experiment can set ui to display interval
     void setMeasureInterval(int msec);
     void changeMeasureIntervalDialog();
+    void notify(QString message);
+    void warning(QString message);
 
 };
 

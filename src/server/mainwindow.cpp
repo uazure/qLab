@@ -13,14 +13,23 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     experiment=new Experiment();
+
     tcp=new TcpServer(this);
     tcp->setExperiment(experiment);
     udp=new UdpServer(this);
     udp->setExperiment(experiment);
 
+    connect(tcp,SIGNAL(warning(QString)),SLOT(warning(QString)));
+    connect(tcp,SIGNAL(notify(QString)),SLOT(notify(QString)));
+
+    //bind tcp socket to local port 25050
+    tcp->bind(25050);
+
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
     connect(experiment,SIGNAL(intervalChanged(int)),tcp,SLOT(experimentIntervalChanged(int)));
     connect(experiment,SIGNAL(TcpForbidden(QString)),tcp,SLOT(experimentForbidden(QString)));
+    connect(experiment,SIGNAL(targetChanged(int,QString)),tcp,SLOT(targetChanged(int,QString)));
+
 
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
@@ -39,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(experimentChanged(QString)),this,SLOT(setExperiment(QString)));
     connect(experiment,SIGNAL(measured(QString)),ui->plainTextEdit,SLOT(appendPlainText(QString)));
     connect(experiment,SIGNAL(fileChanged(QString)),this,SLOT(setFile(QString)));
-    connect(experiment,SIGNAL(Notify(QString)),SLOT(Notify(QString)));
+    connect(experiment,SIGNAL(Notify(QString)),SLOT(notify(QString)));
     connect(experiment,SIGNAL(intervalChanged(int)),SLOT(setMeasureInterval(int)));
     connect(experiment,SIGNAL(updateProgress(int)),ui->measureIntervalProgressBar,SLOT(setValue(int)));
 
@@ -135,8 +144,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-void MainWindow::Notify(QString message) {
+void MainWindow::notify(QString message) {
     statusBar()->showMessage(message);
+}
+
+void MainWindow::warning(QString message) {
+    QMessageBox::warning(this,tr("Warning"),message,QMessageBox::Ok);
 }
 
 void MainWindow::statusChanged(bool status) {
@@ -179,3 +192,4 @@ void MainWindow::showData()
     ViewDataDialog *dialog=new ViewDataDialog(experiment,this);
     dialog->exec();
 }
+

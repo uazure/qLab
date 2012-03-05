@@ -3,12 +3,7 @@
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent)
 {
-    quint16 port=25050;
-    while (!listen(QHostAddress::Any,port) && port<65535) {
-        qWarning()<<"Failed to listen port"<<port;
-        ++port;
-    }
-    qDebug()<<"Listening on port"<<serverPort();
+
     connect(this,SIGNAL(newConnection()),this,SLOT(acceptConnection()));
     experiment=0;
 }
@@ -154,7 +149,20 @@ void TcpServer::measured(QString dataLine) {
     while (i.hasNext()) {
         i.next();
         if (i.value()) {
-            i.key()->write("\n200 Data:\n"+dataLine.toUtf8().append("\n"));
+            i.key()->write("\n200 Data:\n"+dataLine.toUtf8().append("\n\n"));
+        }
+    }
+}
+
+void TcpServer::targetChanged(int controlIndex, QString target) {
+    QHashIterator<QTcpSocket *, bool> i(clientSocketMonitorMode);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value()) {
+            QString target="\n200 Data:\n";
+            target.append("#Control ").append(QString::number(controlIndex)).append("\t");
+            target.append(experiment->getTarget(controlIndex).append("\n\n"));
+            i.key()->write(target.toAscii());
         }
     }
 }
@@ -177,6 +185,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
                       "get all - get initial experimental data with header\n"
                       "monitor on - set monitoring mode on\n"
                       "monitor off - set monitoring mode off\n"
+                      "get controls - get list of available controls\n"
                       "set target CONTROL=NUMBER - set target for specific CONTROL\n"
                       "set target=NUMBER - set target for default CONTROL\n"
                       "get target CONTROL - get target of specified control id\n"
@@ -206,8 +215,14 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         bool ok=false;
         buf.remove(0,11).trimmed().toDouble(&ok);
         if (ok) {
-            experiment->setTarget(buf.remove(0,11).trimmed());
-            socket->write("\n200 Target for control 0 set\n");
+            QString target=buf.remove(0,11).trimmed();
+            ok=experiment->setTarget(target.toAscii());
+            if (!ok) {
+                qWarning()<<"Failed to set target for control 0";
+                socket->write("\n500 Failed to set target\n");
+                return;
+            }
+            emit targetChanged(0,target);
             return;
         } else {
             qWarning()<<"Failed to recognize target value (NaN) of"<<buf;
@@ -243,14 +258,14 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
             socket->write("\n400 Bad request\nTarget value should be double\n\n");
             return;
         }
-        experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
-        QByteArray reply="\n200 Target of control ";
-        reply+=controlIndex;
-        reply+="set";
 
-        socket->write(reply.append("\n\n"));
+        ok=experiment->setTarget(tmp.at(1).trimmed(),controlIndex);
+        if (!ok) {
+            qWarning()<<"Failed to set target of control"<<controlIndex;
+            socket->write("\n500 Failed to set target");
+            return;
+        }
         return;
-
     }
 
     if (buf.startsWith("get history")) {
@@ -358,4 +373,15 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         qWarning()<<"Failed to recognize request:\n"<<buf;
         socket->write("\n\n400 Bad request\nType 'help' for full list of supported commands\n\n");
 
+}
+
+void TcpServer::bind(quint16 port) {
+
+    while (!listen(QHostAddress::Any,port) && port<65535) {
+        emit warning(tr("Failed to bind to port %1").arg(QString::number(port)));
+        qWarning()<<"Failed to listen port"<<port;
+        ++port;
+    }
+    emit notify(tr("Bound to port %1").arg(QString::number(port)));
+    qDebug()<<"Listening on port"<<serverPort();
 }

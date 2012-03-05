@@ -209,7 +209,7 @@ void Experiment::doMeasure() {
         output.append(tmp).append("\t");
     }
     //qDebug("MEASURE CYCLE END");
-    this->dataStringList.append(output.trimmed());
+    dataStringList.append(output.trimmed());
     emit measured(output.trimmed());
 }
 
@@ -404,7 +404,11 @@ bool Experiment::setTarget(QString value, int control)
         qDebug()<<"Target of control"<<control<<"set to"<<value;
         //save target change to history
         addHistoryEntry(value,control);
-        emit targetChanged(value);
+        QString dataLine("*%1\t%2\t%3");
+        dataLine=dataLine.arg(UtimeDevice::readValue(),QString::number(control),value);
+        dataStringList.append(dataLine);
+        emit measured(dataLine);
+        //emit targetChanged(control, value);
         return true;
     } else {
         qWarning()<<"Failed to set target"<<value<<"of control with index"<<control;
