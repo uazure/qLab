@@ -408,7 +408,6 @@ bool Experiment::setTarget(QString value, int control)
         dataLine=dataLine.arg(UtimeDevice::readValue(),QString::number(control),value);
         dataStringList.append(dataLine);
         emit measured(dataLine);
-        //emit targetChanged(control, value);
         return true;
     } else {
         qWarning()<<"Failed to set target"<<value<<"of control with index"<<control;

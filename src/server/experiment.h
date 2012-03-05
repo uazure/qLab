@@ -88,8 +88,7 @@ signals:
     void TcpForbidden(QString message);
     /// says to update progress-meter for interval. progress is from 0 to 100;
     void updateProgress(int progress);
-    /// informs that target value has changed
-    void targetChanged(int control,QString target);
+
 
 public slots:
     /// set experiment name (configuration)

@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     QLocale::setDefault(QLocale::English);
+    //setAttribute(Qt::WA_DeleteOnClose,true);
     ui->setupUi(this);
     experimentSettings=new QSettings (QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"experiment",this);
     experiment=new Experiment();
@@ -126,7 +127,14 @@ void MainWindow::setFile(QString filename) {
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (event->spontaneous()) event->accept();
+    bool sp=event->spontaneous();
+    //close without asking if event was called internally
+    if (!sp) {
+        experiment->saveFile();
+        event->accept();
+        return;
+    }
+
     QMessageBox dialog(this);
     dialog.setText("Really exit?");
     dialog.setIcon(QMessageBox::Question);
@@ -149,7 +157,10 @@ void MainWindow::notify(QString message) {
 }
 
 void MainWindow::warning(QString message) {
-    QMessageBox::warning(this,tr("Warning"),message,QMessageBox::Ok);
+    int retval=QMessageBox::warning(this,tr("Warning"),message,QMessageBox::Ok,QMessageBox::Abort);
+    if (retval==QMessageBox::Abort) {
+        close();
+    }
 }
 
 void MainWindow::statusChanged(bool status) {
