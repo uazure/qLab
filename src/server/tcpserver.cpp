@@ -154,19 +154,6 @@ void TcpServer::measured(QString dataLine) {
     }
 }
 
-void TcpServer::targetChanged(int controlIndex, QString target) {
-    QHashIterator<QTcpSocket *, bool> i(clientSocketMonitorMode);
-    while (i.hasNext()) {
-        i.next();
-        if (i.value()) {
-            QString target="\n200 Data:\n";
-            target.append("#Control ").append(QString::number(controlIndex)).append("\t");
-            target.append(experiment->getTarget(controlIndex).append("\n\n"));
-            i.key()->write(target.toAscii());
-        }
-    }
-}
-
 void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
     //here we gonna recognize request and send an answer
     buf=buf.trimmed();
@@ -222,7 +209,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
                 socket->write("\n500 Failed to set target\n");
                 return;
             }
-            emit targetChanged(0,target);
+            //emit targetChanged(0,target);
             return;
         } else {
             qWarning()<<"Failed to recognize target value (NaN) of"<<buf;

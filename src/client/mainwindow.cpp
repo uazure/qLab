@@ -8,6 +8,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     ui->setupUi(this);
 
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
+
     data=new ExperimentData(this);
     experiment=new Experiment(&tcpClient,this);
     plot=new Plot(this,data);
@@ -53,6 +54,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
     connect(data,SIGNAL(pointCount(int)),plot,SLOT(drawLastPoint(int)));
+    connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
 
 
 

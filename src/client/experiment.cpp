@@ -11,14 +11,18 @@ Experiment::Experiment(TcpClient* tcp, QObject *parent) :
 }
 
 void Experiment::initialize() {
-    tcpClient->query(TcpClient::queryInitialData);
     tcpClient->query(TcpClient::queryControls);
     tcpClient->query(TcpClient::queryInterval);
     tcpClient->query(TcpClient::queryStatus);
+    tcpClient->query(TcpClient::queryInitialData);
 }
 
 QStringList Experiment::getControl() const {
     return controlList;
+}
+
+int Experiment::getControlCount() const {
+    return controlList.size();
 }
 
 void Experiment::setControl(QStringList controls) {

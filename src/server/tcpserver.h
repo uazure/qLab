@@ -28,7 +28,6 @@ private slots:
     void removeConnection();
     void readCommand(void);
     void measured(QString dataLine);
-    void targetChanged(int controlIndex, QString target);
     void protocolParser(QByteArray &line, QTcpSocket *socket);
 
 

@@ -567,3 +567,20 @@ double Plot::getMonitoringInterval(void) const
 }
 
 
+void Plot::appendMarker(QPointF point, int control) {
+    QwtPlotMarker *marker=new QwtPlotMarker();
+    marker->setLineStyle(QwtPlotMarker::VLine);
+    QColor color(Qt::red);
+    QBrush redbrush(Qt::red);
+    QPen linePen(redbrush,2,Qt::SolidLine);
+    marker->setLinePen(linePen);
+//    QSize size;
+//    size.setHeight(12);
+//    size.setWidth(12);
+//    marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(color),QPen(Qt::NoPen),size));
+
+    marker->setValue(point);
+    marker->setTitle(QString::number(control));
+    marker->attach(this);
+    emit message("Appended marker");
+}

@@ -29,8 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(experiment,SIGNAL(statusChanged(bool)),tcp,SLOT(experimentStatusChanged(bool)));
     connect(experiment,SIGNAL(intervalChanged(int)),tcp,SLOT(experimentIntervalChanged(int)));
     connect(experiment,SIGNAL(TcpForbidden(QString)),tcp,SLOT(experimentForbidden(QString)));
-    connect(experiment,SIGNAL(targetChanged(int,QString)),tcp,SLOT(targetChanged(int,QString)));
-
 
 
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));

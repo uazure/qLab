@@ -18,6 +18,7 @@ public slots:
     int getInterval() const;
 
     QStringList getControl() const;
+    int getControlCount() const;
     void setControl(QStringList controls);
 
     void setControlTarget(int controlIndex,QString target);

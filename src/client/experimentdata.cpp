@@ -223,9 +223,46 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
         return;
     }
 
+    if (commentLine.startsWith("*")) {
+        //trim the first symbol ('*')
+        commentLine=commentLine.right(commentLine.size()-1);
+        //extract values separated with tab
+        //timestamp  [tab]  controlIndex  [tab]  targetValue
+        QString tmp(QString::fromUtf8(commentLine));
+        QStringList tmpList=tmp.split("\t",QString::SkipEmptyParts);
+        if (tmpList.size()<3) {
+            qWarning()<<"Failed to parse transition point\n"<<tmp;
+            return;
+        }
+        bool ok;
+        //setting timestamp as double (subtracting initial timestamp
+        double markerX=tmpList.at(0).toDouble(&ok)-initialUtime;;
+        if (!ok) {
+            qWarning()<<"Failed to convert timestamp to double";
+            return;
+        }
 
 
+        //setting value as double
+        double markerY=tmpList.at(2).toDouble(&ok);
+        if (!ok) {
+            qWarning()<<"Failed to convert target value to double";
+            return;
+        }
+        QPointF point(markerX,markerY);
 
+        int control=tmpList.at(1).toInt(&ok);
+        if (!ok) {
+            qWarning()<<"Failed to get cotrol index for marker";
+            return;
+        }
+        emit marker(point,control);
+    }
+}
+
+void ExperimentData::setControlCount(int controlNum) {
+    transitionTable.resize(controlNum);
+    qDebug()<<"transitionTable size"<<transitionTable.size();
 }
 
 void ExperimentData::resetData() {

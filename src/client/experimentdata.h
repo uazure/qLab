@@ -58,10 +58,13 @@ public:
 
     void saveFile(QString &filename);
 
+    void setControlCount(int controlNum);
+
 
 private:
     /// This is the DATA STORAGE for table of doubles
     QVector<QVector<double> > dataTable;
+    QVector<QVector<QVector<double> > > transitionTable;
 
     /** The string list containing raw ascii data before conversion.
 
@@ -104,6 +107,9 @@ signals:
 
     /// Inform about number of points in each column we have
     void pointCount(int count);
+
+    /// Inform plot that we have new marker point for control index
+    void marker(QPointF coordinates,int control=0);
 
 
 

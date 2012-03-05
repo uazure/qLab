@@ -14,12 +14,15 @@
 #include "qwt_plot_panner.h"
 #include "qwt_plot_magnifier.h"
 #include "qwt_scale_widget.h"
+#include "qwt_plot_marker.h"
 #include "scalemagnifier.h"
 #include "scaleplotmagnifier.h"
 #include "scaleplotpanner.h"
 
 #include <QDebug>
 #include <QMap>
+#include <QSize>
+
 #if QT_VERSION>=0x040700
 #include <QElapsedTimer>
 #endif
@@ -44,6 +47,7 @@ public slots:
     void initialize(void);
     void setIncrementalDraw(bool on=true);
     void setMonitoringInterval(double interval);
+    void appendMarker(QPointF point,int control=0);
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
