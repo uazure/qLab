@@ -10,8 +10,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
 #endif
     incrementalDraw=false;
-    //set default monitoring time to 1 hour (3600 seconds)
-    monitoringInterval=3600;
+    //set default monitoring time to 1 minute (60 seconds)
+    setMonitoringInterval(60);
 
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
@@ -223,6 +223,7 @@ void Plot::clear() {
 void Plot::initialize() {
     //set normal selection mode
     selectPointsMode(false);
+
 
     // Clear plot from all items
     clear();

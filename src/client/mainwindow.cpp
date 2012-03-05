@@ -34,7 +34,11 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSetup,SIGNAL(triggered()),SLOT(showSetupCurvesDialog()));
     connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
     connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
+    connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
 
+
+
+    ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
 
@@ -45,6 +49,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(&tcpClient,SIGNAL(dataLine(QByteArray&)),data,SLOT(parseLine(QByteArray&)));
     connect(&tcpClient,SIGNAL(initialData()),plot,SLOT(clear()));
     connect(&tcpClient,SIGNAL(initialData()),data,SLOT(resetData()));
+    connect(&tcpClient,SIGNAL(serverStatus(bool)),ui->actionStart,SLOT(setChecked(bool)));
 
 //FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
     connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
@@ -75,6 +80,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
     //if file was specified on startup - try open it
     if (!filename.isEmpty()) openFile(filename);
+
 
 }
 

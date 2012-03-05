@@ -27,9 +27,12 @@ public:
         queryInitialData,
         queryInterval,
         queryControls,
+        queryStart,
+        queryStop,
         queryStatus,
         queryTarget,
         queryHistory,
+
     };
 
 private:
@@ -64,6 +67,8 @@ signals:
 public slots:
 
     inline void askInitialData() {query(queryInitialData);}
+    void start(bool);
+
 
     void getData();
     /** Slot gets the line from network and process it.

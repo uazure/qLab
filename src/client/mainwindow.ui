@@ -52,10 +52,9 @@
     </property>
     <addaction name="actionFullscreen"/>
     <addaction name="actionViewData"/>
+    <addaction name="actionDraw_incremental"/>
+    <addaction name="actionZoom_to_extents"/>
     <addaction name="separator"/>
-    <addaction name="actionReplot"/>
-    <addaction name="actionClear_plot"/>
-    <addaction name="actionInitialize"/>
    </widget>
    <widget class="QMenu" name="menuPlot">
     <property name="title">
@@ -63,9 +62,10 @@
     </property>
     <addaction name="actionSetup"/>
     <addaction name="actionSelect_points"/>
-    <addaction name="actionZoom_to_extents"/>
-    <addaction name="actionDraw_incremental"/>
+    <addaction name="actionReplot"/>
+    <addaction name="actionClear_plot"/>
     <addaction name="actionMonitoring_interval"/>
+    <addaction name="actionInitialize"/>
    </widget>
    <widget class="QMenu" name="menuExperiment">
     <property name="title">
@@ -73,6 +73,7 @@
     </property>
     <addaction name="actionControl"/>
     <addaction name="actionSet_interval"/>
+    <addaction name="actionStart"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -222,6 +223,17 @@
   <action name="actionControl">
    <property name="text">
     <string>Control</string>
+   </property>
+  </action>
+  <action name="actionStart">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Space</string>
    </property>
   </action>
  </widget>

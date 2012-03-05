@@ -115,9 +115,11 @@ void TcpClient::protocolParser(QByteArray &line) {
         tmpStringList.clear();
         setExpect(expectControls);
     } else if (line.startsWith("200 Idle")) {
+        qDebug("Server says it's idle");
         emit serverStatus(false);
         setExpect(expectCommand);
     } else if (line.startsWith("200 Running")) {
+        qDebug("Server says it's running");
         emit serverStatus(true);
         setExpect(expectCommand);
     } else if (line.startsWith("200 History:")) {
@@ -151,13 +153,22 @@ void TcpClient::query(QueryRequest q,QString param1) {
         write("get controls\n");
         break;
     case queryTarget:
-//        if (param1.isEmpty()) {
-//            param1="0";
-//        }
+        if (param1.isEmpty()) {
+            param1="0";
+        }
         write("get target "+param1.toAscii()+"\n");
+        break;
+    case queryStatus:
+        write("status\n");
         break;
     case queryHistory:
         write("get history\n");
+        break;
+    case queryStart:
+        write("start\n");
+        break;
+    case queryStop:
+        write("stop\n");
         break;
     }
 }
@@ -175,4 +186,12 @@ void TcpClient::setControlTarget(int controlIndex, QString target)
     request.append(QByteArray::number(controlIndex)).append("=");
     request.append(target.toAscii()).append("\n");
     write(request);
+}
+
+void TcpClient::start(bool ok) {
+    if (ok) {
+        query(queryStart);
+    } else {
+        query(queryStop);
+    }
 }
