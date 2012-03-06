@@ -165,7 +165,21 @@ void Experiment::initDevices() {
             deviceNameWithParameters[deviceNameWithParameters.size()-1]=')';
             qDebug()<<"deviceNameWithParameters"<<deviceNameWithParameters;
         }
-        deviceList.append(DeviceFarm::getDeviceObject(deviceName));
+
+        //check if we already have device with such name
+        bool found=0;
+        for (int j=0;j<deviceList.size();j++) {
+            if (deviceList.at(j)->shortName()==deviceName) {
+                deviceList.append(deviceList.at(j));
+                qDebug()<<"Device"<<deviceName<<"found in deviceList";
+                found=true;
+                break;
+            }
+        }
+        if (!found) {
+            deviceList.append(DeviceFarm::getDeviceObject(deviceName));
+            qDebug()<<"Device"<<deviceName<<"not found in deviceList. Created new instance";
+        }
 //        if (deviceList[i]->capable("thermocontroller")) {
 //            //FIXME: controlList should ask for controlled channels from device
 //            appendControl(dynamic_cast <AbstractThermocontrollerDevice *> (deviceList[i]),0);
