@@ -59,6 +59,7 @@ private:
     const QVector<QVector<double> > *dataTable;
     int xCol;
     QwtPlotCurve *selectedCurve;
+    QwtPlotCurve *markCurve;
     int selectedPoint;
     QMap<int,QPointF> selectedPoints;
     QwtPicker *selectPointPicker;
@@ -103,15 +104,9 @@ private slots:
       */
     bool getCurvePoint(const QPoint &point, QwtPlotCurve *curve=NULL);
 
-    /** Clears all selections of points */
-    void clearPointSelection();
-
-    /** Slot is called when user selects some point on the curve. If to
-      is omitted then it means that only ONE curve point should be marked,
-i.e. from=to */
-    void markCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
-    void unmarkCurvePoint(QwtPlotCurve *curve,int from,int to=-1);
-
+    /** Draws a QwtPlotCurve with selectedPoints as data. This curve has z index
+      of 50 and is drawn over all other curves.
+*/
     void markSelectedPoints();
 
 

@@ -15,6 +15,7 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
+    markCurve=NULL;
     selectedPoint=-1; //no point selected. 0 - means first point of the curve.
     experimentData=data;
     dataTable=data->getDataTable();
@@ -289,66 +290,48 @@ void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
     replot();
 }
 
-void Plot::markCurvePoint(QwtPlotCurve *curve, int from, int to) {
-    int darkfactor=0;
-    QwtSymbol *symbol = const_cast<QwtSymbol *>(curve->symbol());
-    //remember brush
-    const QBrush brush = symbol->brush();
-    int light=brush.color().lightness();
-
-    if (brush.color().lightness()>64) {
-        symbol->setBrush(QBrush(brush.color().darker()));
-    } else {
-        symbol->setBrush(QBrush(brush.color().lighter()));
-    }
-
-
-    selectedCurve=curve;
-    selectedPoint=from;
-
-    QwtPlotDirectPainter directPainter;
-
-    //if to defaulting to -1 then we want to mark just one curve point
-    if (to==-1) to=from;
-    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
-    directPainter.drawSeries(curve, from, to);
-    symbol->setBrush(brush); // reset brush
-    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
-
-}
-
-void Plot::unmarkCurvePoint(QwtPlotCurve *curve, int from, int to) {
-    QwtPlotDirectPainter directPainter;
-    //if "to" defaulting to -1 then we want to mark just one curve point
-    if (to==-1) to=from;
-    directPainter.drawSeries(curve, from, to);
-}
 
 void Plot::markSelectedPoints()
 {
-    if (selectedCurve==NULL || selectedPoints.isEmpty()) return;
-
-    QwtSymbol *symbol = const_cast<QwtSymbol *>(selectedCurve->symbol());
-    //remember brush
-    const QBrush brush = symbol->brush();
-    if (brush.color().lightness()>64) {
-        symbol->setBrush(QBrush(brush.color().darker()));
-    } else {
-        symbol->setBrush(QBrush(brush.color().lighter()));
+    if (selectedCurve==NULL || selectedPoints.isEmpty()) {
+        selectedCurve=NULL;
+        selectedPoints.clear();
+        if (markCurve) {
+            markCurve->detach();
+            delete markCurve;
+            markCurve=NULL;
+        }
+        return;
     }
 
-    QwtPlotDirectPainter directPainter;
-
-    for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();i++) {
-        directPainter.drawSeries(selectedCurve,i.key(),i.key());
+    //create markedCurve
+    if (markCurve==NULL) {
+        markCurve=new QwtPlotCurve();
+        markCurve->setItemAttribute(QwtPlotItem::Legend,false);
+        markCurve->setStyle(QwtPlotCurve::NoCurve);
+        markCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(selectedCurve->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
+        markCurve->setZ(50);
+        markCurve->setAxes(selectedCurve->xAxis(),selectedCurve->yAxis());
+        markCurve->attach(this);
     }
-    symbol->setBrush(brush); // reset brush
+
+    //create temporary vector of points and fill it from map of selected points
+    QVector<QPointF> data;
+    for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();++i) {
+        data.append(i.value());
+    }
+
+    if (markCurve) {
+        markCurve->setSamples(data);
+    }
+
 }
 
 
 
 void Plot::replot()
 {
+    markSelectedPoints();
 #if QT_VERSION >= 0x040700
     QElapsedTimer timer;
     timer.start();
@@ -360,46 +343,23 @@ void Plot::replot()
 #if QT_VERSION >= 0x040700
     qDebug()<<"Replot took"<<timer.restart()<<"msecs";
 #endif
-    if (selectedCurve!=NULL && !selectedPoints.isEmpty()) {
-        markSelectedPoints();
-    }
-#if QT_VERSION >= 0x040700
-    qDebug()<<"marking selected points took"<<timer.restart()<<"msecs";
-#endif
-}
 
-void Plot::clearPointSelection() {
-    QwtPlotCurve *curve = NULL;
-    QwtPlotDirectPainter directPainter;
-
-    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
-    //iterate over all plot items
-    for ( QwtPlotItemIterator it = itmList.begin();
-        it != itmList.end(); ++it )
-    {
-            curve= (QwtPlotCurve*)(*it);
-            if (curve->isVisible()) {
-                directPainter.drawSeries(curve,0,curve->dataSize()-1);
-
-        }
-    }
 }
 
 void Plot::selectPoint(const QPoint &point) {
+
     selectedCurve=NULL;
     selectedPoint=-1;
     selectedPoints.clear();
-    clearPointSelection();
 
     if (getCurvePoint(point)) {
-        markCurvePoint(selectedCurve,selectedPoint);
-        selectedPoints.insert(selectedPoint,point);
+        selectedPoints.insert(selectedPoint,selectedCurve->sample(selectedPoint));
     } else {
         selectedCurve=NULL;
         selectedPoint=-1;
         selectedPoints.clear();
     }
-
+    replot();
 
 }
 
@@ -421,8 +381,8 @@ void Plot::selectRange(const QPoint &point)
                 selectedPoints.insert(j,selectedCurve->sample(j));
             }
         } // else if (i==selectedPoint) do nothing :)
-        markCurvePoint(selectedCurve,i,selectedPoint);
     }
+    replot();
 }
 
 void Plot::appendPoint(const QPoint &point)
@@ -436,13 +396,11 @@ void Plot::appendPoint(const QPoint &point)
         if (selectedPoints.contains(selectedPoint)) {
             qDebug()<<"Removing point from selection";
             selectedPoints.remove(selectedPoint);
-            unmarkCurvePoint(selectedCurve,selectedPoint);
         } else {
             qDebug()<<"Appending point to selection";
             selectedPoints.insert(selectedPoint,selectedCurve->sample(selectedPoint));
-            markCurvePoint(selectedCurve,selectedPoint);
         }
-
+    replot();
     } else {
         qDebug()<<"Failed to get curve point near"<<point;
     }
