@@ -15,7 +15,6 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
 
     xCol=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
-    markCurve=NULL;
     selectedPoint=-1; //no point selected. 0 - means first point of the curve.
     experimentData=data;
     dataTable=data->getDataTable();
@@ -293,36 +292,72 @@ void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
 
 void Plot::markSelectedPoints()
 {
+    /** dataList is temporary map of vectors.
+    Each vector contains data for its QwtPlotCurve (key())
+      */
+    QMap<QwtPlotCurve*, QVector<QPointF> > dataMap;
+
     if (selectedCurve==NULL || selectedPoints.isEmpty()) {
         selectedCurve=NULL;
         selectedPoints.clear();
-        if (markCurve) {
-            markCurve->detach();
-            delete markCurve;
-            markCurve=NULL;
+
+        if (!markCurveMap.isEmpty()) {
+            for (QMap<QwtPlotCurve*,QwtPlotCurve*>::iterator iterator = markCurveMap.begin();iterator!=markCurveMap.end();++iterator) {
+                iterator.value()->detach();
+                delete iterator.value();
+            }
+            markCurveMap.clear();
         }
-        return;
+         return;
     }
 
-    //create markedCurve
-    if (markCurve==NULL) {
-        markCurve=new QwtPlotCurve();
-        markCurve->setItemAttribute(QwtPlotItem::Legend,false);
-        markCurve->setStyle(QwtPlotCurve::NoCurve);
-        markCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(selectedCurve->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
-        markCurve->setZ(50);
-        markCurve->setAxes(selectedCurve->xAxis(),selectedCurve->yAxis());
-        markCurve->attach(this);
+    //create markCurveList
+    if (markCurveMap.isEmpty()) {
+        //iterate over all QwtPlotCurves that are on plot
+        const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+        for ( QwtPlotItemIterator it = itmList.begin();
+             it != itmList.end(); ++it )
+        {
+            // if plot item is visible then create curve for selection markers
+            if ((QwtPlotCurve*)(*it)->isVisible())
+            {
+                QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+                QwtPlotCurve *newCurve=new QwtPlotCurve();
+                newCurve->setItemAttribute(QwtPlotItem::Legend,false);
+                newCurve->setStyle(QwtPlotCurve::NoCurve);
+                newCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(c->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
+                newCurve->setZ(50);
+                newCurve->setAxes(c->xAxis(),c->yAxis());
+                newCurve->attach(this);
+                markCurveMap.insert(c,newCurve);
+                //create vector associated with the created curve
+                dataMap.insert(newCurve,QVector<QPointF>());
+            }
+        }
     }
 
-    //create temporary vector of points and fill it from map of selected points
-    QVector<QPointF> data;
+    //iterate over indexes of selected points and add data to vectors
     for (QMap<int,QPointF>::const_iterator i=selectedPoints.constBegin();i!=selectedPoints.constEnd();++i) {
-        data.append(i.value());
+        /** for each selected point index we would iterate over all visible curves
+          */
+        const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+        for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it) {
+            if ((QwtPlotCurve*)(*it)->isVisible()) {
+                //*c is regular visible curve on the plot
+                QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+                //*nc is curve with marked points for *c
+                QwtPlotCurve *nc = markCurveMap.value(c);
+                //dataMap[nc] - vector with data for *nc
+                //We would append there a point from original curve index sample(i.key)
+                dataMap[nc].append(c->sample(i.key()));
+            }
+        }
     }
 
-    if (markCurve) {
-        markCurve->setSamples(data);
+    if (!markCurveMap.isEmpty()) {
+        for (QMap<QwtPlotCurve*,QwtPlotCurve*>::iterator iterator = markCurveMap.begin();iterator!=markCurveMap.end();++iterator) {
+            iterator.value()->setSamples(dataMap.value(iterator.value()));
+        }
     }
 
 }

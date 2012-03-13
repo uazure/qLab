@@ -59,7 +59,7 @@ private:
     const QVector<QVector<double> > *dataTable;
     int xCol;
     QwtPlotCurve *selectedCurve;
-    QwtPlotCurve *markCurve;
+    QMap<QwtPlotCurve *,QwtPlotCurve *> markCurveMap;
     int selectedPoint;
     QMap<int,QPointF> selectedPoints;
     QwtPicker *selectPointPicker;
