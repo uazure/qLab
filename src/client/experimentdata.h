@@ -111,6 +111,9 @@ signals:
     /// Inform plot that we have new marker point for control index
     void marker(QPointF coordinates,int control=0);
 
+    /// Inform plot that we have new marker (telling that we have just rowIndex for data)
+    void marker(int rowIndex);
+
 
 
 public slots:

@@ -59,7 +59,9 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
     connect(data,SIGNAL(pointCount(int)),plot,SLOT(drawLastPoint(int)));
-    connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
+    /** This connection will cause to plot VLine markers*/
+    //connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
+    connect(data,SIGNAL(marker(int)),plot,SLOT(appendMarker(int)));
 
 
 

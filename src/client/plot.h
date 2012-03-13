@@ -48,6 +48,7 @@ public slots:
     void setIncrementalDraw(bool on=true);
     void setMonitoringInterval(double interval);
     void appendMarker(QPointF point,int control=0);
+    void appendMarker(int rowIndex);
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
@@ -79,6 +80,7 @@ private:
 
     bool incrementalDraw;
     double monitoringInterval;
+    static int markerCount;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);

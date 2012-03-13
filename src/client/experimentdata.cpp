@@ -257,6 +257,7 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
             return;
         }
         emit marker(point,control);
+        emit marker(rowCount()-1);
     }
 }
 

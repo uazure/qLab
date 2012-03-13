@@ -1,5 +1,6 @@
 #include "plot.h"
 
+int Plot::markerCount=0;
 
 Plot::Plot(QWidget *parent, ExperimentData *data) :
         QwtPlot(parent)
@@ -359,7 +360,6 @@ void Plot::markSelectedPoints()
             iterator.value()->setSamples(dataMap.value(iterator.value()));
         }
     }
-
 }
 
 
@@ -511,22 +511,6 @@ void Plot::drawLastPoint(int size) {
     qDebug()<<"Max X values is"<<tmp;
     setAxisScale(xBottom,maxXValue-monitoringInterval,maxXValue);
     QwtPlot::replot();
-
-
-    //FIXME: this function should also plot curve sticks
-    //last point has index size-1
-
-//    int from=--size;
-
-//    QwtPlotDirectPainter directPainter;
-//    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
-//    //iterate over all plot items of type PlotCurve
-//    for ( QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
-//        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
-//        if (curve->isVisible()) {
-//            directPainter.drawSeries(curve,from,-1);
-//        }
-//    }
 }
 
 void Plot::zoomExtents(void)
@@ -568,13 +552,35 @@ void Plot::appendMarker(QPointF point, int control) {
     QBrush redbrush(Qt::red);
     QPen linePen(redbrush,2,Qt::SolidLine);
     marker->setLinePen(linePen);
-//    QSize size;
-//    size.setHeight(12);
-//    size.setWidth(12);
-//    marker->setSymbol(new QwtSymbol(QwtSymbol::Diamond,QBrush(color),QPen(Qt::NoPen),size));
-
     marker->setValue(point);
     marker->setTitle(QString::number(control));
     marker->attach(this);
     emit message("Appended marker");
+}
+
+void Plot::appendMarker(int rowIndex) {
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //iterate over all plot items of type PlotCurve
+    for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
+        if (!curve->testItemAttribute(QwtPlotItem::Legend)) {
+            continue;
+        }
+        QwtPlotMarker *marker=new QwtPlotMarker();
+        //marker->setLineStyle(QwtPlotMarker::NoLine);
+        QColor color(Qt::red);
+        QBrush redbrush(Qt::red);
+        QwtSymbol *symbol=new QwtSymbol(*curve->symbol());
+        QPen pen(Qt::SolidLine);
+        pen.setColor(QColor(Qt::white));
+        pen.setWidth(2);
+        symbol->setPen(pen);
+
+        marker->setSymbol(symbol);
+        marker->setValue(curve->sample(rowIndex));
+        marker->attach(this);
+        ++markerCount;
+        qDebug()<<"Marker appended. Total:"<<markerCount;
+    }
+
 }
