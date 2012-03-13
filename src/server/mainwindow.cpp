@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+
     delete experimentSettings;
     delete ui;
 }

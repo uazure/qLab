@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     a.setOrganizationName("qLab");
     a.setApplicationName("qLab server");
-    a.setApplicationVersion("0.0.1 develop");
+    a.setApplicationVersion("0.0.1 alpha");
 
     MainWindow w;
     w.show();

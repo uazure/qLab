@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setOrganizationName("qLab");
     a.setApplicationName("qlab-client");
+    a.setApplicationVersion("0.0.1 alpha");
 
     QStringList arguments=a.arguments();
     QString filename;

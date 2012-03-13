@@ -88,6 +88,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    plot->setVisible(false);
     delete plot;
     delete data;
     delete appSettings;

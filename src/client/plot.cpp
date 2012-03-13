@@ -319,14 +319,17 @@ void Plot::markSelectedPoints()
         for ( QwtPlotItemIterator it = itmList.begin();
              it != itmList.end(); ++it )
         {
-            // if plot item is visible then create curve for selection markers
-            if ((QwtPlotCurve*)(*it)->isVisible())
+            QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+            // if plot item is visible and is in legend then create curve for selection markers
+            if (c->isVisible() && c->testItemAttribute(QwtPlotItem::Legend))
             {
-                QwtPlotCurve *c = (QwtPlotCurve*)(*it);
                 QwtPlotCurve *newCurve=new QwtPlotCurve();
                 newCurve->setItemAttribute(QwtPlotItem::Legend,false);
                 newCurve->setStyle(QwtPlotCurve::NoCurve);
-                newCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(c->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
+                QwtSymbol *symbol=new QwtSymbol(*c->symbol());
+                symbol->setSize((symbol->size())*1.5);
+                //newCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(c->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
+                newCurve->setSymbol(symbol);
                 newCurve->setZ(50);
                 newCurve->setAxes(c->xAxis(),c->yAxis());
                 newCurve->attach(this);
@@ -343,11 +346,16 @@ void Plot::markSelectedPoints()
           */
         const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
         for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it) {
-            if ((QwtPlotCurve*)(*it)->isVisible()) {
-                //*c is regular visible curve on the plot
-                QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+            //*c is regular visible curve on the plot
+            QwtPlotCurve *c = (QwtPlotCurve*)(*it);
+            //if *c is also present in legend (not the curve with markers)
+            if (c->isVisible() && c->testItemAttribute(QwtPlotItem::Legend)) {
                 //*nc is curve with marked points for *c
                 QwtPlotCurve *nc = markCurveMap.value(c);
+                if (nc==NULL) {
+                    qWarning()<<"Empty marker curve associated with curve"<<c->title().text();
+                    continue;
+                }
                 //dataMap[nc] - vector with data for *nc
                 //We would append there a point from original curve index sample(i.key)
                 dataMap[nc].append(c->sample(i.key()));
