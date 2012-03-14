@@ -5,14 +5,18 @@ DeviceFarm::DeviceFarm()
 
 }
 
- AbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName) {
+ AbstractDevice * DeviceFarm::getDeviceObject(QByteArray &DeviceShortName,Experiment *exp) {
     QByteArray shortname=DeviceShortName;
     if (shortname=="time") {
-        return new TimeDevice();
+        return new TimeDevice(exp);
     }
 
     if (shortname=="utime") {
-        return new UtimeDevice();
+        return new UtimeDevice(exp);
+    }
+
+    if (shortname.startsWith("cross")) {
+        return new CrossDevice(exp);
     }
 
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");
@@ -27,9 +31,9 @@ DeviceFarm::DeviceFarm()
 
     if (bus=="gpib") {
         if (isThermocontroller) {
-            device=new GpibThermocontrollerDevice(shortname);
+            device=new GpibThermocontrollerDevice(shortname,exp);
         } else {
-            device=new GpibDevice(shortname);
+            device=new GpibDevice(shortname,exp);
         }
     return device;
 

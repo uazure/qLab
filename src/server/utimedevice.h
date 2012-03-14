@@ -1,6 +1,7 @@
 #ifndef UTIMEDEVICE_H
 #define UTIMEDEVICE_H
 
+//#include "experiment.h"
 #include "abstractdevice.h"
 #include <QTime>
 #include <QDateTime>
@@ -14,7 +15,7 @@ class UtimeDevice : public AbstractDevice
 {
 Q_OBJECT
 public:
-    explicit UtimeDevice(QObject *parent = 0);
+    explicit UtimeDevice(Experiment *exp = 0);
     /// Implementation of pure virtual method of QAbstractDevice
     bool readValue(QByteArray &returnValue, QStringList parameters=QStringList());
 

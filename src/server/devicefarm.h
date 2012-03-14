@@ -5,9 +5,12 @@
 #include "gpibthermocontrollerdevice.h"
 #include "timedevice.h"
 #include "utimedevice.h"
+#include "crossdevice.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QApplication>
+
+class Experiment;
 
 /** The only purpose of this class is to generate objects of specific
 classes that are children of QAbstractDevice and are providing
@@ -29,7 +32,7 @@ public:
       This method returns pointer to object on success or null on fail.
       */
 
-    static AbstractDevice * getDeviceObject(QByteArray &DeviceShortName);
+    static AbstractDevice * getDeviceObject(QByteArray &DeviceShortName,Experiment *exp);
 };
 
 #endif // DEVICEFARM_H

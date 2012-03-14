@@ -16,7 +16,7 @@ class GpibDevice : public AbstractDevice
 {
     Q_OBJECT
 public:
-    explicit GpibDevice(QByteArray &DeviceShortName, QObject *parent = 0);
+    explicit GpibDevice(QByteArray &DeviceShortName, Experiment *exp = 0);
     ~GpibDevice();
     int Id(void) const;
     int Handle(void) const;

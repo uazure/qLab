@@ -3,13 +3,13 @@
 
 #include <QObject>
 #include <QTimer>
-#include "abstractdevice.h"
 #include <QString>
 #include <QList>
 #include <QStringList>
 #include <QSettings>
 #include <QApplication>
 #include <QFile>
+#include "abstractdevice.h"
 #include "devicefarm.h"
 #include "controllabledevicelist.h"
 #include "experimenthistory.h"
@@ -47,8 +47,9 @@ public:
     QString getName(void) const;
     static const int min_interval=EXPERIMENT_MIN_INTERVAL;
     static const int max_interval=EXPERIMENT_MAX_INTERVAL;
+    AbstractDevice * findDevice (QString deviceName) const;
 
-    private:
+private:
 
     QString name;
     void setName(QString name);
@@ -65,7 +66,6 @@ public:
     QDateTime startedOn;
     QStringList dataStringList;
     QString currentFileName;
-    AbstractDevice * findDevice (QString deviceName) const;
 
 private slots:
     void updateProgress(void);

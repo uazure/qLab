@@ -1,7 +1,7 @@
 #include "gpibdevice.h"
 
-GpibDevice::GpibDevice(QByteArray &DeviceShortName, QObject *parent) :
-        AbstractDevice (parent)
+GpibDevice::GpibDevice(QByteArray &DeviceShortName, Experiment *exp) :
+        AbstractDevice (exp)
 
 {
     bus=Gpib;
@@ -227,6 +227,7 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
             returnValue=QByteArray::number(returnValue.toDouble()*getFactor());
         }
 
+        lastValue=returnValue;
         //qDebug()<<"Gpib device id"<<Id()<<"handle"<<Handle()<<"channel"<<channel<<"value"<<returnValue;
         return true;
     } else {

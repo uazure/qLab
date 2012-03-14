@@ -13,7 +13,7 @@ class TimeDevice : public AbstractDevice
 {
 Q_OBJECT
 public:
-    explicit TimeDevice(QObject *parent = 0);
+    explicit TimeDevice(Experiment *exp = 0);
     /// implementation of pure virtual method of QAbstractDevice
     bool readValue(QByteArray &returnValue, QStringList parameters);
 

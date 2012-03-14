@@ -1,8 +1,8 @@
 #include "utimedevice.h"
 #include <QByteArray>
 
-UtimeDevice::UtimeDevice(QObject *parent) :
-        AbstractDevice(parent)
+UtimeDevice::UtimeDevice(Experiment *exp) :
+        AbstractDevice(exp)
 {
     bus=Utime;
     shortname="utime";
@@ -12,6 +12,7 @@ UtimeDevice::UtimeDevice(QObject *parent) :
 
 bool UtimeDevice::readValue(QByteArray &returnValue, QStringList) {
     returnValue=QByteArray::number(QDateTime::currentDateTime().toTime_t())+"."+QTime::currentTime().toString("zzz").toAscii();
+    lastValue=returnValue;
     return true;
 }
 

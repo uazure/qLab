@@ -5,6 +5,8 @@
 #include <QByteArray>
 #include <QDebug>
 #include <QStringList>
+//#include "experiment.h"
+class Experiment;
 
 /// Bus type enumertion. Gpib bus or some other.
 enum deviceBusType {
@@ -15,12 +17,12 @@ enum deviceBusType {
     Multi
 };
 
-class AbstractDevice : virtual public QObject
+class AbstractDevice : public QObject
 {
     Q_OBJECT
 public:
     //
-    explicit AbstractDevice(QObject *parent = 0);
+    explicit AbstractDevice(Experiment *exp = 0);
     ~AbstractDevice();
 
 
@@ -75,6 +77,8 @@ public:
 
     bool capable(QString capability) const;
     void setCapability(QString capability);
+
+    QByteArray getLastValue(void) const;
 
 
 private:
@@ -144,6 +148,10 @@ protected:
     QByteArray idn;
 
     QStringList capabilities;
+
+    QByteArray lastValue;
+
+    Experiment * experiment;
 
 
 

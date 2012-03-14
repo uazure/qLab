@@ -1,8 +1,9 @@
 #include "abstractdevice.h"
 
+#include "experiment.h"
 
-AbstractDevice::AbstractDevice(QObject *parent) :
-        QObject(parent)
+AbstractDevice::AbstractDevice(Experiment *exp) :
+        QObject(exp)
 {
     bus=NoBus;
     numdevices++;
@@ -14,6 +15,7 @@ AbstractDevice::AbstractDevice(QObject *parent) :
     scale_hint=5;
     unit="UNIT";
     label="LABEL";
+    experiment=exp;
 }
 
 AbstractDevice::~AbstractDevice() {
@@ -105,4 +107,8 @@ void AbstractDevice::setCapability(QString capability) {
         qDebug()<<shortname<<"adding capability"<<capability;
         capabilities.append(capability);
     }
+}
+
+QByteArray AbstractDevice::getLastValue() const {
+    return lastValue;
 }

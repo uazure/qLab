@@ -1,7 +1,7 @@
 #include "gpibthermocontrollerdevice.h"
 
-GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, QObject *parent):
-        GpibDevice(shortName, parent),
+GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Experiment *exp):
+        GpibDevice(shortName, exp),
         AbstractThermocontrollerDevice()
 
 {

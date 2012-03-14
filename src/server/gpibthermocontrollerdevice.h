@@ -13,7 +13,7 @@ public AbstractThermocontrollerDevice
     Q_OBJECT
 
 public:
-    GpibThermocontrollerDevice(QByteArray &shortName, QObject *parent=0);
+    GpibThermocontrollerDevice(QByteArray &shortName, Experiment *exp=0);
     virtual bool setTargetValue(QString value, int loopIndex=0);
     virtual bool setControlChannel(QString channel, int loopIndex=0);
     virtual QString getControlChannel(int loopIndex=0);

@@ -177,7 +177,7 @@ void Experiment::initDevices() {
             }
         }
         if (!found) {
-            deviceList.append(DeviceFarm::getDeviceObject(deviceName));
+            deviceList.append(DeviceFarm::getDeviceObject(deviceName,this));
             qDebug()<<"Device"<<deviceName<<"not found in deviceList. Created new instance";
         }
 //        if (deviceList[i]->capable("thermocontroller")) {
