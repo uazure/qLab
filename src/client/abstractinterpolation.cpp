@@ -4,6 +4,68 @@ AbstractInterpolation::AbstractInterpolation()
 {
 }
 
+void AbstractInterpolation::Line_Reg(int valcount, int *val, double *XD, double *YD, double *k, double *b0, double *xs, double *ys, double *xmin, double *xmax) {
+    /** valcount - кол-во
+      valcount - кол-во выделенных пользователем точек.
+      *val - массив, содержащий индексы всех выделенных пользователем точек
+      *XD - массив для чтения всех X-данных в кривой (не только выделенных)
+      *XY - массив для чтения всех Y-данных в кривой (не только выделенных)
+      *k - указатель на коэффициент линейной зависимости (a=kx+b0)
+      *b0 - указатель на свободный член линейной зависимости (a=kx+b0)
+      *xs - указатель на среднее значение иксов
+      *ys - указатель на среднее значение игреков
+      *xmin - указатель на минимальное значение икс
+      *ymax - указатель на максимальное значение икс
+       */
+
+    //нахождение коэфициентов линейной регрессии
+    double a,b,c,d;
+    int nt,i;
+    a=b=c=d=0;nt=0;
+    (*ys)=0;
+    (*xmin)=(*xmax)=XD[val[0]];
+    for (i=0;i<valcount;i++)
+    {
+        a+=XD[val[i]];b+=YD[val[i]];c+=XD[val[i]]*XD[val[i]];
+        d+=XD[val[i]]*YD[val[i]];
+        if(XD[val[i]]>(*xmax)) (*xmax)=XD[val[i]];
+        if(XD[val[i]]<(*xmin)) (*xmin)=XD[val[i]];
+        nt++;
+    }
+    (*xs)=a/nt;
+    (*ys)=b/nt;
+    (*k)=(a*b-nt*d)/(a*a-nt*c);
+    (*b0)=(b-(*k)*a)/nt;
+}
+
+void AbstractInterpolation::lineApproximation(const QVector<double> &x, const QVector<double> &y, double &k, double &b0, double &avgX, double &avgY, double &minX, double &maxX) {
+
+    if (x.size()<2 || y.size()!=x.size() ) {
+        //if there's no sufficient data then just exit
+        return;
+    }
+
+    double a=0,b=0,c=0,d=0;
+    int nt=x.size()-1;
+
+    minX=x.at(0);
+    maxX=x.at(0);
+
+    for (int i=0;i<x.size();++i) {
+        a+=x.at(i);
+        b+=y.at(i);
+        c+=a*a;
+        d+=a*b;
+    }
+
+    avgX=a/nt;
+    avgY=b/nt;
+    k=(a*b-nt*d)/(a*a-nt*c);
+    b0=(b-k*a)/nt;
+}
+
+
+
 /** функция вычисляет значение S полинома степени М в точке Х1
 X1 - значение аргумента
 С - массив коэффициентов
@@ -349,7 +411,3 @@ double AbstractInterpolation::CalcMNK_opt(int N,int M,int Poly,int *val,double X
     *error=false;
     return(c_ret);
 }
-
-
-
-

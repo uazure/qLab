@@ -23,6 +23,20 @@ public:
 
                              )=0;
 
+
+    //FIXME: this function should be moved to appropriate subclass
+    void Line_Reg(int valcount,int *val,double *XD,double *YD,double *k,double *b0,double *xs,double *ys,double *xmin,double *xmax);
+
+    void lineApproximation (const QVector<double> &x,
+                            const QVector<double> &y,
+                            double &k,
+                            double &b0,
+                            double &avgX,
+                            double &avgY,
+                            double &minX,
+                            double &maxX
+                            );
+
 protected:
     /** функция вычисляет значение S полинома степени М в точке Х1
     X1 - значение аргумента
