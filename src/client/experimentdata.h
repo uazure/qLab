@@ -64,7 +64,6 @@ public:
 private:
     /// This is the DATA STORAGE for table of doubles
     QVector<QVector<double> > dataTable;
-    QVector<QVector<QVector<double> > > transitionTable;
 
     /** The string list containing raw ascii data before conversion.
 

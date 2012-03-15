@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     tableview.cpp \
     experiment.cpp \
     experimentcontroldialog.cpp \
-    ../server/clickablelabel.cpp
+    ../server/clickablelabel.cpp \
+    abstractinterpolation.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -36,7 +37,8 @@ HEADERS += mainwindow.h \
     tableview.h \
     experiment.h \
     experimentcontroldialog.h \
-    ../server/clickablelabel.h
+    ../server/clickablelabel.h \
+    abstractinterpolation.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \

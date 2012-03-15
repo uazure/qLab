@@ -5,3 +5,4 @@ install/
 moc_*
 ui_*.h
 *.o
+reference*

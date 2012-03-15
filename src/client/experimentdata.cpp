@@ -262,8 +262,7 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
 }
 
 void ExperimentData::setControlCount(int controlNum) {
-    transitionTable.resize(controlNum);
-    qDebug()<<"transitionTable size"<<transitionTable.size();
+
 }
 
 void ExperimentData::resetData() {
