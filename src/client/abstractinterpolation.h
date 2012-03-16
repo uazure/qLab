@@ -10,6 +10,7 @@
 
 #include <QVector>
 #include <QPointF>
+#include <QDebug>
 
 //mathematical functions from C language (pow,exp...)
 #include <cmath>
@@ -17,6 +18,12 @@
 class AbstractInterpolation
 {
 public:
+    enum Polynomial {
+        polynomExpLine,
+        polynomExpExp,
+        polynomExpFIXME
+    };
+
     AbstractInterpolation();
     virtual void interpolate(const QVector<double> & xValue,
                              const QVector<double> & yValue
@@ -27,8 +34,7 @@ public:
     //FIXME: this function should be moved to appropriate subclass
     void Line_Reg(int valcount,int *val,double *XD,double *YD,double *k,double *b0,double *xs,double *ys,double *xmin,double *xmax);
 
-    void lineApproximation (const QVector<double> &x,
-                            const QVector<double> &y,
+    void lineApproximation (const QVector<QPointF> &data,
                             double &k,
                             double &b0,
                             double &avgX,
@@ -68,6 +74,25 @@ protected:
     T - массив значений (выход)
     */
     static void Bas(int N,int M,int Poly,double X1,double c,double *X,double *T);
+
+    /** Calculates parameters for Gram matrix.
+      T - array of doubles which stores coefficients of Fi functions in Gram matrix
+          T is used to retun calculated values.
+      Poly - type of polynomial to use. Refer to enum Polynomial
+      x - argument value
+      c - coefficient value
+      */
+    static void calculateBasisForGramMatrix (QVector <double> &T,Polynomial Poly,const double x, const double c);
+
+/** Calculates array of coefficients of Gram matrix.
+    data - array of selected points
+    M - number of approximation functions (2-4)
+    Poly - type of polynomial
+    x - X value (usually time)
+    c - coefficient
+*/
+    static QVector<QVector<long double> > calculateGramMatrix(const QVector<QPointF> &data,int M,Polynomial Poly, double c);
+
 
     /** заполнение матрицы Грамма
     N - размер входных массивов

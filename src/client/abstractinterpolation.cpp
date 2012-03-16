@@ -38,22 +38,22 @@ void AbstractInterpolation::Line_Reg(int valcount, int *val, double *XD, double 
     (*b0)=(b-(*k)*a)/nt;
 }
 
-void AbstractInterpolation::lineApproximation(const QVector<double> &x, const QVector<double> &y, double &k, double &b0, double &avgX, double &avgY, double &minX, double &maxX) {
+void AbstractInterpolation::lineApproximation(const QVector<QPointF> &data, double &k, double &b0, double &avgX, double &avgY, double &minX, double &maxX) {
 
-    if (x.size()<2 || y.size()!=x.size() ) {
+    if (data.size()<2) {
         //if there's no sufficient data then just exit
         return;
     }
 
     double a=0,b=0,c=0,d=0;
-    int nt=x.size()-1;
+    int nt=data.size()-1;
 
-    minX=x.at(0);
-    maxX=x.at(0);
+    minX=data.at(0).x();
+    maxX=minX;
 
-    for (int i=0;i<x.size();++i) {
-        a+=x.at(i);
-        b+=y.at(i);
+    for (int i=0;i<data.size();++i) {
+        a+=data.at(i).x();
+        b+=data.at(i).y();
         c+=a*a;
         d+=a*b;
     }
@@ -65,65 +65,66 @@ void AbstractInterpolation::lineApproximation(const QVector<double> &x, const QV
 }
 
 
-
-/** функция вычисляет значение S полинома степени М в точке Х1
-X1 - значение аргумента
-С - массив коэффициентов
-*/
-double AbstractInterpolation::Bas_Poly(int M, double X1, double *C) {
-
-    int k;
-    double S;
-    S=C[0];
-    for(k=1;k<=M;k++) {
-       S+=C[k]*pow(X1,k);
+/** Calculates parameters for Gram matrix.
+  T - array of doubles which stores coefficients of Fi functions in Gram matrix
+      T is used to retun calculated values.
+  Poly - type of polynomial to use. Refer to enum Polynomial
+  x - argument value
+  c - coefficient value
+  */
+void AbstractInterpolation::calculateBasisForGramMatrix(QVector<double> &T, Polynomial Poly, double x, double c) {
+    if (T.size()==0) {
+        qWarning()<<"vector T has zero size";
+        return;
     }
+    int M = T.size()-1;
+    switch (Poly) {
+    case polynomExpLine:
+        for (int k=0;k<=M;++k) {
+            switch (k)
+            {
+            case 0:T[0] =exp(-c*x);
+                break;
+            case 1:T[1] =1-exp(-c*x);
+                break;
+            case 2:T[2]=x;
+                break;
+            default :{
+                qWarning()<<"Requested k larger than T.size()";
+                return;
+            }
 
-    return S;
-}
+        }
 
-/** функция вычисляет значение производной S полинома степени М в точке Х1
-X1 - значение аргумента
-С - массив коэффициентов
-*/
-double AbstractInterpolation::Bas_Poly_h(int M,double X1,double *C)
-{
-    int k;
-    double S;
-    S=C[1];
-    for(k=2;k<=M;k++)
-        S+=C[k]*pow(X1,k-1)*k;
-    return(S);
-}
+        }
+        break;
 
-/**
-возвращает значение базисные функции,
-N - размер входных массивов
-M - номер функции (c нуля)
-X1 - значение аргумента
-X - массив аргументов
-T - массив значений (выход)
-*/
-double  AbstractInterpolation::Bas_Exp(int M,double X0,double X1,double c,double *CH)
-{
-    int k;
-    double Z;
-    X1-=X0;
-    Z=0;
-    for(k=0;k<=M;k++)
-    {
-        switch (k)
-        {
-        case 0:Z+=exp(-c*X1)*CH[k];
-            break;
-        case 1:Z+=(1-exp(-c*X1))*CH[k];
-            break;
-        case 2:Z+=X1*CH[k];
-            break;
-        default :{return(Z);}
+    case polynomExpExp:
+        if (T.size()<2) {
+            qWarning()<<"Insufficient data in T";
+            return;
+        }
+        T[0]=1;
+        T[1]=x;
+        for(int k=2;k<=M;++k) {
+            T[k]=T[k-1]*x;
+        }
+        break;
+
+    case polynomExpFIXME:
+        if (T.size()<3) {
+            qWarning()<<"Insufficient data in T";
+            return;
+        }
+
+        T[0]=1;
+        T[1]=x;
+        for (int k=2;k<=M-1;++k) {
+            T[k]=T[k-1]*x;
+        }
+        T[M]=exp(-c*x);
+        break;
     }
-    }
-    return(Z);
 }
 
 
@@ -174,6 +175,65 @@ case 2:
     }//switch (Poly)
 }
 
+
+QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
+        const QVector<QPointF> &data,
+        int M,
+        Polynomial Poly,
+        double c) {
+
+    int i,j,k;
+    long double q,r,s;
+    int N = data.size()-1;
+
+//    QVector<QVector<long double> *> *A=new QVector<QVector<long double> *>(M);
+//    for (int i=0;i<A->size();++i) {
+//        A[0].resize(M+1);
+//    }
+    QVector<QVector<long double> > A(M);
+        for (int i=0;i<A.size();++i) {
+            A[0].resize(M+1);
+        }
+
+
+    QVector<double> T(M);
+
+    //long double *P=new long double[M*N];
+    long double **P=new long double* [M];
+    for (int i=0;i<M;++i) {
+        P[i]=new long double[N];
+        for (int j=0;j<N;++j) {
+            P[i][j]=0;
+        }
+    }
+
+    //long double P[M_T][N_T];//матрица плана
+
+    for(i=0;i<=N;i++)
+    {
+        calculateBasisForGramMatrix(T,Poly,data.at(i).x(),c);
+        //Bas(N,M,Poly,X[i],c,X,T);
+        for(j=0;j<=M;j++) P[j][i]= T[j];
+    }
+
+    for(k=0;k<=M;k++)
+    {
+        for(j=0;j<=M;j++)
+        {
+            s=0.0;r=0.0;
+            for(i=0;i<=N;i++)
+            {
+                q=P[k][i];
+                s+=q*P[j][i];
+                if(j==M)
+                    r+=q*data.at(i).y();
+            }//for i
+            A[k][j]=s;A[j][k]=s;
+        }//for j
+        A[k][M+1]=r;
+    }//for k
+    return A;
+}
 
 /** заполнение матрицы Грамма
 N - размер входных массивов
@@ -235,84 +295,6 @@ void AbstractInterpolation::Gauss(int N,double *X,long double A[M_T][M_T])
         for(j=i+1;j<=N;j++) S-=A[i][j]*X[j];
         X[i]=S;
     }//for i
-}
-
-/** аппроксимирующая функция
-возвращает значение производной функции в точке X1 для полинома
-коэфициенты базисных функций С[i] должны быть определены
-предварительным вызовом функции CalcMNK
-*/
-double AbstractInterpolation::Fi_h(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData)
-{
-    int i;
-    double T[M_T];
-    double S;
-    double X[N_T];
-    for (i=0;i<=N;i++)
-        X[i]=XData[val[i]]-X0;
-    S=0;
-    Bas(N,M,Poly,X1-X0,c_k,X,T);
-    for (i=1;i<=M;i++)
-        S+=i*C[i]*T[i-1];
-    return(S);
-}
-
-
-/** аппроксимирующая функция
-возвращает значение производной функции в точке X1 для полинома
-коэфициенты базисных функций С[i] должны быть определены
-предварительным вызовом функции CalcMNK
-*/
-double AbstractInterpolation::Fi_h_Exp(int M,double c_k,double X1,double *C) {
-    double S=0;
-    int i;
-    for(i=1;i<=M-1;i++)
-    {
-        if(i>1)
-            S+=C[i]*i*pow(X1,i-1);
-        else S+=C[i];
-    }
-    S+=C[M]*(-c_k)*exp(-c_k*X1);
-    return(S);
-}
-
-/** аппроксимирующая функция
-возвращает значение функции в точке X1 для полинома
-коэфициенты базисных функций С[i] должны быть определены
-предварительным вызовом функции CalcMNK
-*/
-double AbstractInterpolation::Fi_Exp(int M,double c_k,double X1,double *C)
-{
-    double S=0;
-    int i;
-    for(i=0;i<=M-1;i++)
-    {
-        if(i)
-            S+=C[i]*pow(X1,i);
-        else S+=C[i];
-    }
-    S+=C[M]*exp(-c_k*X1);
-    return(S);
-}
-
-
-/** аппроксимирующая функция
-возвращает значение функции в точке X1
-коэфициенты базисных функций С[i] должны быть определены
-предварительным вызовом функции CalcMNK
-*/
-double AbstractInterpolation::Fi(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData)
-{
-    int i;
-    double T[M_T];
-    double S;
-    double X[N_T];
-    for (i=0;i<=N;i++)
-        X[i]=XData[val[i]]-X0;
-    S=0;
-    Bas(N,M,Poly,X1-X0,c_k,X,T);
-    for (i=0;i<=M;i++) S+=C[i]*T[i];
-    return(S);
 }
 
 /** вызов расчета аппроксимации функции методом
@@ -411,3 +393,144 @@ double AbstractInterpolation::CalcMNK_opt(int N,int M,int Poly,int *val,double X
     *error=false;
     return(c_ret);
 }
+
+
+/** функция вычисляет значение S полинома степени М в точке Х1
+X1 - значение аргумента
+С - массив коэффициентов
+*/
+double AbstractInterpolation::Bas_Poly(int M, double X1, double *C) {
+
+    int k;
+    double S;
+    S=C[0];
+    for(k=1;k<=M;k++) {
+       S+=C[k]*pow(X1,k);
+    }
+
+    return S;
+}
+
+/** функция вычисляет значение производной S полинома степени М в точке Х1
+X1 - значение аргумента
+С - массив коэффициентов
+*/
+double AbstractInterpolation::Bas_Poly_h(int M,double X1,double *C)
+{
+    int k;
+    double S;
+    S=C[1];
+    for(k=2;k<=M;k++)
+        S+=C[k]*pow(X1,k-1)*k;
+    return(S);
+}
+
+/**
+возвращает значение базисные функции,
+N - размер входных массивов
+M - номер функции (c нуля)
+X1 - значение аргумента
+X - массив аргументов
+T - массив значений (выход)
+*/
+double  AbstractInterpolation::Bas_Exp(int M,double X0,double X1,double c,double *CH)
+{
+    int k;
+    double Z;
+    X1-=X0;
+    Z=0;
+    for(k=0;k<=M;k++)
+    {
+        switch (k)
+        {
+        case 0:Z+=exp(-c*X1)*CH[k];
+            break;
+        case 1:Z+=(1-exp(-c*X1))*CH[k];
+            break;
+        case 2:Z+=X1*CH[k];
+            break;
+        default :{return(Z);}
+    }
+    }
+    return(Z);
+}
+
+
+/** аппроксимирующая функция
+возвращает значение производной функции в точке X1 для полинома
+коэфициенты базисных функций С[i] должны быть определены
+предварительным вызовом функции CalcMNK
+*/
+double AbstractInterpolation::Fi_h(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData)
+{
+    int i;
+    double T[M_T];
+    double S;
+    double X[N_T];
+    for (i=0;i<=N;i++)
+        X[i]=XData[val[i]]-X0;
+    S=0;
+    Bas(N,M,Poly,X1-X0,c_k,X,T);
+    for (i=1;i<=M;i++)
+        S+=i*C[i]*T[i-1];
+    return(S);
+}
+
+
+/** аппроксимирующая функция
+возвращает значение производной функции в точке X1 для полинома
+коэфициенты базисных функций С[i] должны быть определены
+предварительным вызовом функции CalcMNK
+*/
+double AbstractInterpolation::Fi_h_Exp(int M,double c_k,double X1,double *C) {
+    double S=0;
+    int i;
+    for(i=1;i<=M-1;i++)
+    {
+        if(i>1)
+            S+=C[i]*i*pow(X1,i-1);
+        else S+=C[i];
+    }
+    S+=C[M]*(-c_k)*exp(-c_k*X1);
+    return(S);
+}
+
+/** аппроксимирующая функция
+возвращает значение функции в точке X1 для полинома
+коэфициенты базисных функций С[i] должны быть определены
+предварительным вызовом функции CalcMNK
+*/
+double AbstractInterpolation::Fi_Exp(int M,double c_k,double X1,double *C)
+{
+    double S=0;
+    int i;
+    for(i=0;i<=M-1;i++)
+    {
+        if(i)
+            S+=C[i]*pow(X1,i);
+        else S+=C[i];
+    }
+    S+=C[M]*exp(-c_k*X1);
+    return(S);
+}
+
+
+/** аппроксимирующая функция
+возвращает значение функции в точке X1
+коэфициенты базисных функций С[i] должны быть определены
+предварительным вызовом функции CalcMNK
+*/
+double AbstractInterpolation::Fi(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData)
+{
+    int i;
+    double T[M_T];
+    double S;
+    double X[N_T];
+    for (i=0;i<=N;i++)
+        X[i]=XData[val[i]]-X0;
+    S=0;
+    Bas(N,M,Poly,X1-X0,c_k,X,T);
+    for (i=0;i<=M;i++) S+=C[i]*T[i];
+    return(S);
+}
+
