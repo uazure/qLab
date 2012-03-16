@@ -121,6 +121,9 @@ protected:
     */
     static void CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error);
 
+
+    static double calculateRMS(int M,Polynomial Poly,double X0,double c_k,const QVector<QPointF> &data,const QVector<double> &coef, bool *error);
+
     /** возвращает значение суммы среднеквадратичных отклонений
     аппроксимирующей функции в точках XData относительно
     значений YData */

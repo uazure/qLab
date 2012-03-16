@@ -373,6 +373,34 @@ void AbstractInterpolation::CalcMNK(int N,int M,int Poly,int *val,double X0,doub
 }
 
 
+double AbstractInterpolation::calculateRMS(int M, Polynomial Poly, double X0, double c_k, const QVector<QPointF> &data, const QVector<double> &coef, bool *error) {
+    int i,j;
+
+    double S,S_k;
+    int N=data.size()-1;
+    S_k=0;
+    QVector<double> T(M);
+
+    QVector<QPointF> normalizedData=data;
+    for (i=0;i<=N;i++)
+    {
+        //set x=x-x0 for every QPointF
+        normalizedData[i].setX(data.at(i).x()-X0);
+    }
+
+    for (j=0;j<=N;j++)
+    {
+        S=0;
+        calculateBasisForGramMatrix(T,Poly,normalizedData.at(j).x(),c_k);
+        //Bas(N,M,Poly,X[j],c_k,X,T);
+        //FIXME: what is C and T???
+        for (i=0;i<=M;i++) S+=coef.at(i)*T.at(i);
+        S_k+=(S-data.at(j).y())*(S-data.at(j).y());
+    }
+    return(S_k);
+}
+
+
 /** возвращает значение суммы среднеквадратичных отклонений
 аппроксимирующей функции в точках XData относительно
 значений YData */
