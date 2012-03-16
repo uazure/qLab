@@ -103,8 +103,41 @@ protected:
     */
     static void Gram(int N,int M,int Poly,double c,double *X,double *F,long double A[M_T][M_T]);
 
+
+    static void calculateGauss(QVector<double> &coef,QVector<QVector<long double> > &A);
+
     //решение СЛАУ методом Гаусса
     static void Gauss(int N,double *X,long double A[M_T][M_T]);
+
+    static void calculateMNK(int M,Polynomial Poly,double X0,double c_k,QVector<QPointF> &data,QVector<double> &coef,bool *error);
+
+
+    /** вызов расчета аппроксимации функции методом
+     наименьших квадратов с
+    произвольным базисом
+     c_k - коэфициент экспоненты
+     X,Y - массивы входных точек
+    C - выходной массив коэфициентов
+    */
+    static void CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error);
+
+    /** возвращает значение суммы среднеквадратичных отклонений
+    аппроксимирующей функции в точках XData относительно
+    значений YData */
+    static double Skvo(int N,int M,int Poly,int *val,double X0,double c_k,double *C,double *XData,double *YData);
+
+    /** ВОЗВРАЩАЕТ оптимизированное значение
+    коэфициента экспоненты для
+    расчета аппроксимации функции методом
+     наименьших квадратов с
+    произвольным базисом
+     c_k_Start - стартовое значение коэфициента экспоненты
+     c_k_End - конечное значение коэфициента экспоненты
+     XData,YData - массивы входных точек
+    C - выходной массив коэфициентов */
+    static double CalcMNK_opt(int N,int M,int Poly,int *val,double X0,double c_k_Start,double c_k_End,double *XData,double *YData,double *C,int *error_TH,bool *error,int col_h);
+
+
 
     /** аппроксимирующая функция
     возвращает значение производной функции в точке X1 для полинома
@@ -134,30 +167,7 @@ protected:
     */
     static double Fi(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData);
 
-    /** вызов расчета аппроксимации функции методом
-     наименьших квадратов с
-    произвольным базисом
-     c_k - коэфициент экспоненты
-     X,Y - массивы входных точек
-    C - выходной массив коэфициентов
-    */
-    static void CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error);
 
-    /** возвращает значение суммы среднеквадратичных отклонений
-    аппроксимирующей функции в точках XData относительно
-    значений YData */
-    static double Skvo(int N,int M,int Poly,int *val,double X0,double c_k,double *C,double *XData,double *YData);
-
-    /** ВОЗВРАЩАЕТ оптимизированное значение
-    коэфициента экспоненты для
-    расчета аппроксимации функции методом
-     наименьших квадратов с
-    произвольным базисом
-     c_k_Start - стартовое значение коэфициента экспоненты
-     c_k_End - конечное значение коэфициента экспоненты
-     XData,YData - массивы входных точек
-    C - выходной массив коэфициентов */
-    static double CalcMNK_opt(int N,int M,int Poly,int *val,double X0,double c_k_Start,double c_k_End,double *XData,double *YData,double *C,int *error_TH,bool *error,int col_h);
 
 
 

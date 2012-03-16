@@ -272,6 +272,30 @@ void AbstractInterpolation::Gram(int N,int M,int Poly,double c,double *X,double 
     }//for k
 }
 
+
+void AbstractInterpolation::calculateGauss(QVector<double> &coef, QVector<QVector<long double> > &A) {
+    int i,j,k,N1,K1;
+    long double R,S;
+    int N=coef.size()-1;
+    N1 = N+1;
+    for(k=0;k<=N;k++)
+    {
+        K1=k+1;S = A[k][k];
+        for(j=K1;j<=N1;j++) A[k][j]=A[k][j]/S;
+        for(i=K1;i<=N;i++)
+        {
+            R = A[i][k];
+            for(j=K1;j<=N1;j++) A[i][j]-=A[k][j]*R;
+        }//for i
+    }//for k
+    for(i=N;i>=0;i--)
+    {
+        S=A[i][N1];
+        for(j=i+1;j<=N;j++) S-=A[i][j]*coef[j];
+        coef[i]=S;
+    }//for i
+}
+
 //решение СЛАУ методом Гаусса
 void AbstractInterpolation::Gauss(int N,double *X,long double A[M_T][M_T])
 {
@@ -296,6 +320,33 @@ void AbstractInterpolation::Gauss(int N,double *X,long double A[M_T][M_T])
         X[i]=S;
     }//for i
 }
+
+
+
+void AbstractInterpolation::calculateMNK(int M, Polynomial Poly, double X0, double c_k, QVector<QPointF> &data, QVector<double> &coef, bool *error)
+{
+    //long double A[M_T][M_T];//матрица Грамма
+
+    int N=data.size()-1; //last index of data
+    int i;
+    //double X[N_T],Y[N_T];
+    *error=true;
+    QVector<QPointF> normalizedData=data;
+
+    //normalize time.
+    for (i=0;i<=N;i++)
+    {
+        //set x=x-x0 for every QPointF
+        normalizedData[i].setX(data.at(i).x()-X0);
+    }
+
+    QVector<QVector<long double> > A=calculateGramMatrix(normalizedData,M,Poly,c_k);
+    //Gram(N,M,Poly,c_k,X,Y,A);
+    calculateGauss(coef,A);
+    //Gauss(M,C,A);
+    *error=false;
+}
+
 
 /** вызов расчета аппроксимации функции методом
  наименьших квадратов с
