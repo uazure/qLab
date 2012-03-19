@@ -355,6 +355,15 @@ void AbstractInterpolation::calculateMNK(int M, Polynomial Poly, double X0, doub
  X,Y - массивы входных точек
 C - выходной массив коэфициентов
 */
+/** N - points count
+    M - parameter that is passed to Gram()
+    c_k - parameter passed to Gram()
+    A - Gram matrix
+    Poly - type of approximation function (index)
+
+
+
+  */
 void AbstractInterpolation::CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error)
 {
     long double A[M_T][M_T];//матрица Грамма
@@ -368,6 +377,7 @@ void AbstractInterpolation::CalcMNK(int N,int M,int Poly,int *val,double X0,doub
         Y[i]=YData[val[i]];
     }
     Gram(N,M,Poly,c_k,X,Y,A);
+    //Gauss returns double C value (and possible values for A)
     Gauss(M,C,A);
     *error=false;
 }
@@ -437,12 +447,17 @@ double AbstractInterpolation::CalcMNK_opt(int N,int M,int Poly,int *val,double X
     double h,c_k,S,S_min,c_ret;
     int i,i_ret;
     *error=true;
+    //h - step size for parameter variation
+    //col_h - number of steps
     h = (c_k_End-c_k_Start)/col_h;
     S_min=0;*error_TH=0;
     for (i=0;i<col_h;i++)
     {
     c_k=c_k_Start+h*i;
+    //calculate RMS value for each c_k value
+    //C - is *double where coefficient is written
     CalcMNK(N,M,Poly,val,X0,c_k,XData,YData,C,error);
+    //S - is RMS deviation of aprpoximation function with current parameters set (c_k, calculated C)
     S = Skvo(N,M,Poly,val,X0,c_k,C,XData,YData);
     if(!i) {S_min=S;i_ret=i;c_ret=c_k;}
     if(S<S_min)
