@@ -35,6 +35,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
     connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
+    connect(ui->actionSelectT0,SIGNAL(triggered()),plot,SLOT(selectT0()));
 
 
 
@@ -276,3 +277,4 @@ void MainWindow::viewExperimentControlDialog() {
     dialog->exec();
     delete dialog;
 }
+

@@ -483,6 +483,7 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
         selectedCurve=curve;
         selectedPoint=index;
         emit curvePointClicked(curve,index);
+        emit xValueSelected(curve->sample(index).x());
         return true;
     } else {
         return false;
@@ -591,4 +592,17 @@ void Plot::appendMarker(int rowIndex) {
         qDebug()<<"Marker appended. Total:"<<markerCount;
     }
 
+}
+
+void Plot::selectT0() {
+    selectPointsMode(false);
+    selectPointPicker->setEnabled(true);
+    connect(this,SIGNAL(xValueSelected(double)),&interpolation,SLOT(setT0(double)));
+
+    zoomerLeft->setEnabled(false);
+    zoomerRight->setEnabled(false);
+    zoomerExclusiveLeft->setEnabled(false);
+    zoomerExclusiveRight->setEnabled(false);
+
+    emit message("Select T0");
 }

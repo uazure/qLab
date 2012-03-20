@@ -15,8 +15,10 @@
 //mathematical functions from C language (pow,exp...)
 #include <cmath>
 
-class AbstractInterpolation
+class AbstractInterpolation: public QObject
 {
+    Q_OBJECT
+
 public:
     enum Polynomial {
         polynomExpLine,
@@ -25,10 +27,11 @@ public:
     };
 
     AbstractInterpolation();
-    virtual void interpolate(const QVector<double> & xValue,
-                             const QVector<double> & yValue
 
-                             )=0;
+    virtual void interpolate(const QVector<QPointF> & data);
+
+public slots:
+    inline void setT0(double Tzero) {T0=Tzero;};
 
 
     //FIXME: this function should be moved to appropriate subclass
@@ -109,7 +112,7 @@ protected:
     //решение СЛАУ методом Гаусса
     static void Gauss(int N,double *X,long double A[M_T][M_T]);
 
-    static void calculateMNK(int M,Polynomial Poly,double X0,double c_k,QVector<QPointF> &data,QVector<double> &coef,bool *error);
+    static void calculateMNK(Polynomial Poly,double X0,double c_k,QVector<QPointF> &data,QVector<double> &coef,bool *error);
 
 
     /** вызов расчета аппроксимации функции методом
@@ -122,12 +125,25 @@ protected:
     static void CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error);
 
 
-    static double calculateRMS(int M,Polynomial Poly,double X0,double c_k,const QVector<QPointF> &data,const QVector<double> &coef, bool *error);
+    static double calculateRMS(Polynomial Poly,double X0,double c_k,const QVector<QPointF> &data,const QVector<double> &coef, bool *error);
 
     /** возвращает значение суммы среднеквадратичных отклонений
     аппроксимирующей функции в точках XData относительно
     значений YData */
     static double Skvo(int N,int M,int Poly,int *val,double X0,double c_k,double *C,double *XData,double *YData);
+
+
+    /** data - array of selected points for processing
+        coef - array of coefficients, coef.size()==M-1
+        Poly - type of interpolation. Selected by user.
+        val - ???? WHAT IS THIS???
+        X0 - starting X value (selected as T0 point by user)
+        c_k_start - starting value for optimization (defined in settings)
+        c_k_end - end value for optimization (defined in settings)
+        stepCount - number of steps for variating c_k between c_k_start and c_k_end
+        error - error indicator. Probably it's not required. It's better to throw some exceptions or emit signals
+      */
+    static double calculateOptimizedMNK(QVector<QPointF> &data,QVector<double> &coef,Polynomial Poly, double X0, double c_k_start, double c_k_end, int stepCount,bool *error);
 
     /** ВОЗВРАЩАЕТ оптимизированное значение
     коэфициента экспоненты для
@@ -171,6 +187,8 @@ protected:
     static double Fi(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData);
 
 
+private:
+    double T0;
 
 
 

@@ -2,7 +2,13 @@
 
 AbstractInterpolation::AbstractInterpolation()
 {
+    T0=-1;
 }
+
+void AbstractInterpolation::interpolate(const QVector<QPointF> &data) {
+
+}
+
 
 void AbstractInterpolation::Line_Reg(int valcount, int *val, double *XD, double *YD, double *k, double *b0, double *xs, double *ys, double *xmin, double *xmax) {
     /** valcount - кол-во
@@ -186,10 +192,6 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
     long double q,r,s;
     int N = data.size()-1;
 
-//    QVector<QVector<long double> *> *A=new QVector<QVector<long double> *>(M);
-//    for (int i=0;i<A->size();++i) {
-//        A[0].resize(M+1);
-//    }
     QVector<QVector<long double> > A(M);
         for (int i=0;i<A.size();++i) {
             A[0].resize(M+1);
@@ -323,7 +325,7 @@ void AbstractInterpolation::Gauss(int N,double *X,long double A[M_T][M_T])
 
 
 
-void AbstractInterpolation::calculateMNK(int M, Polynomial Poly, double X0, double c_k, QVector<QPointF> &data, QVector<double> &coef, bool *error)
+void AbstractInterpolation::calculateMNK(Polynomial Poly, double X0, double c_k, QVector<QPointF> &data, QVector<double> &coef, bool *error)
 {
     //long double A[M_T][M_T];//матрица Грамма
 
@@ -340,12 +342,14 @@ void AbstractInterpolation::calculateMNK(int M, Polynomial Poly, double X0, doub
         normalizedData[i].setX(data.at(i).x()-X0);
     }
 
-    QVector<QVector<long double> > A=calculateGramMatrix(normalizedData,M,Poly,c_k);
+    QVector<QVector<long double> > A=calculateGramMatrix(normalizedData,coef.size()-1,Poly,c_k);
     //Gram(N,M,Poly,c_k,X,Y,A);
     calculateGauss(coef,A);
     //Gauss(M,C,A);
     *error=false;
 }
+
+
 
 
 /** вызов расчета аппроксимации функции методом
@@ -360,9 +364,6 @@ C - выходной массив коэфициентов
     c_k - parameter passed to Gram()
     A - Gram matrix
     Poly - type of approximation function (index)
-
-
-
   */
 void AbstractInterpolation::CalcMNK(int N,int M,int Poly,int *val,double X0,double c_k,double *XData,double *YData,double *C,bool *error)
 {
@@ -383,13 +384,13 @@ void AbstractInterpolation::CalcMNK(int N,int M,int Poly,int *val,double X0,doub
 }
 
 
-double AbstractInterpolation::calculateRMS(int M, Polynomial Poly, double X0, double c_k, const QVector<QPointF> &data, const QVector<double> &coef, bool *error) {
+double AbstractInterpolation::calculateRMS(Polynomial Poly, double X0, double c_k, const QVector<QPointF> &data, const QVector<double> &coef, bool *error) {
     int i,j;
 
     double S,S_k;
     int N=data.size()-1;
     S_k=0;
-    QVector<double> T(M);
+    QVector<double> T(coef.size());
 
     QVector<QPointF> normalizedData=data;
     for (i=0;i<=N;i++)
@@ -404,7 +405,7 @@ double AbstractInterpolation::calculateRMS(int M, Polynomial Poly, double X0, do
         calculateBasisForGramMatrix(T,Poly,normalizedData.at(j).x(),c_k);
         //Bas(N,M,Poly,X[j],c_k,X,T);
         //FIXME: what is C and T???
-        for (i=0;i<=M;i++) S+=coef.at(i)*T.at(i);
+        for (i=0;i<coef.size();++i) S+=coef.at(i)*T.at(i);
         S_k+=(S-data.at(j).y())*(S-data.at(j).y());
     }
     return(S_k);
@@ -414,6 +415,8 @@ double AbstractInterpolation::calculateRMS(int M, Polynomial Poly, double X0, do
 /** возвращает значение суммы среднеквадратичных отклонений
 аппроксимирующей функции в точках XData относительно
 значений YData */
+
+//C - array of double, C[i] where i = 0 .. M
 double AbstractInterpolation::Skvo(int N,int M,int Poly,int *val,double X0,double c_k,double *C,double *XData,double *YData)
 {
     int i,j;
@@ -432,6 +435,64 @@ double AbstractInterpolation::Skvo(int N,int M,int Poly,int *val,double X0,doubl
     }
     return(S_k);
 }
+
+double AbstractInterpolation::calculateOptimizedMNK(QVector<QPointF> &data, QVector<double> &coef, Polynomial Poly, double X0, double c_k_start, double c_k_end, int stepCount, bool *error) {
+    double h,c_k,S,S_min,c_ret;
+    int i,i_ret;
+    *error=true;
+    //h - step size for parameter variation
+    //col_h - number of steps
+    h = (c_k_end-c_k_start)/stepCount;
+    S_min=0;
+    for (i=0;i<stepCount;i++)
+    {
+    c_k=c_k_start+h*i;
+    //calculate RMS value for each c_k value
+    //C - is *double where coefficients is written. C[i] where i = 0 .. M
+    calculateMNK(Poly,X0,c_k,data,coef,error);
+    //CalcMNK(N,M,Poly,val,X0,c_k,XData,YData,C,error);
+    //S - is RMS deviation of aprpoximation function with current parameters set (c_k, calculated C)
+    S = calculateRMS(Poly,X0,c_k,data,coef,error);
+    //S = Skvo(N,M,Poly,val,X0,c_k,C,XData,YData);
+    if(!i) {S_min=S;i_ret=i;c_ret=c_k;}
+    if(S<S_min)
+            {
+            S_min=S;c_ret=c_k;i_ret=i;
+            }
+    if(S>S_min*5) break;
+    }
+    if (!i_ret) {
+        //*error_TH=1;
+        *error=false;
+        return(c_ret);
+    }
+
+    if (i_ret>=stepCount-1) {
+        //*error_TH=2;
+        *error=false;
+        return(c_ret);
+    }
+
+    c_k_start = (c_k_start+h*(i_ret-2));
+    c_k_end = (c_k_start+h*(i_ret+2));
+    h = (c_k_end-c_k_start)/stepCount;
+    for (i=0;i<stepCount;i++)
+    {
+    c_k=c_k_start+h*i;
+    calculateMNK(Poly,X0,c_k,data,coef,error);
+    //CalcMNK(N,M,Poly,val,X0,c_k,XData,YData,C,error);
+    S = calculateRMS(Poly,X0,c_k,data,coef,error);
+    //S = Skvo(N,M,Poly,val,X0,c_k,C,XData,YData);
+    if(!i) {S_min=S;i_ret=i;c_ret=c_k;}
+    if(S<S_min)
+            {
+            S_min=S;c_ret=c_k;i_ret=i;
+            }
+    }
+    *error=false;
+    return(c_ret);
+}
+
 
 
 /** ВОЗВРАЩАЕТ оптимизированное значение
@@ -455,7 +516,7 @@ double AbstractInterpolation::CalcMNK_opt(int N,int M,int Poly,int *val,double X
     {
     c_k=c_k_Start+h*i;
     //calculate RMS value for each c_k value
-    //C - is *double where coefficient is written
+    //C - is *double where coefficients is written. C[i] where i = 0 .. M
     CalcMNK(N,M,Poly,val,X0,c_k,XData,YData,C,error);
     //S - is RMS deviation of aprpoximation function with current parameters set (c_k, calculated C)
     S = Skvo(N,M,Poly,val,X0,c_k,C,XData,YData);

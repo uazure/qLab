@@ -88,6 +88,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSelectT0"/>
+   <addaction name="actionApproximate"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
@@ -234,6 +236,19 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Space</string>
+   </property>
+  </action>
+  <action name="actionSelectT0">
+   <property name="text">
+    <string>selectT0</string>
+   </property>
+   <property name="toolTip">
+    <string>Select T0</string>
+   </property>
+  </action>
+  <action name="actionApproximate">
+   <property name="text">
+    <string>Approximate</string>
    </property>
   </action>
  </widget>

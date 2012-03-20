@@ -18,6 +18,7 @@
 #include "scalemagnifier.h"
 #include "scaleplotmagnifier.h"
 #include "scaleplotpanner.h"
+#include "abstractinterpolation.h"
 
 #include <QDebug>
 #include <QMap>
@@ -41,6 +42,7 @@ public:
 public slots:
     void replot();
     void selectPointsMode(bool select=true);
+    void selectT0();
     void drawLastPoint(int size);
     void clear(void);
     void zoomExtents(void);
@@ -52,6 +54,7 @@ public slots:
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
+    void xValueSelected(double value);
     void message(QString message);
 
 
@@ -81,6 +84,7 @@ private:
     bool incrementalDraw;
     double monitoringInterval;
     static int markerCount;
+    AbstractInterpolation interpolation;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);
@@ -110,8 +114,6 @@ private slots:
       of 50 and is drawn over all other curves.
 */
     void markSelectedPoints();
-
-
 
 
 
