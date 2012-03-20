@@ -239,6 +239,9 @@
    </property>
   </action>
   <action name="actionSelectT0">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>selectT0</string>
    </property>

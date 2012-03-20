@@ -163,6 +163,9 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->removeEventFilter(yRightPanner);
 
 
+    connect(&interpolation,SIGNAL(T0Selected()),this,SLOT(normalMode()));
+
+
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
     initialize();
 }
@@ -490,6 +493,9 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
     }
 }
 
+void Plot::normalMode() {
+    selectPointsMode(false);
+}
 
 void Plot::selectPointsMode(bool select) {
     selectPointPicker->setEnabled(select);
@@ -594,10 +600,12 @@ void Plot::appendMarker(int rowIndex) {
 
 }
 
-void Plot::selectT0() {
+void Plot::selectT0(bool on) {
+    if (on) {
     selectPointsMode(false);
     selectPointPicker->setEnabled(true);
     connect(this,SIGNAL(xValueSelected(double)),&interpolation,SLOT(setT0(double)));
+
 
     zoomerLeft->setEnabled(false);
     zoomerRight->setEnabled(false);
@@ -605,4 +613,11 @@ void Plot::selectT0() {
     zoomerExclusiveRight->setEnabled(false);
 
     emit message("Select T0");
+}
+
+    if (!on) {
+        disconnect(&interpolation,SLOT(setT0(double)));
+        return;
+    }
+
 }

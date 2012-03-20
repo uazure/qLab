@@ -31,7 +31,7 @@ public:
     virtual void interpolate(const QVector<QPointF> & data);
 
 public slots:
-    inline void setT0(double Tzero) {T0=Tzero;};
+    void setT0(double Tzero);
 
 
     //FIXME: this function should be moved to appropriate subclass
@@ -191,6 +191,8 @@ private:
     double T0;
 
 
+signals:
+    void T0Selected(void);
 
 };
 

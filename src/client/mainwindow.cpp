@@ -35,13 +35,14 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
     connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
-    connect(ui->actionSelectT0,SIGNAL(triggered()),plot,SLOT(selectT0()));
+    connect(ui->actionSelectT0,SIGNAL(triggered(bool)),plot,SLOT(selectT0(bool)));
 
 
 
     ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
+    connect(plot->getInterpolation(),SIGNAL(T0Selected()),ui->actionSelectT0,SLOT(trigger()));
 
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));

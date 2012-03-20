@@ -38,11 +38,15 @@ public:
     ~Plot();
     void addCurve(int yColumn, int xColumn=-1);
     double getMonitoringInterval(void) const;
+    inline const AbstractInterpolation * getInterpolation() const {
+        return &interpolation;
+    };
 
 public slots:
     void replot();
+    void normalMode();
     void selectPointsMode(bool select=true);
-    void selectT0();
+    void selectT0(bool on=true);
     void drawLastPoint(int size);
     void clear(void);
     void zoomExtents(void);

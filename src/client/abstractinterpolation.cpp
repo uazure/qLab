@@ -9,6 +9,14 @@ void AbstractInterpolation::interpolate(const QVector<QPointF> &data) {
 
 }
 
+void AbstractInterpolation::setT0(double Tzero) {
+    T0=Tzero;
+    qDebug()<<"T0 set to"<<T0;
+    emit T0Selected();
+    //disconnect this slot from all signals.
+    disconnect(this,SLOT(setT0(double)));
+}
+
 
 void AbstractInterpolation::Line_Reg(int valcount, int *val, double *XD, double *YD, double *k, double *b0, double *xs, double *ys, double *xmin, double *xmax) {
     /** valcount - кол-во
