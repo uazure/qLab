@@ -73,7 +73,6 @@
     </property>
     <addaction name="actionControl"/>
     <addaction name="actionSet_interval"/>
-    <addaction name="actionStart"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -91,6 +90,8 @@
    <addaction name="actionSelectT0"/>
    <addaction name="actionSelect_points"/>
    <addaction name="actionApproximate"/>
+   <addaction name="separator"/>
+   <addaction name="actionStart"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
