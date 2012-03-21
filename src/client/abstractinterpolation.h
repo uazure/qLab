@@ -7,13 +7,14 @@
 //количество базисных функций
 #define M_T 10
 
-
 #include <QVector>
 #include <QPointF>
 #include <QDebug>
 
 //mathematical functions from C language (pow,exp...)
 #include <cmath>
+
+class Plot;
 
 class AbstractInterpolation: public QObject
 {
@@ -26,12 +27,14 @@ public:
         polynomExpFIXME
     };
 
-    AbstractInterpolation();
+    AbstractInterpolation(Plot * plotObject);
 
     virtual void interpolate(const QVector<QPointF> & data);
 
 public slots:
     void setT0(double Tzero);
+    void resetT0();
+    bool issetT0();
 
 
     //FIXME: this function should be moved to appropriate subclass
@@ -47,6 +50,7 @@ public slots:
                             );
 
 protected:
+    Plot * plot;
     /** функция вычисляет значение S полинома степени М в точке Х1
     X1 - значение аргумента
     С - массив коэффициентов

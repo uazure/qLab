@@ -1,4 +1,5 @@
 #include "plot.h"
+#include "abstractinterpolation.h"
 
 int Plot::markerCount=0;
 
@@ -163,7 +164,8 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->removeEventFilter(yRightPanner);
 
 
-    connect(&interpolation,SIGNAL(T0Selected()),this,SLOT(normalMode()));
+    interpolation=new AbstractInterpolation(this);
+    connect(interpolation,SIGNAL(T0Selected()),this,SLOT(normalMode()));
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
@@ -299,7 +301,7 @@ void Plot::markSelectedPoints()
     /** dataList is temporary map of vectors.
     Each vector contains data for its QwtPlotCurve (key())
       */
-    QMap<QwtPlotCurve*, QVector<QPointF> > dataMap;
+    dataMap.clear();
 
     if (selectedCurve==NULL || selectedPoints.isEmpty()) {
         selectedCurve=NULL;
@@ -604,7 +606,7 @@ void Plot::selectT0(bool on) {
     if (on) {
     selectPointsMode(false);
     selectPointPicker->setEnabled(true);
-    connect(this,SIGNAL(xValueSelected(double)),&interpolation,SLOT(setT0(double)));
+    connect(this,SIGNAL(xValueSelected(double)),interpolation,SLOT(setT0(double)));
 
 
     zoomerLeft->setEnabled(false);
@@ -616,8 +618,32 @@ void Plot::selectT0(bool on) {
 }
 
     if (!on) {
-        disconnect(&interpolation,SLOT(setT0(double)));
+        selectPointsMode(false);
+        disconnect(interpolation,SLOT(setT0(double)));
         return;
     }
 
+}
+
+QVector<QPointF> Plot::getSelectedPoints(QwtPlotCurve *curve) const
+{
+    QwtPlotCurve *selectionCurve;
+    if(curve!=NULL)  {
+        if (markCurveMap.contains(curve))
+        selectionCurve=markCurveMap[curve];
+    } else {
+        if (markCurveMap.contains(selectedCurve))
+        selectionCurve=markCurveMap[selectedCurve];
+    }
+    if (!selectionCurve) {
+        qWarning()<<"Failed to get selection curve";
+        return QVector<QPointF> ();
+    }
+
+    // form an array of QPointF
+    if (!dataMap.contains(selectionCurve)) {
+        qWarning("No points selected");
+        return QVector<QPointF> ();
+    }
+    return dataMap[selectionCurve];
 }

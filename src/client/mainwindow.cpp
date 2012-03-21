@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "abstractinterpolation.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -277,5 +278,10 @@ void MainWindow::viewExperimentControlDialog() {
     ExperimentControlDialog *dialog=new ExperimentControlDialog(experiment,&tcpClient,this);
     dialog->exec();
     delete dialog;
+}
+
+void MainWindow::approximate(void)
+{
+
 }
 

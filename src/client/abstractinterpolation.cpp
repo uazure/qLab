@@ -1,11 +1,20 @@
+#include "plot.h"
 #include "abstractinterpolation.h"
 
-AbstractInterpolation::AbstractInterpolation()
+
+AbstractInterpolation::AbstractInterpolation(Plot *plotObject)
 {
     T0=-1;
+    plot=plotObject;
 }
 
 void AbstractInterpolation::interpolate(const QVector<QPointF> &data) {
+    if (T0==-1) {
+        qWarning()<<"T0 not set";
+        return;
+    }
+
+
 
 }
 
@@ -16,6 +25,8 @@ void AbstractInterpolation::setT0(double Tzero) {
     //disconnect this slot from all signals.
     disconnect(this,SLOT(setT0(double)));
 }
+
+
 
 
 void AbstractInterpolation::Line_Reg(int valcount, int *val, double *XD, double *YD, double *k, double *b0, double *xs, double *ys, double *xmin, double *xmax) {
@@ -333,7 +344,12 @@ void AbstractInterpolation::Gauss(int N,double *X,long double A[M_T][M_T])
 
 
 
-void AbstractInterpolation::calculateMNK(Polynomial Poly, double X0, double c_k, QVector<QPointF> &data, QVector<double> &coef, bool *error)
+void AbstractInterpolation::calculateMNK(Polynomial Poly,
+                                         double X0,
+                                         double c_k,
+                                         QVector<QPointF> &data,
+                                         QVector<double> &coef,
+                                         bool *error)
 {
     //long double A[M_T][M_T];//матрица Грамма
 
@@ -444,7 +460,14 @@ double AbstractInterpolation::Skvo(int N,int M,int Poly,int *val,double X0,doubl
     return(S_k);
 }
 
-double AbstractInterpolation::calculateOptimizedMNK(QVector<QPointF> &data, QVector<double> &coef, Polynomial Poly, double X0, double c_k_start, double c_k_end, int stepCount, bool *error) {
+double AbstractInterpolation::calculateOptimizedMNK(QVector<QPointF> &data,
+                                                    QVector<double> &coef,
+                                                    Polynomial Poly,
+                                                    double X0,
+                                                    double c_k_start,
+                                                    double c_k_end,
+                                                    int stepCount,
+                                                    bool *error) {
     double h,c_k,S,S_min,c_ret;
     int i,i_ret;
     *error=true;
@@ -695,5 +718,16 @@ double AbstractInterpolation::Fi(int N,int M,int Poly,int *val,double X0,double 
     Bas(N,M,Poly,X1-X0,c_k,X,T);
     for (i=0;i<=M;i++) S+=C[i]*T[i];
     return(S);
+}
+
+void AbstractInterpolation::resetT0()
+{
+    T0=-1;
+}
+
+bool AbstractInterpolation::issetT0()
+{
+    if (T0!=-1) return true;
+    return false;
 }
 

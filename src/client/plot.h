@@ -18,7 +18,7 @@
 #include "scalemagnifier.h"
 #include "scaleplotmagnifier.h"
 #include "scaleplotpanner.h"
-#include "abstractinterpolation.h"
+
 
 #include <QDebug>
 #include <QMap>
@@ -27,6 +27,8 @@
 #if QT_VERSION>=0x040700
 #include <QElapsedTimer>
 #endif
+
+class AbstractInterpolation;
 
 class Plot : public QwtPlot
 {
@@ -39,8 +41,10 @@ public:
     void addCurve(int yColumn, int xColumn=-1);
     double getMonitoringInterval(void) const;
     inline const AbstractInterpolation * getInterpolation() const {
-        return &interpolation;
+        return interpolation;
     };
+
+    QVector<QPointF> getSelectedPoints(QwtPlotCurve *curve=NULL) const;
 
 public slots:
     void replot();
@@ -68,6 +72,7 @@ private:
     int xCol;
     QwtPlotCurve *selectedCurve;
     QMap<QwtPlotCurve *,QwtPlotCurve *> markCurveMap;
+    QMap<QwtPlotCurve*, QVector<QPointF> > dataMap;
     int selectedPoint;
     QMap<int,QPointF> selectedPoints;
     QwtPicker *selectPointPicker;
@@ -88,7 +93,7 @@ private:
     bool incrementalDraw;
     double monitoringInterval;
     static int markerCount;
-    AbstractInterpolation interpolation;
+    AbstractInterpolation* interpolation;
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);

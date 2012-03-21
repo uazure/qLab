@@ -64,6 +64,7 @@ private slots:
     void saveFile(QString filename="");
     void setInterval(void);
     void viewExperimentControlDialog(void);
+    void approximate(void);
 
 };
 
