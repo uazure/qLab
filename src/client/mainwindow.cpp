@@ -37,6 +37,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
     connect(ui->actionSelectT0,SIGNAL(triggered(bool)),plot,SLOT(selectT0(bool)));
+    connect(ui->actionApproximate,SIGNAL(triggered()),SLOT(approximate()));
 
 
 
@@ -282,6 +283,14 @@ void MainWindow::viewExperimentControlDialog() {
 
 void MainWindow::approximate(void)
 {
+    if (!plot->getInterpolation()->issetT0()) {
+        QMessageBox::warning(this,tr("T0 not selected"),tr("Please, select T0 and range of points"));
+        return;
+    }
+    if (!plot->hasSelectedPoints()) {
+        QMessageBox::warning(this,tr("No points selected"),tr("Please, select range of points"));
+        return;
+    }
 
 }
 

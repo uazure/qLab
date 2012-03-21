@@ -34,7 +34,7 @@ public:
 public slots:
     void setT0(double Tzero);
     void resetT0();
-    bool issetT0();
+    bool issetT0() const;
 
 
     //FIXME: this function should be moved to appropriate subclass

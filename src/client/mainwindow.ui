@@ -89,6 +89,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelectT0"/>
+   <addaction name="actionSelect_points"/>
    <addaction name="actionApproximate"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

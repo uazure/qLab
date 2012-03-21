@@ -45,6 +45,7 @@ public:
     };
 
     QVector<QPointF> getSelectedPoints(QwtPlotCurve *curve=NULL) const;
+    bool hasSelectedPoints() const;
 
 public slots:
     void replot();
@@ -59,6 +60,7 @@ public slots:
     void setMonitoringInterval(double interval);
     void appendMarker(QPointF point,int control=0);
     void appendMarker(int rowIndex);
+
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);

@@ -647,3 +647,9 @@ QVector<QPointF> Plot::getSelectedPoints(QwtPlotCurve *curve) const
     }
     return dataMap[selectionCurve];
 }
+
+bool Plot::hasSelectedPoints() const
+{
+    if (selectedCurve!=NULL) return true;
+    return false;
+}

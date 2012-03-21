@@ -9,11 +9,10 @@ AbstractInterpolation::AbstractInterpolation(Plot *plotObject)
 }
 
 void AbstractInterpolation::interpolate(const QVector<QPointF> &data) {
-    if (T0==-1) {
+    if (!issetT0()) {
         qWarning()<<"T0 not set";
         return;
     }
-
 
 
 }
@@ -725,7 +724,7 @@ void AbstractInterpolation::resetT0()
     T0=-1;
 }
 
-bool AbstractInterpolation::issetT0()
+bool AbstractInterpolation::issetT0() const
 {
     if (T0!=-1) return true;
     return false;
