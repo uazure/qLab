@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "abstractinterpolation.h"
+#include "selectapproximationdialog.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -295,8 +296,29 @@ void MainWindow::approximate(void)
     //show dialog for selecting curve for Temperature
     QwtPlotCurve *temperatureCurve=plot->showSelectCurveDialog(tr("Temperature"));
     qDebug()<<temperatureCurve;
+    if (temperatureCurve==NULL) {
+        qDebug()<<"User didn't selected curve";
+        return;
+    }
+
     QwtPlotCurve *pressureCurve=plot->showSelectCurveDialog(tr("Pressure"));
     qDebug()<<pressureCurve;
 
+    if (temperatureCurve==NULL) {
+        qDebug()<<"User didn't selected curve";
+        return;
+    }
+
+    int approximationMethodForTemperature=plot->showSelectApproximationDialog(tr("Temperature"));
+    if (approximationMethodForTemperature<0) {
+        qDebug()<<"User didn't selected approximation method for temperature";
+        return;
+    }
+    int approximationMethodForPressure=plot->showSelectApproximationDialog(tr("Pressure"));
+    if (approximationMethodForPressure<0) {
+        qDebug()<<"User didn't selected approximation method for pressure";
+        return;
+    }
+    //FIXME: Here should be code for calling approximation procedures
 }
 

@@ -6,6 +6,11 @@ SelectApproximationDialog::SelectApproximationDialog(const QString &name, QWidge
     ui(new Ui::SelectApproximationDialog)
 {
     ui->setupUi(this);
+    QFont font=QWidget::font();
+    font.setPointSizeF(font.pointSizeF()*1.3);
+    font.setBold(true);
+    ui->label->setFont(font);
+    ui->label->setText(name);
 }
 
 SelectApproximationDialog::~SelectApproximationDialog()

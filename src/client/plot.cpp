@@ -1,6 +1,7 @@
 #include "plot.h"
 #include "abstractinterpolation.h"
 #include "selectcurvedialog.h"
+#include "selectapproximationdialog.h"
 
 int Plot::markerCount=0;
 
@@ -677,4 +678,17 @@ QwtPlotCurve * Plot::showSelectCurveDialog(const QString &name) {
     }
 
     return curve;
+}
+
+int Plot::showSelectApproximationDialog(const QString &name) {
+    SelectApproximationDialog dialog(name,this);
+    int result=dialog.exec();
+    if (result!=QDialog::Accepted) {
+        qDebug()<<"User canceled approximation selection";
+        return -1;
+    }
+    int method=dialog.getApproximationMethodId();
+    qDebug()<<"User picked approxmation method"<<method;
+
+    return method;
 }

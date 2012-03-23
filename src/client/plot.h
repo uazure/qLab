@@ -62,6 +62,7 @@ public slots:
     void appendMarker(QPointF point,int control=0);
     void appendMarker(int rowIndex);
     QwtPlotCurve * showSelectCurveDialog(const QString &name);
+    int showSelectApproximationDialog(const QString &name);
 
 
 signals:
