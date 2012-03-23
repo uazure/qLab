@@ -292,5 +292,11 @@ void MainWindow::approximate(void)
         return;
     }
 
+    //show dialog for selecting curve for Temperature
+    QwtPlotCurve *temperatureCurve=plot->showSelectCurveDialog(tr("Temperature"));
+    qDebug()<<temperatureCurve;
+    QwtPlotCurve *pressureCurve=plot->showSelectCurveDialog(tr("Pressure"));
+    qDebug()<<pressureCurve;
+
 }
 

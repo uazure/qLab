@@ -1,5 +1,6 @@
 #include "plot.h"
 #include "abstractinterpolation.h"
+#include "selectcurvedialog.h"
 
 int Plot::markerCount=0;
 
@@ -652,4 +653,28 @@ bool Plot::hasSelectedPoints() const
 {
     if (selectedCurve!=NULL) return true;
     return false;
+}
+
+QwtPlotCurve * Plot::showSelectCurveDialog(const QString &name) {
+    QwtPlotCurve *curve;
+    if (approximationCurveMap.contains(name)) {
+        curve=approximationCurveMap.value(name);
+        qDebug()<<"Found curve in approximationCurveMap";
+        return curve;
+    }
+
+    qDebug()<<"Curve not found in approximationCurveMap. Asking user.";
+    SelectCurveDialog dialog(name,this);
+    int result=dialog.exec();
+    if (result!=QDialog::Accepted) {
+        return NULL;
+    }
+
+    curve=dialog.getSelectedCurve();
+
+    if (dialog.isRememberChecked()) {
+        approximationCurveMap.insert(name,curve)    ;
+    }
+
+    return curve;
 }

@@ -20,6 +20,7 @@
 #include "scaleplotpanner.h"
 
 
+
 #include <QDebug>
 #include <QMap>
 #include <QSize>
@@ -60,6 +61,7 @@ public slots:
     void setMonitoringInterval(double interval);
     void appendMarker(QPointF point,int control=0);
     void appendMarker(int rowIndex);
+    QwtPlotCurve * showSelectCurveDialog(const QString &name);
 
 
 signals:
@@ -91,6 +93,8 @@ private:
     ScalePlotPanner *yLeftPanner;
     ScalePlotPanner *yRightPanner;
     ScalePlotPanner *xBottomPanner;
+
+    QMap<QString,QwtPlotCurve *> approximationCurveMap;
 
     bool incrementalDraw;
     double monitoringInterval;

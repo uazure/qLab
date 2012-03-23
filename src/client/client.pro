@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     experiment.cpp \
     experimentcontroldialog.cpp \
     ../server/clickablelabel.cpp \
-    abstractinterpolation.cpp
+    abstractinterpolation.cpp \
+    selectcurvedialog.cpp \
+    selectapproximationdialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -38,11 +40,15 @@ HEADERS += mainwindow.h \
     experiment.h \
     experimentcontroldialog.h \
     ../server/clickablelabel.h \
-    abstractinterpolation.h
+    abstractinterpolation.h \
+    selectcurvedialog.h \
+    selectapproximationdialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
-    experimentcontroldialog.ui
+    experimentcontroldialog.ui \
+    selectcurvedialog.ui \
+    selectapproximationdialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src
