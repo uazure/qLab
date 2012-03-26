@@ -2,10 +2,10 @@
 #include "abstractinterpolation.h"
 
 
-AbstractInterpolation::AbstractInterpolation(Plot *plotObject)
+AbstractInterpolation::AbstractInterpolation()
 {
     T0=-1;
-    plot=plotObject;
+    //plot=plotObject;
 }
 
 void AbstractInterpolation::interpolate(const QVector<QPointF> &data) {
@@ -24,6 +24,7 @@ void AbstractInterpolation::setT0(double Tzero) {
     //disconnect this slot from all signals.
     disconnect(this,SLOT(setT0(double)));
 }
+
 
 
 
@@ -210,9 +211,15 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
     long double q,r,s;
     int N = data.size()-1;
 
-    QVector<QVector<long double> > A(M);
+    if (M<0) {
+        qWarning()<<"M for calculateGramMatrix is"<<M<<"Consider quit";
+        QVector<QVector<long double> > A(0);
+        return A;
+    }
+        QVector<QVector<long double> > A(M);
+
         for (int i=0;i<A.size();++i) {
-            A[0].resize(M+1);
+            A[i].resize(M+1);
         }
 
 
@@ -233,12 +240,14 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
     {
         calculateBasisForGramMatrix(T,Poly,data.at(i).x(),c);
         //Bas(N,M,Poly,X[i],c,X,T);
-        for(j=0;j<=M;j++) P[j][i]= T[j];
+        for(j=0;j<M;j++) {
+            P[j][i]= T[j];
+        }
     }
 
-    for(k=0;k<=M;k++)
+    for(k=0;k<M;k++)
     {
-        for(j=0;j<=M;j++)
+        for(j=0;j<M;j++)
         {
             s=0.0;r=0.0;
             for(i=0;i<=N;i++)
@@ -250,7 +259,7 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
             }//for i
             A[k][j]=s;A[j][k]=s;
         }//for j
-        A[k][M+1]=r;
+        A[k][M]=r;
     }//for k
     return A;
 }
@@ -365,7 +374,7 @@ void AbstractInterpolation::calculateMNK(Polynomial Poly,
         normalizedData[i].setX(data.at(i).x()-X0);
     }
 
-    QVector<QVector<long double> > A=calculateGramMatrix(normalizedData,coef.size()-1,Poly,c_k);
+    QVector<QVector<long double> > A=calculateGramMatrix(normalizedData,coef.size(),Poly,c_k);
     //Gram(N,M,Poly,c_k,X,Y,A);
     calculateGauss(coef,A);
     //Gauss(M,C,A);

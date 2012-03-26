@@ -319,6 +319,22 @@ void MainWindow::approximate(void)
         qDebug()<<"User didn't selected approximation method for pressure";
         return;
     }
+
+    //coefT - array of coefficients for approximation. Size of array is the approximation method index
+    QVector<double> coefT(approximationMethodForTemperature);
+    coefT.fill(0);
+    QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
+    double X0=plot->getInterpolation()->getT0();
+    bool error=false;
+    //c_k_start for temperature - 0.1
+    //c_k_end for temperature - 300
+    //c_k_start for pressure - 0.1
+    //c_k_end for pressure - 1000
+    double c_k_start = 0.1;
+    double c_k_end=300;
+    int steps=1000;
+    AbstractInterpolation::calculateOptimizedMNK(points,coefT,AbstractInterpolation::polynomExpLine,X0,c_k_start,c_k_end,steps,&error);
     //FIXME: Here should be code for calling approximation procedures
+
 }
 

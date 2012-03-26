@@ -166,7 +166,7 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->removeEventFilter(yRightPanner);
 
 
-    interpolation=new AbstractInterpolation(this);
+    interpolation=new AbstractInterpolation();
     connect(interpolation,SIGNAL(T0Selected()),this,SLOT(normalMode()));
 
 

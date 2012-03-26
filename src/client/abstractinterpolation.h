@@ -22,12 +22,12 @@ class AbstractInterpolation: public QObject
 
 public:
     enum Polynomial {
-        polynomExpLine,
-        polynomExpExp,
+        polynomExpLine=0,
+        polynomExpExp=1,
         polynomExpFIXME
     };
 
-    AbstractInterpolation(Plot * plotObject);
+    AbstractInterpolation();
 
     virtual void interpolate(const QVector<QPointF> & data);
 
@@ -35,6 +35,7 @@ public slots:
     void setT0(double Tzero);
     void resetT0();
     bool issetT0() const;
+    double getT0() const {return T0;};
 
 
     //FIXME: this function should be moved to appropriate subclass
@@ -48,9 +49,6 @@ public slots:
                             double &minX,
                             double &maxX
                             );
-
-protected:
-    Plot * plot;
     /** функция вычисляет значение S полинома степени М в точке Х1
     X1 - значение аргумента
     С - массив коэффициентов
@@ -189,6 +187,10 @@ protected:
     предварительным вызовом функции CalcMNK
     */
     static double Fi(int N,int M,int Poly,int *val,double X0,double c_k,double X1,double *C,double *XData);
+
+
+protected:
+    Plot * plot;
 
 
 private:
