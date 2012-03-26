@@ -321,7 +321,7 @@ void MainWindow::approximate(void)
     }
 
     //coefT - array of coefficients for approximation. Size of array is the approximation method index
-    QVector<double> coefT(approximationMethodForTemperature);
+    QVector<double> coefT(approximationMethodForTemperature+1);
     coefT.fill(0);
     QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
     double X0=plot->getInterpolation()->getT0();
