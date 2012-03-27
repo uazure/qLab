@@ -333,6 +333,7 @@ void MainWindow::approximate(void)
     double c_k_start = 0.1;
     double c_k_end=300;
     int steps=1000;
+
     AbstractInterpolation::calculateOptimizedMNK(points,coefT,AbstractInterpolation::polynomExpLine,X0,c_k_start,c_k_end,steps,&error);
     //FIXME: Here should be code for calling approximation procedures
 

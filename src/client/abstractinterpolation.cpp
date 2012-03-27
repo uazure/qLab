@@ -203,10 +203,12 @@ case 2:
 
 QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
         const QVector<QPointF> &data,
-        int M,
+        const int M,
         Polynomial Poly,
         double c) {
 
+    static int callCounter=0;
+    ++callCounter;
     int i,j,k;
     long double q,r,s;
     int N = data.size()-1;
@@ -226,13 +228,20 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
     QVector<double> T(M);
 
     //long double *P=new long double[M*N];
-    long double **P=new long double* [M];
+    qDebug()<<callCounter<<"Creating Plan matrix P"<<M<<"x"<<N;
+    QVector<QVector<long double> > P;
+    P.fill(QVector<long double>(N),M);
     for (int i=0;i<M;++i) {
-        P[i]=new long double[N];
-        for (int j=0;j<N;++j) {
-            P[i][j]=0;
-        }
+        P[i].fill(0.0,N);
     }
+
+//    long double **P=new long double* [M];
+//    for (int i=0;i<M;++i) {
+//        P[i]=new long double[N];
+//        for (int j=0;j<N;++j) {
+//            P[i][j]=0;
+//        }
+//    }
 
     //long double P[M_T][N_T];//матрица плана
 
@@ -261,6 +270,15 @@ QVector<QVector<long double> > AbstractInterpolation::calculateGramMatrix(
         }//for j
         A[k][M]=r;
     }//for k
+
+    //delete plan matrix:
+//    for (int i=0;i<M;++i) {
+//        qDebug()<<callCounter<<"Deleting P[i] with i ="<<i;
+//        delete[] P[i];
+//    }
+//    qDebug()<<"Deleting P";
+//    delete[] P;
+
     return A;
 }
 

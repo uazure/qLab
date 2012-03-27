@@ -96,7 +96,7 @@ public slots:
     x - X value (usually time)
     c - coefficient
 */
-    static QVector<QVector<long double> > calculateGramMatrix(const QVector<QPointF> &data,int M,Polynomial Poly, double c);
+    static QVector<QVector<long double> > calculateGramMatrix(const QVector<QPointF> &data, const int M,Polynomial Poly, double c);
 
 
     /** заполнение матрицы Грамма
