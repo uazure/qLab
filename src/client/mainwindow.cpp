@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "abstractinterpolation.h"
 #include "selectapproximationdialog.h"
+#include "gsl/gsl_multifit_nlin.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -333,8 +334,10 @@ void MainWindow::approximate(void)
     double c_k_start = 0.1;
     double c_k_end=300;
     int steps=1000;
+    //FIXME: gsl implementation of interpolation solver
 
-    AbstractInterpolation::calculateOptimizedMNK(points,coefT,AbstractInterpolation::polynomExpLine,X0,c_k_start,c_k_end,steps,&error);
+
+    //AbstractInterpolation::calculateOptimizedMNK(points,coefT,AbstractInterpolation::polynomExpLine,X0,c_k_start,c_k_end,steps,&error);
     //FIXME: Here should be code for calling approximation procedures
 
 }

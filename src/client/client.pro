@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     ../server/clickablelabel.cpp \
     abstractinterpolation.cpp \
     selectcurvedialog.cpp \
-    selectapproximationdialog.cpp
+    selectapproximationdialog.cpp \
+    nonlinearapproximation.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -42,7 +43,8 @@ HEADERS += mainwindow.h \
     ../server/clickablelabel.h \
     abstractinterpolation.h \
     selectcurvedialog.h \
-    selectapproximationdialog.h
+    selectapproximationdialog.h \
+    nonlinearapproximation.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
@@ -54,6 +56,8 @@ INCLUDEPATH += ../qwt6
 # INCLUDEPATH += ../../../qwt/src
 # qwt 6.0.1 need to be compiled and installed to system path
 LIBS += -L../../../qwt/lib
+LIBS += -lgsl \
+    -lgslcblas
 
 # release mode and unix
 LIBS += -lqwt
