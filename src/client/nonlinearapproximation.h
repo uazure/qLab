@@ -1,19 +1,38 @@
 #ifndef NONLINEARAPPROXIMATION_H
 #define NONLINEARAPPROXIMATION_H
 
+#include <QVector>
+#include <QPointF>
+#include <QDebug>
 #include "gsl/gsl_multifit_nlin.h"
 
 class NonLinearApproximation
 {
 public:
     NonLinearApproximation();
+    //exponental base function
+    //Y(x) = (b-a) exp (-x / c) +a
+    static int expb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
+
+    static int expb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
+
+    static int expb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
+
+    int solve(const QVector<QPointF> &point);
+
+
+
+
 
 private:
+
     //type definition of solver
     const gsl_multifit_fdfsolver_type *T;
     //solver
     gsl_multifit_fdfsolver *s;
     int status;
+
+    /*
     //n - number of points;
     const size_t n = N;
     //p - number of parameters of interpolation function. For exp interpolation p=3
@@ -35,6 +54,7 @@ private:
     f.n = n;
     f.p = p;
     f.params = &d;
+    */
 };
 
 #endif // NONLINEARAPPROXIMATION_H
