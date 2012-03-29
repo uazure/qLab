@@ -5,6 +5,7 @@
 #include <QPointF>
 #include <QDebug>
 #include "gsl/gsl_multifit_nlin.h"
+#include "gsl/gsl_blas.h"
 
 class NonLinearApproximation
 {
@@ -31,6 +32,7 @@ private:
     //solver
     gsl_multifit_fdfsolver *s;
     int status;
+    void print_state (size_t iter,gsl_multifit_fdfsolver * s);
 
     /*
     //n - number of points;
@@ -38,7 +40,7 @@ private:
     //p - number of parameters of interpolation function. For exp interpolation p=3
     const size_t p = 3;
     //covar matrix. I don't know what it is :( But it's size is pxp
-    gsl_matrix *covar = gsl_matrix_alloc (p, p);
+
     //y and sigma - array of doubles. size is num of experimental points
     double y[N], sigma[N];
     struct data d = { n, y, sigma};
