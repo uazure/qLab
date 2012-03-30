@@ -295,6 +295,7 @@ void MainWindow::approximate(void)
         return;
     }
 
+
     //show dialog for selecting curve for Temperature
     QwtPlotCurve *temperatureCurve=plot->showSelectCurveDialog(tr("Temperature"));
     qDebug()<<temperatureCurve;
@@ -316,29 +317,24 @@ void MainWindow::approximate(void)
         qDebug()<<"User didn't selected approximation method for temperature";
         return;
     }
-    int approximationMethodForPressure=plot->showSelectApproximationDialog(tr("Pressure"));
-    if (approximationMethodForPressure<0) {
-        qDebug()<<"User didn't selected approximation method for pressure";
-        return;
+//    int approximationMethodForPressure=plot->showSelectApproximationDialog(tr("Pressure"));
+//    if (approximationMethodForPressure<0) {
+//        qDebug()<<"User didn't selected approximation method for pressure";
+//        return;
+//    }
+
+    QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
+
+    double x0=plot->getInterpolation()->getT0();
+    for (int i=0;i<points.size();++i) {
+        points[i].setX(points.at(i).x()-x0);
     }
 
-    //coefT - array of coefficients for approximation. Size of array is the approximation method index
-    QVector<double> coefT(approximationMethodForTemperature+1);
-    coefT.fill(0);
-    QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
-    double X0=plot->getInterpolation()->getT0();
-    bool error=false;
-    //c_k_start for temperature - 0.1
-    //c_k_end for temperature - 300
-    //c_k_start for pressure - 0.1
-    //c_k_end for pressure - 1000
-    double c_k_start = 0.1;
-    double c_k_end=300;
-    int steps=1000;
-    //FIXME: gsl implementation of interpolation solver
     NonLinearApproximation approximation;
     qDebug()<<"Starting solver";
-    int result=approximation.solve(points);
+    QString log;
+    int result=approximation.solve(points,1,log);
+    QMessageBox::information(this,tr("Information"),log);
     qDebug()<<"Result: "<<result;
 
 

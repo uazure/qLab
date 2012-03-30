@@ -19,7 +19,16 @@ public:
 
     static int expb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
 
-    int solve(const QVector<QPointF> &point);
+
+    //exponental + line base function
+    //Y(x) = (b-a) exp (-x/c) + a + d*x
+    static int explineb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
+
+    static int explineb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
+
+    static int explineb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
+
+    int solve(const QVector<QPointF> &point,int method,QString &log);
 
 
 
