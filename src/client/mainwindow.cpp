@@ -333,7 +333,7 @@ void MainWindow::approximate(void)
     NonLinearApproximation approximation;
     qDebug()<<"Starting solver";
     QString log;
-    int result=approximation.solve(points,1,log);
+    int result=approximation.solve(points,approximationMethodForTemperature,log);
     QMessageBox::information(this,tr("Information"),log);
     qDebug()<<"Result: "<<result;
 
