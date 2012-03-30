@@ -93,6 +93,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
 
     if (point.size()<p) {
         qWarning()<<"Not enough selected points to use this approximation method";
+        log="Status: insufficient data points, n < p\nSelect more points or use other approximation method";
         gsl_vector_free(xvector);
         gsl_matrix_free(covar);
         return GSL_EINVAL;
