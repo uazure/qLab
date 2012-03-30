@@ -46,7 +46,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         f.fdf=&NonLinearApproximation::expb_fdf;
 
         break;
-    case 2:
+    case 2: //expline
         formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
         p=4;
         xvector=gsl_vector_alloc(p);
