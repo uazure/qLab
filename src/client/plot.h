@@ -45,7 +45,7 @@ public:
     double getT0() const;
     double getT0Value(QwtPlotCurve *curve) const;
     bool issetT0() const;
-    void addInterpolationCurve(const QVector<QPointF> &points);
+    void addInterpolationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
 
 
 public slots:
@@ -62,9 +62,7 @@ public slots:
     void setMonitoringInterval(double interval);
     void appendMarker(QPointF point,int control=0);
     void appendMarker(int rowIndex);
-    QwtPlotCurve * showSelectCurveDialog(const QString &name);
-    int showSelectApproximationDialog(const QString &name);
-    void showInterpolationCurves(bool show=true);
+    void showApproximationCurves(bool show=true);
 
 
 signals:
@@ -97,9 +95,9 @@ private:
     ScalePlotPanner *yLeftPanner;
     ScalePlotPanner *yRightPanner;
     ScalePlotPanner *xBottomPanner;
-    QList<QwtPlotCurve *> interpolationCurveList;
+    QList<QwtPlotCurve *> approximationCurveList;
 
-    QMap<QString,QwtPlotCurve *> approximationCurveMap;
+    //QMap<QString,QwtPlotCurve *> approximationCurveMap;
 
     bool incrementalDraw;
     bool showInterpolation;

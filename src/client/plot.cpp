@@ -1,7 +1,6 @@
 #include "plot.h"
 //#include "abstractinterpolation.h"
 #include "selectcurvedialog.h"
-#include "selectapproximationdialog.h"
 
 int Plot::markerCount=0;
 
@@ -652,43 +651,6 @@ bool Plot::hasSelectedPoints() const
     return false;
 }
 
-QwtPlotCurve * Plot::showSelectCurveDialog(const QString &name) {
-    QwtPlotCurve *curve;
-    if (approximationCurveMap.contains(name)) {
-        curve=approximationCurveMap.value(name);
-        qDebug()<<"Found curve in approximationCurveMap";
-        return curve;
-    }
-
-    qDebug()<<"Curve not found in approximationCurveMap. Asking user.";
-    SelectCurveDialog dialog(name,this);
-    int result=dialog.exec();
-    if (result!=QDialog::Accepted) {
-        return NULL;
-    }
-
-    curve=dialog.getSelectedCurve();
-
-    if (dialog.isRememberChecked()) {
-        approximationCurveMap.insert(name,curve)    ;
-    }
-
-    return curve;
-}
-
-int Plot::showSelectApproximationDialog(const QString &name) {
-    SelectApproximationDialog dialog(name,this);
-    int result=dialog.exec();
-    if (result!=QDialog::Accepted) {
-        qDebug()<<"User canceled approximation selection";
-        return -1;
-    }
-    int method=dialog.getApproximationMethodId();
-    qDebug()<<"User picked approxmation method"<<method;
-
-    return method;
-}
-
 //Returns x value (time) for selected T0 point
 double Plot::getT0() const
 {
@@ -740,25 +702,28 @@ void Plot::setT0(QwtPlotCurve *curve, int index)
     emit T0Selected();
 }
 
-void Plot::addInterpolationCurve(const QVector<QPointF> &points)
+void Plot::addInterpolationCurve(const QVector<QPointF> &points, QwtPlotCurve * originalDataCurve)
 {
     if (points.size()<=0) {
         qWarning()<<"No points to add interpolation curve";
         return;
     }
 
-    QwtPlotCurve *interpolationCurve=new QwtPlotCurve();
+    QwtPlotCurve *interpolationCurve=new QwtPlotCurve(QString::number(points.first().x()));
     interpolationCurve->setItemAttribute(QwtPlotItem::Legend,false);
     interpolationCurve->setSamples(points);
+    interpolationCurve->setYAxis(originalDataCurve->yAxis());
     interpolationCurve->setVisible(showInterpolation);
     interpolationCurve->attach(this);
+    approximationCurveList.append(interpolationCurve);
     QwtPlot::replot();
 }
 
-void Plot::showInterpolationCurves(bool show)
+void Plot::showApproximationCurves(bool show)
 {
     showInterpolation=show;
-    for (int i=0;i<interpolationCurveList.size();++i) {
-        interpolationCurveList.at(i)->setVisible(show);
+    for (int i=0;i<approximationCurveList.size();++i) {
+        approximationCurveList[i]->setVisible(show);
     }
+    QwtPlot::replot();
 }

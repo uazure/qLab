@@ -43,7 +43,7 @@ public:
 
 
 
-    QVector<QPointF> getInterpolation() const {return interpolation;}
+    QVector<QPointF> getApproximationPoints() const {return interpolation;}
     void setInterpolationSteps(int steps) {interpolationSteps=steps;}
     int getInterpolationSteps() const {return interpolationSteps;}
 

@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "abstractinterpolation.h"
-#include "selectapproximationdialog.h"
 #include "nonlinearapproximation.h"
 //#include "gsl/gsl_multifit_nlin.h"
 
@@ -41,7 +40,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
     connect(ui->actionSelectT0,SIGNAL(triggered(bool)),plot,SLOT(selectT0(bool)));
     connect(ui->actionApproximate,SIGNAL(triggered()),SLOT(approximate()));
-    connect(ui->actionShow_approximations,SIGNAL(triggered(bool)),plot,SLOT(showInterpolationCurves(bool)));
+    connect(ui->actionShow_approximations,SIGNAL(triggered(bool)),plot,SLOT(showApproximationCurves(bool)));
 
 
     ui->actionDraw_incremental->trigger();
@@ -294,56 +293,48 @@ void MainWindow::approximate(void)
         return;
     }
 
-
-    //show dialog for selecting curve for Temperature
-    QwtPlotCurve *temperatureCurve=plot->showSelectCurveDialog(tr("Temperature"));
-    qDebug()<<temperatureCurve;
-    if (temperatureCurve==NULL) {
-        qDebug()<<"User didn't selected curve";
+    //show dialog for selecting curve and approximation method for Temperature and Pressure
+    ApproximationDialog dialog(plot,this);
+    if (!dialog.exec()) {
+        qWarning()<<"Curves and approximation method has not been chosen";
         return;
     }
+    QwtPlotCurve *TCurve=dialog.getTCurve();
+    QwtPlotCurve *FCurve=dialog.getFCurve();
+    int TapproximationMethod=dialog.getTApproximationMethodId();
+    int FapproximationMethod=dialog.getFApproximationMethodId();
 
-    QwtPlotCurve *pressureCurve=plot->showSelectCurveDialog(tr("Pressure"));
-    qDebug()<<pressureCurve;
 
-    if (temperatureCurve==NULL) {
-        qDebug()<<"User didn't selected curve";
-        return;
-    }
-
-    int approximationMethodForTemperature=plot->showSelectApproximationDialog(tr("Temperature"));
-    if (approximationMethodForTemperature<0) {
-        qDebug()<<"User didn't selected approximation method for temperature";
-        return;
-    }
-//    int approximationMethodForPressure=plot->showSelectApproximationDialog(tr("Pressure"));
-//    if (approximationMethodForPressure<0) {
-//        qDebug()<<"User didn't selected approximation method for pressure";
-//        return;
-//    }
-
-    QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
+    QVector<QPointF> Tpoints=plot->getSelectedPoints(TCurve);
+    QVector<QPointF> Fpoints=plot->getSelectedPoints(FCurve);
 
     double x0=plot->getT0();
-    for (int i=0;i<points.size();++i) {
-        points[i].setX(points.at(i).x()-x0);
+    for (int i=0;i<Tpoints.size();++i) {
+        Tpoints[i].setX(Tpoints.at(i).x()-x0);
+        Fpoints[i].setX(Fpoints.at(i).x()-x0);
     }
 
-    NonLinearApproximation approximation;
+    NonLinearApproximation approximationT, approximationF;
     qDebug()<<"Starting solver";
-    QString log;
-    int result=approximation.solve(points,approximationMethodForTemperature,log);
-    QMessageBox::information(this,tr("Information"),log);
-    qDebug()<<"Result: "<<result;
-    QVector<QPointF> interpolationPoints=approximation.getInterpolation();
+    QString Tlog,Flog;
+    approximationT.solve(Tpoints,TapproximationMethod,Tlog);
+    approximationF.solve(Fpoints,FapproximationMethod,Flog);
+
+    QMessageBox::information(this,tr("Information"),Tlog+Flog);
+    QVector<QPointF> TinterpolationPoints=approximationT.getApproximationPoints();
+    QVector<QPointF> FinterpolationPoints=approximationF.getApproximationPoints();
 
     //add x0 to interpolation results
-    for (int i=0;i<interpolationPoints.size();++i) {
-        interpolationPoints[i].setX(interpolationPoints.at(i).x()+x0);
+    for (int i=0;i<TinterpolationPoints.size();++i) {
+        TinterpolationPoints[i].setX(TinterpolationPoints.at(i).x()+x0);
     }
-    qDebug()<<interpolationPoints;
 
-    plot->addInterpolationCurve(interpolationPoints);
+    for (int i=0;i<FinterpolationPoints.size();++i) {
+        FinterpolationPoints[i].setX(FinterpolationPoints.at(i).x()+x0);
+    }
 
+    //qDebug()<<TinterpolationPoints;
+    plot->addInterpolationCurve(TinterpolationPoints,TCurve);
+    plot->addInterpolationCurve(FinterpolationPoints,FCurve);
 }
 

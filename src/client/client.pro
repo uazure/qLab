@@ -24,8 +24,8 @@ SOURCES += main.cpp \
     ../server/clickablelabel.cpp \
     abstractinterpolation.cpp \
     selectcurvedialog.cpp \
-    selectapproximationdialog.cpp \
-    nonlinearapproximation.cpp
+    nonlinearapproximation.cpp \
+    approximationdialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -43,14 +43,14 @@ HEADERS += mainwindow.h \
     ../server/clickablelabel.h \
     abstractinterpolation.h \
     selectcurvedialog.h \
-    selectapproximationdialog.h \
-    nonlinearapproximation.h
+    nonlinearapproximation.h \
+    approximationdialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
     experimentcontroldialog.ui \
     selectcurvedialog.ui \
-    selectapproximationdialog.ui
+    approximationdialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src

@@ -21,6 +21,7 @@
 #include "setupcurvesdialog.h"
 #include "experiment.h"
 #include "experimentcontroldialog.h"
+#include "approximationdialog.h"
 
 namespace Ui {
     class MainWindow;
