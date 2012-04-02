@@ -317,10 +317,14 @@ void MainWindow::approximate(void)
     NonLinearApproximation approximationT, approximationF;
     qDebug()<<"Starting solver";
     QString Tlog,Flog;
-    approximationT.solve(Tpoints,TapproximationMethod,Tlog);
-    approximationF.solve(Fpoints,FapproximationMethod,Flog);
+    double targetT, targetF;
 
-    QMessageBox::information(this,tr("Information"),Tlog+Flog);
+    approximationT.solve(Tpoints,TapproximationMethod,Tlog,&targetT);
+    approximationF.solve(Fpoints,FapproximationMethod,Flog,&targetF);
+
+
+
+    QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
     QVector<QPointF> TinterpolationPoints=approximationT.getApproximationPoints();
     QVector<QPointF> FinterpolationPoints=approximationF.getApproximationPoints();
 

@@ -6,7 +6,7 @@ NonLinearApproximation::NonLinearApproximation()
 }
 
 
-int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log) {
+int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log, QVector<double> results) {
 
     //set inteproplation steps x5 of original point number:
     setInterpolationSteps(point.size()*5);
@@ -138,9 +138,32 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         qDebug()<<letter<<" ="<<FIT(i)<<"+-"<<c*ERR(i);
     }
 
-    //generate approximation curve points
     double xStart=point.first().x();
     double xEnd=point.last().x();
+
+    //report target values and (optinally) times:
+    results.clear();
+    switch (method) {
+    case 0:
+        //formula="Y(x) = a*x+b";
+        results.append(gsl_vector_get(s->x,1));
+        break;
+    case 1:
+        //formula="Y(x) = (b-a) exp (-x / c) +a";
+        results.append(gsl_vector_get(s->x,1));
+        results.append(gsl_vector_get(s->x,2));
+        break;
+    case 2:
+        //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
+        results.append(gsl_vector_get(s->x,1));
+        results.append(gsl_vector_get(s->x,2));
+        break;
+    case 4:
+
+    }
+
+    //generate approximation curve points
+
     for (int i=0;i<interpolationSteps;++i) {
         double x=xStart+(xEnd-xStart)*i/interpolationSteps;
         double a,b,c,d,e,f,y;
