@@ -709,7 +709,7 @@ void Plot::addInterpolationCurve(const QVector<QPointF> &points, QwtPlotCurve * 
         return;
     }
 
-    QwtPlotCurve *interpolationCurve=new QwtPlotCurve(QString::number(points.first().x()));
+    QwtPlotCurve *interpolationCurve=new QwtPlotCurve(QString::number(points.first().x())+" "+interpolationCurve->title().text());
     interpolationCurve->setItemAttribute(QwtPlotItem::Legend,false);
     interpolationCurve->setSamples(points);
     interpolationCurve->setYAxis(originalDataCurve->yAxis());

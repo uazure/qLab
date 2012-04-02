@@ -333,7 +333,7 @@ void MainWindow::approximate(void)
         FinterpolationPoints[i].setX(FinterpolationPoints.at(i).x()+x0);
     }
 
-    //qDebug()<<TinterpolationPoints;
+    //add approximation curves to the plot
     plot->addInterpolationCurve(TinterpolationPoints,TCurve);
     plot->addInterpolationCurve(FinterpolationPoints,FCurve);
 }

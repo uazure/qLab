@@ -48,19 +48,19 @@ ApproximationDialog::ApproximationDialog(Plot *plotWidget, QWidget *parent) :
 
     switch (lastTApproximationMethod) {
     case 0:
-        ui->Tapproximation0->setChecked();
+        ui->Tapproximation0->setChecked(true);
         break;
     case 1:
-        ui->Tapproximation1->setChecked();
+        ui->Tapproximation1->setChecked(true);
         break;
     case 2:
-        ui->Tapproximation2->setChecked();
+        ui->Tapproximation2->setChecked(true);
         break;
     case 3:
-        ui->Tapproximation3->setChecked();
+        ui->Tapproximation3->setChecked(true);
         break;
     case 4:
-        ui->Tapproximation4->setChecked();
+        ui->Tapproximation4->setChecked(true);
         break;
     default:
         break;
@@ -69,19 +69,19 @@ ApproximationDialog::ApproximationDialog(Plot *plotWidget, QWidget *parent) :
 
     switch (lastFApproximationMethod>=0) {
     case 0:
-        ui->Fapproximation0->setChecked();
+        ui->Fapproximation0->setChecked(true);
         break;
     case 1:
-        ui->Fapproximation1->setChecked();
+        ui->Fapproximation1->setChecked(true);
         break;
     case 2:
-        ui->Fapproximation2->setChecked();
+        ui->Fapproximation2->setChecked(true);
         break;
     case 3:
-        ui->Fapproximation3->setChecked();
+        ui->Fapproximation3->setChecked(true);
         break;
     case 4:
-        ui->Fapproximation4->setChecked();
+        ui->Fapproximation4->setChecked(true);
         break;
     default:
         break;

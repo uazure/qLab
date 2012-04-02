@@ -21,6 +21,7 @@ public:
     QwtPlotCurve * getTCurve() const {return tCurve;}
     QwtPlotCurve * getFCurve() const {return fCurve;}
     static QwtPlotCurve *lastTCurve, *lastFCurve;
+    static int lastTApproximationMethod, lastFApproximationMethod;
 
 
 

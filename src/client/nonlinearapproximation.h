@@ -12,7 +12,13 @@ class NonLinearApproximation
 public:
     NonLinearApproximation();
 
-    int solve(const QVector<QPointF> &point,int method,QString &log);
+    /** result - reference of vector<double>. It will be filled with
+      0 - target value
+      1 - tau
+      2 - tau2 (optional)
+      */
+
+    int solve(const QVector<QPointF> &point,int method,QString &log, QVector<double> &result);
 
     //exponental base function
     //Y(x) = (b-a) exp (-x / c) +a
