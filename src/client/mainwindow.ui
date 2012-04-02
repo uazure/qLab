@@ -92,6 +92,7 @@
    <addaction name="actionApproximate"/>
    <addaction name="separator"/>
    <addaction name="actionStart"/>
+   <addaction name="actionShow_approximations"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit">
@@ -254,6 +255,11 @@
   <action name="actionApproximate">
    <property name="text">
     <string>Approximate</string>
+   </property>
+  </action>
+  <action name="actionShow_approximations">
+   <property name="text">
+    <string>Show approximations</string>
    </property>
   </action>
  </widget>

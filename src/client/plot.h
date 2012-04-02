@@ -29,8 +29,6 @@
 #include <QElapsedTimer>
 #endif
 
-class AbstractInterpolation;
-
 class Plot : public QwtPlot
 {
     Q_OBJECT
@@ -41,18 +39,21 @@ public:
     ~Plot();
     void addCurve(int yColumn, int xColumn=-1);
     double getMonitoringInterval(void) const;
-    inline const AbstractInterpolation * getInterpolation() const {
-        return interpolation;
-    };
 
     QVector<QPointF> getSelectedPoints(QwtPlotCurve *curve=NULL) const;
     bool hasSelectedPoints() const;
+    double getT0() const;
+    double getT0Value(QwtPlotCurve *curve) const;
+    bool issetT0() const;
+    void addInterpolationCurve(const QVector<QPointF> &points);
+
 
 public slots:
     void replot();
     void normalMode();
     void selectPointsMode(bool select=true);
     void selectT0(bool on=true);
+    void setT0(QwtPlotCurve* curve, int index);
     void drawLastPoint(int size);
     void clear(void);
     void zoomExtents(void);
@@ -63,12 +64,14 @@ public slots:
     void appendMarker(int rowIndex);
     QwtPlotCurve * showSelectCurveDialog(const QString &name);
     int showSelectApproximationDialog(const QString &name);
+    void showInterpolationCurves(bool show=true);
 
 
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
     void xValueSelected(double value);
     void message(QString message);
+    void T0Selected();
 
 
 private:
@@ -94,13 +97,16 @@ private:
     ScalePlotPanner *yLeftPanner;
     ScalePlotPanner *yRightPanner;
     ScalePlotPanner *xBottomPanner;
+    QList<QwtPlotCurve *> interpolationCurveList;
 
     QMap<QString,QwtPlotCurve *> approximationCurveMap;
 
     bool incrementalDraw;
+    bool showInterpolation;
     double monitoringInterval;
     static int markerCount;
-    AbstractInterpolation* interpolation;
+    int T0index;
+
 
 private slots:
     void hidePlotItem(QwtPlotItem *plotItem, bool hide);

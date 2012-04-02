@@ -1,5 +1,5 @@
 #include "plot.h"
-#include "abstractinterpolation.h"
+//#include "abstractinterpolation.h"
 #include "selectcurvedialog.h"
 #include "selectapproximationdialog.h"
 
@@ -14,10 +14,12 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
 #endif
     incrementalDraw=false;
+    showInterpolation=true;
     //set default monitoring time to 1 minute (60 seconds)
     setMonitoringInterval(60);
 
     xCol=-1;
+    T0index=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
     selectedPoint=-1; //no point selected. 0 - means first point of the curve.
     experimentData=data;
@@ -164,10 +166,6 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     yRightPanner->setMouseButton(Qt::RightButton);
     axisWidget(yRight)->installEventFilter(yRightPanner);
     canvas()->removeEventFilter(yRightPanner);
-
-
-    interpolation=new AbstractInterpolation();
-    connect(interpolation,SIGNAL(T0Selected()),this,SLOT(normalMode()));
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
@@ -608,8 +606,7 @@ void Plot::selectT0(bool on) {
     if (on) {
     selectPointsMode(false);
     selectPointPicker->setEnabled(true);
-    connect(this,SIGNAL(xValueSelected(double)),interpolation,SLOT(setT0(double)));
-
+    connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(setT0(QwtPlotCurve*,int)));
 
     zoomerLeft->setEnabled(false);
     zoomerRight->setEnabled(false);
@@ -621,10 +618,9 @@ void Plot::selectT0(bool on) {
 
     if (!on) {
         selectPointsMode(false);
-        disconnect(interpolation,SLOT(setT0(double)));
+        disconnect(this,SLOT(setT0(QwtPlotCurve*,int)));
         return;
     }
-
 }
 
 QVector<QPointF> Plot::getSelectedPoints(QwtPlotCurve *curve) const
@@ -691,4 +687,78 @@ int Plot::showSelectApproximationDialog(const QString &name) {
     qDebug()<<"User picked approxmation method"<<method;
 
     return method;
+}
+
+//Returns x value (time) for selected T0 point
+double Plot::getT0() const
+{
+    //if T0 is not selected return 0;
+    if (T0index<0) return 0;
+
+
+    QwtPlotCurve *curve;
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //find first curve that is on legend
+    for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        curve=(QwtPlotCurve*)(*it);
+        if (!curve->testItemAttribute(QwtPlotItem::Legend)) {
+            continue;
+        }
+        break;
+    }
+
+    return curve->sample(T0index).x();
+}
+
+double Plot::getT0Value(QwtPlotCurve *curve) const
+{
+    if (curve==NULL) {
+        qWarning()<<"Curve not selected";
+        return 0;
+    } else if (T0index<0) {
+        qWarning()<<"T0 not selected";
+        return 0;
+    }
+
+    return curve->sample(T0index).y();
+}
+
+bool Plot::issetT0() const
+{
+    if (T0index<0) return false;
+    else return true;
+}
+
+void Plot::setT0(QwtPlotCurve *curve, int index)
+{
+    if (!curve) {
+        T0index=-1;
+        return;
+    }
+
+    T0index=index;
+    emit T0Selected();
+}
+
+void Plot::addInterpolationCurve(const QVector<QPointF> &points)
+{
+    if (points.size()<=0) {
+        qWarning()<<"No points to add interpolation curve";
+        return;
+    }
+
+    QwtPlotCurve *interpolationCurve=new QwtPlotCurve();
+    interpolationCurve->setItemAttribute(QwtPlotItem::Legend,false);
+    interpolationCurve->setSamples(points);
+    interpolationCurve->setVisible(showInterpolation);
+    interpolationCurve->attach(this);
+    QwtPlot::replot();
+}
+
+void Plot::showInterpolationCurves(bool show)
+{
+    showInterpolation=show;
+    for (int i=0;i<interpolationCurveList.size();++i) {
+        interpolationCurveList.at(i)->setVisible(show);
+    }
 }

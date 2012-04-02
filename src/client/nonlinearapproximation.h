@@ -17,40 +17,35 @@ public:
     //exponental base function
     //Y(x) = (b-a) exp (-x / c) +a
     static int expb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
-
     static int expb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
-
     static int expb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
 
 
     //exponental + line base function
     //Y(x) = (b-a) exp (-x/c) + a + d*x
     static int explineb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
-
     static int explineb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
-
     static int explineb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
 
 
     //exponental + exponental + line base function
     //Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + f + g*x
     static int expexplineb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
-
     static int expexplineb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
-
     static int expexplineb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
 
 
     //line base function
     //Y(x) = a*x+b
     static int lineb_f(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_vector *f);
-
     static int lineb_df(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_matrix * J);
-
     static int lineb_fdf(const gsl_vector *approximationCoefficients, void * vectorPtr,gsl_vector *f, gsl_matrix * J);
 
 
 
+    QVector<QPointF> getInterpolation() const {return interpolation;}
+    void setInterpolationSteps(int steps) {interpolationSteps=steps;}
+    int getInterpolationSteps() const {return interpolationSteps;}
 
 
 private:
@@ -61,30 +56,11 @@ private:
     gsl_multifit_fdfsolver *s;
     int status;
     void print_state (size_t iter,gsl_multifit_fdfsolver * s);
+    int interpolationSteps;
+    QVector<QPointF> interpolation;
 
-    /*
-    //n - number of points;
-    const size_t n = N;
-    //p - number of parameters of interpolation function. For exp interpolation p=3
-    const size_t p = 3;
-    //covar matrix. I don't know what it is :( But it's size is pxp
 
-    //y and sigma - array of doubles. size is num of experimental points
-    double y[N], sigma[N];
-    struct data d = { n, y, sigma};
-    gsl_multifit_function_fdf f;
-    //starting parameters for fitting
-    double x_init[3] = { 1.0, 0.0, 0.0 };
-    gsl_vector_view x = gsl_vector_view_array (x_init, p);
 
-//function mapping for f (  gsl_multifit_function_fdf )
-    f.f = &expb_f;
-    f.df = &expb_df;
-    f.fdf = &expb_fdf;
-    f.n = n;
-    f.p = p;
-    f.params = &d;
-    */
 };
 
 #endif // NONLINEARAPPROXIMATION_H

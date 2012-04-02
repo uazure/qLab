@@ -41,14 +41,13 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
     connect(ui->actionSelectT0,SIGNAL(triggered(bool)),plot,SLOT(selectT0(bool)));
     connect(ui->actionApproximate,SIGNAL(triggered()),SLOT(approximate()));
-
+    connect(ui->actionShow_approximations,SIGNAL(triggered(bool)),plot,SLOT(showInterpolationCurves(bool)));
 
 
     ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
-    connect(plot->getInterpolation(),SIGNAL(T0Selected()),ui->actionSelectT0,SLOT(trigger()));
-
+    connect(plot,SIGNAL(T0Selected()),ui->actionSelectT0,SLOT(trigger()));
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
@@ -286,7 +285,7 @@ void MainWindow::viewExperimentControlDialog() {
 
 void MainWindow::approximate(void)
 {
-    if (!plot->getInterpolation()->issetT0()) {
+    if (!plot->issetT0()) {
         QMessageBox::warning(this,tr("T0 not selected"),tr("Please, select T0 and range of points"));
         return;
     }
@@ -325,7 +324,7 @@ void MainWindow::approximate(void)
 
     QVector<QPointF> points=plot->getSelectedPoints(temperatureCurve);
 
-    double x0=plot->getInterpolation()->getT0();
+    double x0=plot->getT0();
     for (int i=0;i<points.size();++i) {
         points[i].setX(points.at(i).x()-x0);
     }
@@ -336,10 +335,15 @@ void MainWindow::approximate(void)
     int result=approximation.solve(points,approximationMethodForTemperature,log);
     QMessageBox::information(this,tr("Information"),log);
     qDebug()<<"Result: "<<result;
+    QVector<QPointF> interpolationPoints=approximation.getInterpolation();
 
+    //add x0 to interpolation results
+    for (int i=0;i<interpolationPoints.size();++i) {
+        interpolationPoints[i].setX(interpolationPoints.at(i).x()+x0);
+    }
+    qDebug()<<interpolationPoints;
 
-    //AbstractInterpolation::calculateOptimizedMNK(points,coefT,AbstractInterpolation::polynomExpLine,X0,c_k_start,c_k_end,steps,&error);
-    //FIXME: Here should be code for calling approximation procedures
+    plot->addInterpolationCurve(interpolationPoints);
 
 }
 

@@ -2,11 +2,15 @@
 
 NonLinearApproximation::NonLinearApproximation()
 {
-
+    interpolationSteps=50;
 }
 
 
 int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log) {
+
+    //set inteproplation steps x5 of original point number:
+    setInterpolationSteps(point.size()*5);
+
     int p; //number of parameters
     gsl_vector* xvector;
     gsl_matrix *covar;
@@ -133,6 +137,51 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         log+=" = "+FIT(i)+"+-"+QString::number(c*ERR(i))+"\n";
         qDebug()<<letter<<" ="<<FIT(i)<<"+-"<<c*ERR(i);
     }
+
+    //generate approximation curve points
+    double xStart=point.first().x();
+    double xEnd=point.last().x();
+    for (int i=0;i<interpolationSteps;++i) {
+        double x=xStart+(xEnd-xStart)*i/interpolationSteps;
+        double a,b,c,d,e,f,y;
+
+        switch (method) {
+        case 0:
+            //formula="Y(x) = a*x+b";
+            a=gsl_vector_get(s->x,0);
+            b=gsl_vector_get(s->x,1);
+            y=a*x+b;
+            break;
+        case 1:
+            //formula="Y(x) = (b-a) exp (-x / c) +a";
+            a=gsl_vector_get(s->x,0);
+            b=gsl_vector_get(s->x,1);
+            c=gsl_vector_get(s->x,2);
+            y=(b-a)*exp(-x/c)+a;
+            break;
+        case 2:
+            //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
+            a=gsl_vector_get(s->x,0);
+            b=gsl_vector_get(s->x,1);
+            c=gsl_vector_get(s->x,2);
+            d=gsl_vector_get(s->x,3);
+            y=(b-a)*exp(-x/c)+a+d*x;
+            break;
+        case 4:
+            //formula="Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + e + f*x";
+            a=gsl_vector_get(s->x,0);
+            b=gsl_vector_get(s->x,1);
+            c=gsl_vector_get(s->x,2);
+            d=gsl_vector_get(s->x,3);
+            e=gsl_vector_get(s->x,4);
+            f=gsl_vector_get(s->x,5);
+            y=a*(1-exp(-x/c))+b*(exp(-x/d)-1)+e+f*x;
+            break;
+        }
+        QPointF interpolationPoint(x,y);
+        interpolation.append(interpolationPoint);
+    }
+
 
     gsl_vector_free(xvector);
     gsl_multifit_fdfsolver_free(s);
@@ -385,3 +434,5 @@ int NonLinearApproximation::expexplineb_fdf(const gsl_vector *approximationCoeff
            lineb_df(approximationCoefficients,vectorPtr,J);
            return GSL_SUCCESS;
        }
+
+
