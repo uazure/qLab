@@ -10,6 +10,16 @@
 class NonLinearApproximation
 {
 public:
+
+    enum approximationMethod {
+        methodLine,
+        methodExp,
+        methodExpLine,
+        methodExpExpLine,
+        methodExpExp,
+        methodTailAvg
+    };
+
     NonLinearApproximation();
 
     /** result - reference of vector<double>. It will be filled with
@@ -52,6 +62,8 @@ public:
     QVector<QPointF> getApproximationPoints() const {return interpolation;}
     void setInterpolationSteps(int steps) {interpolationSteps=steps;}
     int getInterpolationSteps() const {return interpolationSteps;}
+
+    static double linearApproximation(const QVector<QPointF> & point);
 
 
 private:

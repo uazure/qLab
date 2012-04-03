@@ -1,5 +1,6 @@
 #include "approximationdialog.h"
 #include "ui_approximationdialog.h"
+#include "nonlinearapproximation.h"
 
 int ApproximationDialog::lastTApproximationMethod=-1;
 int ApproximationDialog::lastFApproximationMethod=-1;
@@ -47,40 +48,31 @@ ApproximationDialog::ApproximationDialog(Plot *plotWidget, QWidget *parent) :
     }
 
     switch (lastTApproximationMethod) {
-    case 0:
-        ui->Tapproximation0->setChecked(true);
+    case NonLinearApproximation::methodTailAvg:
+        ui->TapproximationTailAvg->setChecked(true);
         break;
-    case 1:
+    case NonLinearApproximation::methodExp:
         ui->Tapproximation1->setChecked(true);
-        break;
-    case 2:
-        ui->Tapproximation2->setChecked(true);
-        break;
-    case 3:
-        ui->Tapproximation3->setChecked(true);
-        break;
-    case 4:
-        ui->Tapproximation4->setChecked(true);
         break;
     default:
         break;
     }
 
 
-    switch (lastFApproximationMethod>=0) {
-    case 0:
+    switch (lastFApproximationMethod) {
+    case NonLinearApproximation::methodLine:
         ui->Fapproximation0->setChecked(true);
         break;
-    case 1:
+    case NonLinearApproximation::methodExp:
         ui->Fapproximation1->setChecked(true);
         break;
-    case 2:
+    case NonLinearApproximation::methodExpLine:
         ui->Fapproximation2->setChecked(true);
         break;
-    case 3:
+    case NonLinearApproximation::methodExpExp:
         ui->Fapproximation3->setChecked(true);
         break;
-    case 4:
+    case NonLinearApproximation::methodExpExpLine:
         ui->Fapproximation4->setChecked(true);
         break;
     default:
@@ -95,11 +87,10 @@ ApproximationDialog::~ApproximationDialog()
 
 int ApproximationDialog::getTApproximationMethodId() const
 {
-    if (ui->Tapproximation0->isChecked()) return 0;
-    if (ui->Tapproximation1->isChecked()) return 1;
-    if (ui->Tapproximation2->isChecked()) return 2;
-    if (ui->Tapproximation3->isChecked()) return 3;
-    if (ui->Tapproximation4->isChecked()) return 4;
+
+    if (ui->Tapproximation1->isChecked()) return NonLinearApproximation::methodExp;
+    if (ui->TapproximationTailAvg->isChecked()) return NonLinearApproximation::methodTailAvg;
+
 
     qWarning()<<"No approximation method selected. Returning -1";
     return -1;
@@ -107,11 +98,11 @@ int ApproximationDialog::getTApproximationMethodId() const
 
 int ApproximationDialog::getFApproximationMethodId() const
 {
-    if (ui->Fapproximation0->isChecked()) return 0;
-    if (ui->Fapproximation1->isChecked()) return 1;
-    if (ui->Fapproximation2->isChecked()) return 2;
-    if (ui->Fapproximation3->isChecked()) return 3;
-    if (ui->Fapproximation4->isChecked()) return 4;
+    if (ui->Fapproximation0->isChecked()) return NonLinearApproximation::methodLine;
+    if (ui->Fapproximation1->isChecked()) return NonLinearApproximation::methodExp;
+    if (ui->Fapproximation2->isChecked()) return NonLinearApproximation::methodExpLine;
+    if (ui->Fapproximation3->isChecked()) return NonLinearApproximation::methodExpExp;
+    if (ui->Fapproximation4->isChecked()) return NonLinearApproximation::methodExpExpLine;
 
     qWarning()<<"No approximation method selected. Returning -1";
     return -1;

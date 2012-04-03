@@ -314,13 +314,16 @@ void MainWindow::approximate(void)
         Fpoints[i].setX(Fpoints.at(i).x()-x0);
     }
 
+
+
+
     NonLinearApproximation approximationT, approximationF;
     qDebug()<<"Starting solver";
     QString Tlog,Flog;
-    QVector<double> targetT, targetF;
+    QVector<double> paramsT, paramsF;
 
-    approximationT.solve(Tpoints,TapproximationMethod,Tlog,targetT);
-    approximationF.solve(Fpoints,FapproximationMethod,Flog,targetF);
+    approximationT.solve(Tpoints,TapproximationMethod,Tlog,paramsT);
+    approximationF.solve(Fpoints,FapproximationMethod,Flog,paramsF);
 
 
 

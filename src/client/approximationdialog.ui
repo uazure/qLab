@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>633</width>
-    <height>328</height>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,20 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QListWidget" name="TcurveListWidget"/>
+         <widget class="QListWidget" name="TcurveListWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>100</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="TrememberCheckBox">
@@ -36,9 +49,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="Tapproximation0">
+         <widget class="QRadioButton" name="TapproximationTailAvg">
           <property name="text">
-           <string>Line (y=ax+b)</string>
+           <string>Tail average (y=b)</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -56,28 +69,17 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="Tapproximation2">
-          <property name="text">
-           <string>Exp + Line (y=(b-a)*exp (-x/c) +a +d*x</string>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="Tapproximation3">
-          <property name="enabled">
-           <bool>false</bool>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
           </property>
-          <property name="text">
-           <string>Exp + Exp</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="Tapproximation4">
-          <property name="text">
-           <string>Exp + Exp + Line</string>
-          </property>
-         </widget>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -89,7 +91,20 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QListWidget" name="FcurveListWidget"/>
+         <widget class="QListWidget" name="FcurveListWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>100</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="FrememberCheckBox">
@@ -141,6 +156,22 @@
            <string>Exp + Exp + Line</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>

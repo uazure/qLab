@@ -21,7 +21,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
     QString formula;
 
     switch (method) {
-    case 0:
+    case NonLinearApproximation::methodLine:
         formula="Y(x) = a*x+b";
         p=2;
         xvector=gsl_vector_alloc(p);
@@ -35,7 +35,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         f.fdf=&NonLinearApproximation::lineb_fdf;
 
         break;
-    case 1: //exp fitting
+    case NonLinearApproximation::methodExp: //exp fitting
         formula="Y(x) = (b-a) exp (-x / c) +a";
         p = 3;
         xvector=gsl_vector_alloc(p);
@@ -50,7 +50,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         f.fdf=&NonLinearApproximation::expb_fdf;
 
         break;
-    case 2: //expline
+    case NonLinearApproximation::methodExpLine: //expline
         formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
         p=4;
         xvector=gsl_vector_alloc(p);
@@ -66,7 +66,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         f.fdf=&NonLinearApproximation::explineb_fdf;
         break;
 
-    case 4:
+    case NonLinearApproximation::methodExpExpLine:
         formula="Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + e + f*x";
         p=6;
         xvector=gsl_vector_alloc(p);
@@ -176,20 +176,20 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         double a,b,c,d,e,f,y;
 
         switch (method) {
-        case 0:
+        case NonLinearApproximation::methodLine:
             //formula="Y(x) = a*x+b";
             a=gsl_vector_get(s->x,0);
             b=gsl_vector_get(s->x,1);
             y=a*x+b;
             break;
-        case 1:
+        case NonLinearApproximation::methodExp:
             //formula="Y(x) = (b-a) exp (-x / c) +a";
             a=gsl_vector_get(s->x,0);
             b=gsl_vector_get(s->x,1);
             c=gsl_vector_get(s->x,2);
             y=(b-a)*exp(-x/c)+a;
             break;
-        case 2:
+        case NonLinearApproximation::methodExpLine:
             //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
             a=gsl_vector_get(s->x,0);
             b=gsl_vector_get(s->x,1);
@@ -197,7 +197,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
             d=gsl_vector_get(s->x,3);
             y=(b-a)*exp(-x/c)+a+d*x;
             break;
-        case 4:
+        case NonLinearApproximation::methodExpExpLine:
             //formula="Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + e + f*x";
             a=gsl_vector_get(s->x,0);
             b=gsl_vector_get(s->x,1);
@@ -466,3 +466,16 @@ int NonLinearApproximation::expexplineb_fdf(const gsl_vector *approximationCoeff
        }
 
 
+
+       double NonLinearApproximation::linearApproximation(const QVector<QPointF> &point) {
+           int start=point.size()*2/3;
+           if (start<1) {
+               return point.last().x();
+           }
+
+           double sum;
+           for (int i=start,n=0;i<point.size();++i) {
+               sum+=point.at(i).x();
+           }
+           return sum/(point.size()-start);
+       }
