@@ -11,12 +11,13 @@ class DilatometerData : public QObject, public QwtSeriesData<QPointF>
 Q_OBJECT
 public:
     explicit DilatometerData(QObject *parent = 0);
-    QVector<ThermalExpansionPoint> thermalExpansionVector;
+
     inline QPointF sample(size_t i) const {return thermalExpansionVector.at(i);}
     inline size_t size() const {return thermalExpansionVector.size();}
     QRectF boundingRect() const {return qwtBoundingRect(*this);}
 
-
+    //function that appends point with thermal expansion information
+    bool setThermalExpansion(double T0, double T1, double dF, double Favg,double tau1=0,double tau2=0,bool onHeat=true);
 
 
 
@@ -26,6 +27,9 @@ public slots:
 
 
 private:
+    //vector thermal expansion points
+    //T() - is synonym for x() and alpha() - is synonym for y();
+    QVector<ThermalExpansionPoint> thermalExpansionVector;
 
     //length of the sample
     double L0;
@@ -36,7 +40,7 @@ private:
       dL = dF/sensitivity(Favg)
       where Favg = (F0+F1)/2
       */
-    double sensitivity (double frequency) const {
+    static double sensitivity (double frequency) {
         /*--------------------------------------------------------------*
            TableCurve Function: C:\\RABOTA\\C60-Pure-11-2005\\Calibr\\24_11_2005_lin.c Nov 24, 2005 5:30:45 PM
            C:\\RABOTA\\C60-Pure-11-2005\\Calibr\\24_11.txt

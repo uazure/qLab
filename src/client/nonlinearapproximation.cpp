@@ -141,28 +141,33 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
     double xStart=point.first().x();
     double xEnd=point.last().x();
 
-    //report target values and (optinally) times:
+    //report calculated coefficients for later calculation of dT and dF:
     results.clear();
-    switch (method) {
-    case 0:
-        //formula="Y(x) = a*x+b";
-        results.append(gsl_vector_get(s->x,1));
-        break;
-    case 1:
-        //formula="Y(x) = (b-a) exp (-x / c) +a";
-        results.append(gsl_vector_get(s->x,1));
-        results.append(gsl_vector_get(s->x,2));
-        break;
-    case 2:
-        //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
-        results.append(gsl_vector_get(s->x,1));
-        results.append(gsl_vector_get(s->x,2));
-        break;
-    case 4:
-        results.append(gsl_vector_get(s->x,1));
-        results.append(gsl_vector_get(s->x,2));
-        break;
+
+    for (int i=0;i<p;++p) {
+        results.append(gsl_vector_get(s->x,p));
     }
+//    switch (method) {
+//    case 0:
+//        //formula="Y(x) = a*x+b";
+//        results.append(gsl_vector_get(s->x,1));
+//        break;
+//    case 1:
+//        //formula="Y(x) = (b-a) exp (-x / c) +a";
+//        results.append(gsl_vector_get(s->x,1));
+//        results.append(gsl_vector_get(s->x,2));
+//        break;
+//    case 2:
+//        //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
+//        results.append(gsl_vector_get(s->x,1));
+//        results.append(gsl_vector_get(s->x,2));
+//        break;
+//    case 4:
+//        //formula="Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + e + f*x";
+//        results.append(gsl_vector_get(s->x,1));
+//        results.append(gsl_vector_get(s->x,2));
+//        break;
+//    }
 
     //generate approximation curve points
 

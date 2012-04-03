@@ -14,7 +14,7 @@ public:
 
     /** result - reference of vector<double>. It will be filled with
       0 - target value
-      1 - tau
+      1 - tau (optional)
       2 - tau2 (optional)
       */
 
