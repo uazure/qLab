@@ -6,7 +6,7 @@ NonLinearApproximation::NonLinearApproximation()
 }
 
 
-int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log, QVector<double> results) {
+int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log, QVector<double> &results) {
 
     //set inteproplation steps x5 of original point number:
     setInterpolationSteps(point.size()*5);
@@ -159,7 +159,9 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         results.append(gsl_vector_get(s->x,2));
         break;
     case 4:
-
+        results.append(gsl_vector_get(s->x,1));
+        results.append(gsl_vector_get(s->x,2));
+        break;
     }
 
     //generate approximation curve points

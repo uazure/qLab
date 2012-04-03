@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     abstractinterpolation.cpp \
     selectcurvedialog.cpp \
     nonlinearapproximation.cpp \
-    approximationdialog.cpp
+    approximationdialog.cpp \
+    thermalexpansionpoint.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -44,7 +45,8 @@ HEADERS += mainwindow.h \
     abstractinterpolation.h \
     selectcurvedialog.h \
     nonlinearapproximation.h \
-    approximationdialog.h
+    approximationdialog.h \
+    thermalexpansionpoint.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
