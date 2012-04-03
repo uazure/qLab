@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     selectcurvedialog.cpp \
     nonlinearapproximation.cpp \
     approximationdialog.cpp \
-    thermalexpansionpoint.cpp
+    thermalexpansionpoint.cpp \
+    dilatometerdata.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -46,7 +47,8 @@ HEADERS += mainwindow.h \
     selectcurvedialog.h \
     nonlinearapproximation.h \
     approximationdialog.h \
-    thermalexpansionpoint.h
+    thermalexpansionpoint.h \
+    dilatometerdata.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
