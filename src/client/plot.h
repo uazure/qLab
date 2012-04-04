@@ -44,6 +44,7 @@ public:
     bool hasSelectedPoints() const;
     double getT0() const;
     double getT0Value(QwtPlotCurve *curve) const;
+    int getT0Index() const {return T0index;}
     bool issetT0() const;
     void addInterpolationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
 

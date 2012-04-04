@@ -13,6 +13,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
 
     data=new ExperimentData(this);
+    dilatometerData=new DilatometerData(this);
     experiment=new Experiment(&tcpClient,this);
     plot=new Plot(this,data);
     plot->setAxisTitle(QwtPlot::xBottom,tr("t, sec"));
@@ -96,6 +97,7 @@ MainWindow::~MainWindow()
     plot->setVisible(false);
     delete plot;
     delete data;
+    delete dilatometerData;
     delete appSettings;
     delete ui;
 
@@ -325,9 +327,13 @@ void MainWindow::approximate(void)
     approximationT.solve(Tpoints,TapproximationMethod,Tlog,paramsT);
     approximationF.solve(Fpoints,FapproximationMethod,Flog,paramsF);
 
+    int question=QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
+//    if (question!=QMessageBox::Accepted) {
+//        return;
+//    }
 
-
-    QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
+    qDebug()<<"Creting interpolation curves";
+    //create interpolation curves and add them to plot
     QVector<QPointF> TinterpolationPoints=approximationT.getApproximationPoints();
     QVector<QPointF> FinterpolationPoints=approximationF.getApproximationPoints();
 
@@ -341,7 +347,101 @@ void MainWindow::approximate(void)
     }
 
     //add approximation curves to the plot
-    plot->addInterpolationCurve(TinterpolationPoints,TCurve);
-    plot->addInterpolationCurve(FinterpolationPoints,FCurve);
+    if (TinterpolationPoints.size()>0 && FinterpolationPoints.size()>0) {
+        qDebug()<<"Adding interpolation curves to plot";
+        plot->addInterpolationCurve(TinterpolationPoints,TCurve);
+        plot->addInterpolationCurve(FinterpolationPoints,FCurve);
+    } else {
+        qDebug()<<"interploation curves are empty. Exiting";
+        return;
+    }
+
+    //calculate dT, dF and create thermal expansion point
+    double dT,T0,T1;
+    bool onHeat=true;
+
+    qDebug()<<"Calculating T0 and T1";
+    switch (TapproximationMethod) {
+    case NonLinearApproximation::methodTailAvg:
+        T0=TCurve->sample(plot->getT0Index()).y();
+        T1=paramsT.first();
+        break;
+    case NonLinearApproximation::methodExp:
+        T0=TCurve->sample(plot->getT0Index()).y();
+        T1=(paramsT.at(1)-paramsT.at(0))-T0;
+        break;
+    default:
+        T0=TCurve->sample(plot->getT0Index()).y();
+        T1=T0+1;
+        QMessageBox::warning(this,tr("deltaT can't be calculated"),tr("Temperature approximation method can not be used for deltaT calculation"));
+        return;
+        break;
+    }
+
+    //determine dT and onHeat
+    dT=T1-T0;
+    if (T1>T0) onHeat=true;
+    else onHeat=false;
+    qDebug()<<"Calculated T0 ="<<T0<<"T1 ="<<T1<<"dT ="<<dT;
+
+
+    qDebug()<<"Calculating F parameters";
+    double dF,Favg,tau1=0,tau2=0;
+    //determining dF and Favg
+    switch (FapproximationMethod) {
+    case NonLinearApproximation::methodLine:
+    case NonLinearApproximation::methodExp:
+        //same code for both cases
+        //b - shows limit of exponential growth and dF at x=0 for line
+        dF=paramsF.at(1)-(FCurve->sample(plot->getT0Index()).y());
+        Favg=(paramsF.at(1)+(FCurve->sample(plot->getT0Index()).y()))/2;
+        if (FapproximationMethod==NonLinearApproximation::methodExp) {
+            tau1=paramsF.at(2);
+        }
+        break;
+    case NonLinearApproximation::methodExpLine:
+        dF=paramsF.at(1)-paramsF.at(0); //b-a FIXME: Probably this should be fixed to take into account F value at T0
+        Favg=FCurve->sample(plot->getT0Index()).y()+dF/2;
+        tau1=paramsF.at(2);
+        break;
+    case NonLinearApproximation::methodExpExpLine:
+        qWarning()<<"FIXME: Not implelemted";
+        break;
+    default:
+        qWarning()<<"FIXME: Not implelemted";
+        break;
+    }
+    qDebug()<<"Calculated dF ="<<dF<<"Favg ="<<Favg<<"tau1 ="<<tau1;
+    qDebug()<<"setting thermal expansion parameters to dilatometerData";
+    dilatometerData->setThermalExpansion(T0,T1,dF,Favg,tau1,tau2);
+
+    QVector<QPointF> dTCurveData;
+    QVector<QPointF> dFCurveData;
+
+    dTCurveData.append(QPointF(TCurve->sample(plot->getT0Index())));
+    dTCurveData.append(QPointF(plot->getT0(),plot->getT0Value(TCurve)+dT));
+
+    dFCurveData.append(QPointF(FCurve->sample(plot->getT0Index())));
+    dFCurveData.append(QPointF(plot->getT0(),plot->getT0Value(FCurve)+dF));
+
+    QwtPlotCurve * dFCurve= new QwtPlotCurve("dF");
+    QwtPlotCurve * dTCurve= new QwtPlotCurve("dT");
+
+    dFCurve->setYAxis(FCurve->yAxis());
+    dTCurve->setYAxis(TCurve->yAxis());
+
+    dFCurve->setSamples(dFCurveData);
+    dTCurve->setSamples(dTCurveData);
+
+    QPen pen(Qt::red);
+    pen.setWidthF(2.0);
+    dFCurve->setPen(pen);
+    pen.setColor(Qt::blue);
+    dTCurve->setPen(pen);
+    dFCurve->attach(plot);
+    dTCurve->attach(plot);
+
+    plot->QwtPlot::replot();
+
 }
 

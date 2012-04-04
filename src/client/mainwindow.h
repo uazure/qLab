@@ -17,6 +17,7 @@
 #include "seriesdata.h"
 #include "tcpclient.h"
 #include "experimentdata.h"
+#include "dilatometerdata.h"
 #include "dataviewwindow.h"
 #include "setupcurvesdialog.h"
 #include "experiment.h"
@@ -41,6 +42,7 @@ private:
     Ui::MainWindow *ui;
     Plot *plot;
     ExperimentData *data;
+    DilatometerData *dilatometerData;
     TcpClient tcpClient;
     void closeEvent(QCloseEvent *);
     QLabel connectionLabel;

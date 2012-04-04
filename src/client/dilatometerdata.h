@@ -17,7 +17,8 @@ public:
     QRectF boundingRect() const {return qwtBoundingRect(*this);}
 
     //function that appends point with thermal expansion information
-    bool setThermalExpansion(double T0, double T1, double dF, double Favg,double tau1=0,double tau2=0,bool onHeat=true);
+    bool setThermalExpansion(double T0, double T1, double dF, double Favg,double tau1=0,double tau2=0);
+    void setL0(double L0);
 
 
 

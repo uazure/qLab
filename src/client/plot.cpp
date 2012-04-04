@@ -657,7 +657,6 @@ double Plot::getT0() const
     //if T0 is not selected return 0;
     if (T0index<0) return 0;
 
-
     QwtPlotCurve *curve;
     const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
     //find first curve that is on legend
@@ -709,7 +708,7 @@ void Plot::addInterpolationCurve(const QVector<QPointF> &points, QwtPlotCurve * 
         return;
     }
 
-    QwtPlotCurve *interpolationCurve=new QwtPlotCurve(QString::number(points.first().x())+" "+interpolationCurve->title().text());
+    QwtPlotCurve *interpolationCurve=new QwtPlotCurve(QString::number(points.first().x())+" "+originalDataCurve->title().text());
     interpolationCurve->setItemAttribute(QwtPlotItem::Legend,false);
     interpolationCurve->setSamples(points);
     interpolationCurve->setYAxis(originalDataCurve->yAxis());

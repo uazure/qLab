@@ -1,5 +1,6 @@
 #include "dilatometerdata.h"
 #include <QSettings>
+#include <QVariant>
 #include <QDebug>
 #include "thermalexpansionpoint.h"
 
@@ -14,14 +15,13 @@ DilatometerData::DilatometerData(QObject *parent) :
         qWarning("Failed read value of L0 from settings. L0=1; Change it manually and save");
         L0=1;
     }
-
-
 }
 
 
 
-bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, double Favg, double tau1, double tau2, bool onHeat) {
+bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, double Favg, double tau1, double tau2) {
     try {
+        bool onHeat;
         double dL=dF/sensitivity(Favg);
         double dT=T1-T0;
         double Tavg=(T1+T0)/2;
@@ -29,10 +29,18 @@ bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, doubl
         else onHeat=false;
         double alpha=dL/dT*L0;
         ThermalExpansionPoint p(alpha,Tavg,tau1,tau2,onHeat);
+        qDebug()<<"Adding new thermal expansion point to set: alpha ="<<alpha<<"T ="<<Tavg<<"tau1 ="<<tau1<<"tau2 ="<<tau2<<"onHeat ="<<onHeat;
         thermalExpansionVector.append(p);
         return true;
     } catch (...) {
         qWarning()<<"Failed to calculate alpha";
         return false;
     }
+}
+
+void DilatometerData::setL0(double L0) {
+    this->L0=L0;
+    QSettings settings;
+    settings.setValue("dilatometer/L0",QVariant(L0));
+    qDebug()<<"L0 set to"<<L0<<"and saved to file";
 }

@@ -23,9 +23,10 @@ public:
     NonLinearApproximation();
 
     /** result - reference of vector<double>. It will be filled with
-      0 - target value
-      1 - tau (optional)
-      2 - tau2 (optional)
+      0 - a
+      1 - b
+      2 - c
+      .....
       */
 
     int solve(const QVector<QPointF> &point,int method,QString &log, QVector<double> &result);

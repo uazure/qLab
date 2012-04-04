@@ -6,10 +6,35 @@ NonLinearApproximation::NonLinearApproximation()
 }
 
 
-int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QString &log, QVector<double> &results) {
+int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, QString &log, QVector<double> &results) {
+    results.clear();
+    interpolation.clear();
+    QVector<QPointF> points(origPoint);
 
-    //set inteproplation steps x5 of original point number:
-    setInterpolationSteps(point.size()*5);
+    if (method==NonLinearApproximation::methodTailAvg) {
+            int start=points.size()*2/3;
+            if (start<1) {
+                log+="Failed to get 2/3 of interval. Using last point only\n";
+                results.append(points.last().x());
+                return GSL_SUCCESS;
+            }
+
+            double sum;
+                for (int i=start;i<points.size();++i) {
+                sum+=points.at(i).y();
+            }
+            int numpoints=points.size()-start;
+            double avg=sum/numpoints;
+            QString tmp="Averaging over last %1 points: avg is %2\n";
+            log.append(tmp.arg(QString::number(numpoints),QString::number(avg)));
+            results.append(avg);
+
+            //Filling interpolation curve with 2 points - at start and at end
+            interpolation.append(QPointF(points.first().x(),avg));
+            interpolation.append(QPointF(points.last().x(),avg));
+
+            return GSL_SUCCESS;
+        }
 
     int p; //number of parameters
     gsl_vector* xvector;
@@ -17,13 +42,18 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
     //multifit function
     gsl_multifit_function_fdf f;
     size_t iter=0;
-    int n = point.size();
+    int n = points.size();
     QString formula;
+    int tmpstart=points.size()*2/3;
 
     switch (method) {
     case NonLinearApproximation::methodLine:
         formula="Y(x) = a*x+b";
         p=2;
+        //for Line method - get just 2/3 of latest points
+
+        if (tmpstart>0) points.remove(0,tmpstart);
+
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
         gsl_vector_set(xvector,0,0); //a
@@ -40,9 +70,9 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         p = 3;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,0); //a
-        gsl_vector_set(xvector,1,1); //b
-        gsl_vector_set(xvector,2,1); //c
+        gsl_vector_set(xvector,0,25000000); //a
+        gsl_vector_set(xvector,1,25000000); //b
+        gsl_vector_set(xvector,2,60); //c
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::expb_f;
@@ -55,10 +85,10 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         p=4;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,0); //a
-        gsl_vector_set(xvector,1,1); //b
-        gsl_vector_set(xvector,2,1); //c
-        gsl_vector_set(xvector,3,0); //d
+        gsl_vector_set(xvector,0,25000000); //a
+        gsl_vector_set(xvector,1,25000000); //b
+        gsl_vector_set(xvector,2,60); //c //seconds
+        gsl_vector_set(xvector,3,0.5); //d
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::explineb_f;
@@ -88,14 +118,14 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
 
     //f.n - the number of functions, i.e. the number of components of the vector f. - from gsl doc
     //f.n - is the points count. - from gsl example
-    f.n=point.size();
+    f.n=points.size();
     //f.p - number of independent variables for appriximation function (a, b, c) - 3 independent coefficients
     f.p=p;
     //init covar matrix (i don't know what it is)
     covar = gsl_matrix_alloc (p, p);
-    f.params=(void *) &point;
+    f.params=(void *) &points;
 
-    if (point.size()<p) {
+    if (points.size()<p) {
         qWarning()<<"Not enough selected points to use this approximation method";
         log="Status: insufficient data points, n < p\nSelect more points or use other approximation method";
         gsl_vector_free(xvector);
@@ -138,36 +168,17 @@ int NonLinearApproximation::solve(const QVector<QPointF> &point,int method, QStr
         qDebug()<<letter<<" ="<<FIT(i)<<"+-"<<c*ERR(i);
     }
 
-    double xStart=point.first().x();
-    double xEnd=point.last().x();
 
     //report calculated coefficients for later calculation of dT and dF:
-    results.clear();
-
-    for (int i=0;i<p;++p) {
-        results.append(gsl_vector_get(s->x,p));
+    for (int i=0;i<p;++i) {
+        results.append(gsl_vector_get(s->x,i));
     }
-//    switch (method) {
-//    case 0:
-//        //formula="Y(x) = a*x+b";
-//        results.append(gsl_vector_get(s->x,1));
-//        break;
-//    case 1:
-//        //formula="Y(x) = (b-a) exp (-x / c) +a";
-//        results.append(gsl_vector_get(s->x,1));
-//        results.append(gsl_vector_get(s->x,2));
-//        break;
-//    case 2:
-//        //formula="Y(x) = (b-a) exp (-x / c) +a +d*x";
-//        results.append(gsl_vector_get(s->x,1));
-//        results.append(gsl_vector_get(s->x,2));
-//        break;
-//    case 4:
-//        //formula="Y(x) = a*(1-exp(-x/c)) + b*(exp (-x/d)-1) + e + f*x";
-//        results.append(gsl_vector_get(s->x,1));
-//        results.append(gsl_vector_get(s->x,2));
-//        break;
-//    }
+
+    double xStart=origPoint.first().x();
+    double xEnd=origPoint.last().x();
+
+    //set inteproplation steps x5 of original point number:
+    setInterpolationSteps(origPoint.size()*5);
 
     //generate approximation curve points
 
@@ -275,7 +286,8 @@ int NonLinearApproximation::expb_fdf(const gsl_vector *approximationCoefficients
 }
 
 
-void NonLinearApproximation::print_state(size_t iter, gsl_multifit_fdfsolver *s) {
+void NonLinearApproximation::print_state(size_t iter, gsl_multifit_fdfsolver *) {
+    qDebug()<<"Ineration"<<iter;
     /*QString text="iter: %1\tx=%2\t%3\t%4\t|f(x)|=%5";
         qDebug()<<text.arg(QString::number(iter),
                         QString::number(gsl_vector_get(s->x,0)),
@@ -435,13 +447,14 @@ int NonLinearApproximation::expexplineb_fdf(const gsl_vector *approximationCoeff
        }
 
 
-       int NonLinearApproximation::lineb_df(const gsl_vector *approximationCoefficients, void * vectorPtr, gsl_matrix *J) {
+       int NonLinearApproximation::lineb_df(const gsl_vector *, void * vectorPtr, gsl_matrix *J) {
            //Y(x) = a*x+b
            //converting void * to QVector<QPointF>
            QVector<QPointF> * point=(QVector<QPointF> *) vectorPtr;
 
-           double a=gsl_vector_get(approximationCoefficients,0);
-           double b=gsl_vector_get(approximationCoefficients,1);
+           //unused vars
+           //double a=gsl_vector_get(approximationCoefficients,0);
+           //double b=gsl_vector_get(approximationCoefficients,1);
 
            for (int i=0;i<point->size();++i) {
                double x=point->at(i).x();
@@ -474,7 +487,7 @@ int NonLinearApproximation::expexplineb_fdf(const gsl_vector *approximationCoeff
            }
 
            double sum;
-           for (int i=start,n=0;i<point.size();++i) {
+           for (int i=start;i<point.size();++i) {
                sum+=point.at(i).x();
            }
            return sum/(point.size()-start);
