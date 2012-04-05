@@ -213,8 +213,14 @@ void Plot::addCurve(int yColumn, int xColumn) {
 void Plot::clear() {
     // set xCol to -1 to indicate that absciss axis is not defined in data object to prevent automatic curve generation
     xCol=-1;
+
     // detach all items from the plot
-    detachItems( QwtPlotItem::Rtti_PlotItem, autoDelete() );
+    detachItems( QwtPlotItem::Rtti_PlotItem, true);
+    temporaryCurveList.clear();
+    approximationCurveList.clear();
+    markCurveMap.clear();
+    dataMap.clear();
+
     //disable yRight and xTop axes if they were enabled for some reason
     enableAxis(yRight,false);
     enableAxis(xTop,false);
@@ -466,8 +472,12 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
         for ( QwtPlotItemIterator it = itmList.begin();
              it != itmList.end(); ++it )
         {
+            QwtPlotCurve *c = (QwtPlotCurve*)(*it);
             // if plot item is of type PlotCurve then find closest point
-            if ((QwtPlotCurve*)(*it)->isVisible())
+            //QwtPlotCurves must be in Legend and has valid symbol
+            if (c->isVisible() &&
+                c->testItemAttribute(QwtPlotItem::Legend) &&
+                c->symbol()!=NULL)
             {
                 QwtPlotCurve *c = (QwtPlotCurve*)(*it);
                 double d;
@@ -701,7 +711,7 @@ void Plot::setT0(QwtPlotCurve *curve, int index)
     emit T0Selected();
 }
 
-void Plot::addInterpolationCurve(const QVector<QPointF> &points, QwtPlotCurve * originalDataCurve)
+void Plot::addApproximationCurve(const QVector<QPointF> &points, QwtPlotCurve * originalDataCurve)
 {
     if (points.size()<=0) {
         qWarning()<<"No points to add interpolation curve";
@@ -724,5 +734,30 @@ void Plot::showApproximationCurves(bool show)
     for (int i=0;i<approximationCurveList.size();++i) {
         approximationCurveList[i]->setVisible(show);
     }
+    QwtPlot::replot();
+}
+
+void Plot::addTemporaryCurve(const QVector<QPointF> &points, const QwtPlotCurve *originalDataCurve) {
+
+    QwtPlotCurve * curve= new QwtPlotCurve("Temporary curve");
+    curve->setSamples(points);
+    QPen pen;
+    if (originalDataCurve!=NULL) {
+        curve->setYAxis(originalDataCurve->yAxis());
+        pen=originalDataCurve->pen();
+        curve->setItemAttribute(QwtPlotItem::Legend,false);
+    }
+    pen.setWidthF(2);
+    curve->setPen(pen);
+    temporaryCurveList.append(curve);
+    curve->attach(this);;
+    QwtPlot::replot();
+}
+
+void Plot::clearTemporaryCurves() {
+    for (int i=0;i<temporaryCurveList.size();++i) {
+        delete temporaryCurveList.at(i);
+    }
+    temporaryCurveList.clear();
     QwtPlot::replot();
 }

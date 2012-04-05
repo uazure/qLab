@@ -46,7 +46,8 @@ public:
     double getT0Value(QwtPlotCurve *curve) const;
     int getT0Index() const {return T0index;}
     bool issetT0() const;
-    void addInterpolationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
+    void addApproximationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
+    void addTemporaryCurve(const QVector<QPointF> &points,const QwtPlotCurve *originalDataCurve=NULL);
 
 
 public slots:
@@ -64,6 +65,8 @@ public slots:
     void appendMarker(QPointF point,int control=0);
     void appendMarker(int rowIndex);
     void showApproximationCurves(bool show=true);
+    void clearTemporaryCurves();
+
 
 
 signals:
@@ -97,6 +100,7 @@ private:
     ScalePlotPanner *yRightPanner;
     ScalePlotPanner *xBottomPanner;
     QList<QwtPlotCurve *> approximationCurveList;
+    QList<QwtPlotCurve *> temporaryCurveList;
 
     //QMap<QString,QwtPlotCurve *> approximationCurveMap;
 

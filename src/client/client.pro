@@ -22,7 +22,6 @@ SOURCES += main.cpp \
     experiment.cpp \
     experimentcontroldialog.cpp \
     ../server/clickablelabel.cpp \
-    abstractinterpolation.cpp \
     selectcurvedialog.cpp \
     nonlinearapproximation.cpp \
     approximationdialog.cpp \
@@ -43,7 +42,6 @@ HEADERS += mainwindow.h \
     experiment.h \
     experimentcontroldialog.h \
     ../server/clickablelabel.h \
-    abstractinterpolation.h \
     selectcurvedialog.h \
     nonlinearapproximation.h \
     approximationdialog.h \

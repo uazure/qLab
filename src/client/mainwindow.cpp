@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "abstractinterpolation.h"
 #include "nonlinearapproximation.h"
-//#include "gsl/gsl_multifit_nlin.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -324,13 +322,19 @@ void MainWindow::approximate(void)
     QString Tlog,Flog;
     QVector<double> paramsT, paramsF;
 
-    approximationT.solve(Tpoints,TapproximationMethod,Tlog,paramsT);
-    approximationF.solve(Fpoints,FapproximationMethod,Flog,paramsF);
+    int resultT=approximationT.solve(Tpoints,TapproximationMethod,Tlog,paramsT);
+    int resultF=approximationF.solve(Fpoints,FapproximationMethod,Flog,paramsF);
 
-    int question=QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
-//    if (question!=QMessageBox::Accepted) {
-//        return;
-//    }
+
+    if (resultT==GSL_SUCCESS && resultF==GSL_SUCCESS) {
+        QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
+    } else {
+        int result = QMessageBox::warning(this,tr("Warning"),Tlog+"\n\n"+Flog,QMessageBox::Ok,QMessageBox::Cancel);
+        if (result==QMessageBox::Cancel) {
+            return;
+        }
+    }
+
 
     qDebug()<<"Creting interpolation curves";
     //create interpolation curves and add them to plot
@@ -349,8 +353,8 @@ void MainWindow::approximate(void)
     //add approximation curves to the plot
     if (TinterpolationPoints.size()>0 && FinterpolationPoints.size()>0) {
         qDebug()<<"Adding interpolation curves to plot";
-        plot->addInterpolationCurve(TinterpolationPoints,TCurve);
-        plot->addInterpolationCurve(FinterpolationPoints,FCurve);
+        plot->addApproximationCurve(TinterpolationPoints,TCurve);
+        plot->addApproximationCurve(FinterpolationPoints,FCurve);
     } else {
         qDebug()<<"interploation curves are empty. Exiting";
         return;
@@ -390,8 +394,10 @@ void MainWindow::approximate(void)
     //determining dF and Favg
     switch (FapproximationMethod) {
     case NonLinearApproximation::methodLine:
+        dF=paramsF.at(1)-(FCurve->sample(plot->getT0Index()).y());
+        Favg=(FCurve->sample(plot->getT0Index()).y())+dF/2;
+        break;
     case NonLinearApproximation::methodExp:
-        //same code for both cases
         //b - shows limit of exponential growth and dF at x=0 for line
         dF=paramsF.at(0)-(FCurve->sample(plot->getT0Index()).y());
         Favg=(FCurve->sample(plot->getT0Index()).y())+dF/2;
@@ -428,24 +434,8 @@ void MainWindow::approximate(void)
     dFCurveData.append(QPointF(FCurve->sample(plot->getT0Index())));
     dFCurveData.append(QPointF(plot->getT0(),plot->getT0Value(FCurve)+dF));
 
-    QwtPlotCurve * dFCurve= new QwtPlotCurve("dF");
-    QwtPlotCurve * dTCurve= new QwtPlotCurve("dT");
 
-    dFCurve->setYAxis(FCurve->yAxis());
-    dTCurve->setYAxis(TCurve->yAxis());
-
-    dFCurve->setSamples(dFCurveData);
-    dTCurve->setSamples(dTCurveData);
-
-    QPen pen(Qt::red);
-    pen.setWidthF(2.0);
-    dFCurve->setPen(pen);
-    pen.setColor(Qt::blue);
-    dTCurve->setPen(pen);
-    dFCurve->attach(plot);
-    dTCurve->attach(plot);
-
-    plot->QwtPlot::replot();
-
+    plot->addTemporaryCurve(dTCurveData,TCurve);
+    plot->addTemporaryCurve(dFCurveData,FCurve);
 }
 
