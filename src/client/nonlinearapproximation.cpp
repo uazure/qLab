@@ -101,12 +101,12 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         p=6;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,1); //a
-        gsl_vector_set(xvector,1,1); //b
-        gsl_vector_set(xvector,2,1); //c
-        gsl_vector_set(xvector,3,1); //d
-        gsl_vector_set(xvector,4,0); //e
-        gsl_vector_set(xvector,5,0); //f
+        gsl_vector_set(xvector,0,25000000); //a
+        gsl_vector_set(xvector,1,25000000); //b
+        gsl_vector_set(xvector,2,60); //c
+        gsl_vector_set(xvector,3,60); //d
+        gsl_vector_set(xvector,4,25000000); //e
+        gsl_vector_set(xvector,5,0.5); //f
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::expexplineb_f;
@@ -146,9 +146,9 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         if (status) break;
         status=gsl_multifit_test_delta(s->dx,s->x,1e-4,1e-4);
     }
-    while (status==GSL_CONTINUE && iter<500);
+    while (status==GSL_CONTINUE && iter<2500);
     gsl_multifit_covar(s->J,0.0,covar);
-    #define FIT(i) QString::number(gsl_vector_get(s->x,i))
+    #define FIT(i) QString::number(gsl_vector_get(s->x,i),'g',12)
     #define ERR(i) sqrt(gsl_matrix_get(covar,i,i))
     double chi=gsl_blas_dnrm2(s->f);
     double dof=n-p;

@@ -368,7 +368,7 @@ void MainWindow::approximate(void)
         break;
     case NonLinearApproximation::methodExp:
         T0=TCurve->sample(plot->getT0Index()).y();
-        T1=(paramsT.at(1)-paramsT.at(0))-T0;
+        T1=paramsT.first();
         break;
     default:
         T0=TCurve->sample(plot->getT0Index()).y();
@@ -393,19 +393,23 @@ void MainWindow::approximate(void)
     case NonLinearApproximation::methodExp:
         //same code for both cases
         //b - shows limit of exponential growth and dF at x=0 for line
-        dF=paramsF.at(1)-(FCurve->sample(plot->getT0Index()).y());
-        Favg=(paramsF.at(1)+(FCurve->sample(plot->getT0Index()).y()))/2;
+        dF=paramsF.at(0)-(FCurve->sample(plot->getT0Index()).y());
+        Favg=(FCurve->sample(plot->getT0Index()).y())+dF/2;
         if (FapproximationMethod==NonLinearApproximation::methodExp) {
             tau1=paramsF.at(2);
         }
         break;
     case NonLinearApproximation::methodExpLine:
-        dF=paramsF.at(1)-paramsF.at(0); //b-a FIXME: Probably this should be fixed to take into account F value at T0
+        dF=paramsF.at(0)-(FCurve->sample(plot->getT0Index()).y());
         Favg=FCurve->sample(plot->getT0Index()).y()+dF/2;
         tau1=paramsF.at(2);
         break;
     case NonLinearApproximation::methodExpExpLine:
-        qWarning()<<"FIXME: Not implelemted";
+        dF=paramsF.at(0)+paramsF.at(1)-(FCurve->sample(plot->getT0Index()).y());
+        Favg=FCurve->sample(plot->getT0Index()).y()+dF/2;
+        tau1=paramsF.at(2);
+        tau2=paramsF.at(3);
+        qWarning()<<"FIXME: Probably fixes needed";
         break;
     default:
         qWarning()<<"FIXME: Not implelemted";
