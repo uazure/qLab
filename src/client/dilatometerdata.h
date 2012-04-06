@@ -20,6 +20,9 @@ public:
     bool setThermalExpansion(double T0, double T1, double dF, double Favg,double tau1=0,double tau2=0);
     void setL0(double L0);
 
+    void setLog(const QString& log) {calculationLog=log;}
+    const QString& getLog(void) {return calculationLog;}
+
 
 
 signals:
@@ -58,6 +61,8 @@ private:
         if (frequency>2.528104E+07) frequency=2.528104E+07;
         return 24230920245.51454+frequency*-945.9756196586279;
     }
+
+    QString calculationLog;
 
 };
 

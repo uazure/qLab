@@ -68,6 +68,9 @@ private slots:
     void setInterval(void);
     void viewExperimentControlDialog(void);
     void approximate(void);
+    void showConfigurationDialog(void);
+    void showCalculationLog(void);
+
 
 };
 

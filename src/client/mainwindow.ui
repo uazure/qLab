@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>606</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -55,6 +55,7 @@
     <addaction name="actionDraw_incremental"/>
     <addaction name="actionZoom_to_extents"/>
     <addaction name="separator"/>
+    <addaction name="actionLast_calculation"/>
    </widget>
    <widget class="QMenu" name="menuPlot">
     <property name="title">
@@ -68,16 +69,26 @@
     <addaction name="actionInitialize"/>
    </widget>
    <widget class="QMenu" name="menuExperiment">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>Experiment</string>
     </property>
     <addaction name="actionControl"/>
     <addaction name="actionSet_interval"/>
    </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>Preferences</string>
+    </property>
+    <addaction name="actionConfiguration"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuPlot"/>
    <addaction name="menuExperiment"/>
+   <addaction name="menuPreferences"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -266,6 +277,16 @@
    </property>
    <property name="text">
     <string>Show approximations</string>
+   </property>
+  </action>
+  <action name="actionConfiguration">
+   <property name="text">
+    <string>Configuration</string>
+   </property>
+  </action>
+  <action name="actionLast_calculation">
+   <property name="text">
+    <string>Last calculation</string>
    </property>
   </action>
  </widget>

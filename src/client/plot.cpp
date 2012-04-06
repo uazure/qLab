@@ -516,8 +516,12 @@ void Plot::selectPointsMode(bool select) {
     zoomerRight->setEnabled(!select);
     zoomerExclusiveLeft->setEnabled(!select);
     zoomerExclusiveRight->setEnabled(!select);
-    if (select) emit message("Select mode");
-    else emit message("Normal mode");
+    if (select) {
+        emit message("Select mode");
+    }
+    else {
+        emit message("Normal mode");
+    }
 }
 
 void Plot::drawLastPoint(int size) {
@@ -613,9 +617,9 @@ void Plot::appendMarker(int rowIndex) {
 
 void Plot::selectT0(bool on) {
     if (on) {
-    selectPointsMode(false);
+    //selectPointsMode(false);
     selectPointPicker->setEnabled(true);
-    connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(setT0(QwtPlotCurve*,int)));
+   connect(this,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),SLOT(setT0(QwtPlotCurve*,int)));
 
     zoomerLeft->setEnabled(false);
     zoomerRight->setEnabled(false);
@@ -626,7 +630,6 @@ void Plot::selectT0(bool on) {
 }
 
     if (!on) {
-        selectPointsMode(false);
         disconnect(this,SLOT(setT0(QwtPlotCurve*,int)));
         return;
     }
@@ -708,7 +711,7 @@ void Plot::setT0(QwtPlotCurve *curve, int index)
     }
 
     T0index=index;
-    emit T0Selected();
+    emit T0Selected(true);
 }
 
 void Plot::addApproximationCurve(const QVector<QPointF> &points, QwtPlotCurve * originalDataCurve)

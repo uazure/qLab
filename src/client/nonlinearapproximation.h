@@ -66,6 +66,8 @@ public:
 
     static double linearApproximation(const QVector<QPointF> & point);
 
+    const QString& showLog() const;
+
 
 private:
 
@@ -77,7 +79,6 @@ private:
     void print_state (size_t iter,gsl_multifit_fdfsolver * s);
     int interpolationSteps;
     QVector<QPointF> interpolation;
-
 
 
 };

@@ -73,7 +73,9 @@ signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
     void xValueSelected(double value);
     void message(QString message);
-    void T0Selected();
+    void T0Selected(bool);
+    void zoomPlotMode();
+    void selectPointMode();
 
 
 private:
@@ -101,6 +103,7 @@ private:
     ScalePlotPanner *xBottomPanner;
     QList<QwtPlotCurve *> approximationCurveList;
     QList<QwtPlotCurve *> temporaryCurveList;
+
 
     //QMap<QString,QwtPlotCurve *> approximationCurveMap;
 

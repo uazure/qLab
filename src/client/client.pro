@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     nonlinearapproximation.cpp \
     approximationdialog.cpp \
     thermalexpansionpoint.cpp \
-    dilatometerdata.cpp
+    dilatometerdata.cpp \
+    basicconfigurationdialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -46,13 +47,15 @@ HEADERS += mainwindow.h \
     nonlinearapproximation.h \
     approximationdialog.h \
     thermalexpansionpoint.h \
-    dilatometerdata.h
+    dilatometerdata.h \
+    basicconfigurationdialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
     experimentcontroldialog.ui \
     selectcurvedialog.ui \
-    approximationdialog.ui
+    approximationdialog.ui \
+    basicconfigurationdialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src

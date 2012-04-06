@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "nonlinearapproximation.h"
+#include "basicconfigurationdialog.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -27,7 +28,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionReplot,SIGNAL(triggered()),plot,SLOT(replot()));
     connect(ui->actionClear_plot,SIGNAL(triggered()),plot,SLOT(clear()));
     connect(ui->actionInitialize,SIGNAL(triggered()),plot,SLOT(initialize()));
-    connect(ui->actionSelect_points,SIGNAL(triggered(bool)),plot,SLOT(selectPointsMode(bool)));
+    connect(ui->actionSelect_points,SIGNAL(toggled(bool)),plot,SLOT(selectPointsMode(bool)));
     connect(ui->actionZoom_to_extents,SIGNAL(triggered()),plot,SLOT(zoomExtents()));
     connect(ui->actionDraw_incremental,SIGNAL(triggered(bool)),plot,SLOT(setIncrementalDraw(bool)));
     connect(ui->actionOpen_file,SIGNAL(triggered()),SLOT(openFile()));
@@ -37,15 +38,18 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSet_interval,SIGNAL(triggered()),SLOT(setInterval()));
     connect(ui->actionControl,SIGNAL(triggered()),SLOT(viewExperimentControlDialog()));
     connect(ui->actionStart,SIGNAL(triggered(bool)),&tcpClient,SLOT(start(bool)));
-    connect(ui->actionSelectT0,SIGNAL(triggered(bool)),plot,SLOT(selectT0(bool)));
+
     connect(ui->actionApproximate,SIGNAL(triggered()),SLOT(approximate()));
     connect(ui->actionShow_approximations,SIGNAL(triggered(bool)),plot,SLOT(showApproximationCurves(bool)));
-
+    connect(ui->actionConfiguration,SIGNAL(triggered()),SLOT(showConfigurationDialog()));
+    connect(ui->actionLast_calculation,SIGNAL(triggered()),SLOT(showCalculationLog()));
 
     ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
-    connect(plot,SIGNAL(T0Selected()),ui->actionSelectT0,SLOT(trigger()));
+    connect(ui->actionSelectT0,SIGNAL(toggled(bool)),plot,SLOT(selectT0(bool)));
+    connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelectT0,SLOT(trigger()));
+    connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelect_points,SLOT(setChecked(bool)));
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
@@ -59,6 +63,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
     connect(&tcpClient,SIGNAL(bytesRead(int)),&bytesReadLabel,SLOT(setNum(int)));
     connect(&tcpClient,SIGNAL(serverInterval(int)),experiment,SLOT(setInterval(int)));
+
 
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
@@ -142,16 +147,18 @@ void MainWindow::connectTo() {
 void MainWindow::socketConnectedToServer() {
     qDebug()<<"Connected!";
     ui->actionDisconnect->setDisabled(false);
+    ui->menuExperiment->setEnabled(true);
     connectionLabel.setStyleSheet("QLabel {color:green;font-weight:bold;}");
 }
 
 void MainWindow::socketDisconnectedFromServer() {
     qWarning()<<"Disconnected from server!";
+    ui->menuExperiment->setEnabled(false);
     QMessageBox msgBox(this);
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setText("Disconnected from server");
     msgBox.setIcon(QMessageBox::Warning);
-    //msgBox.exec();
+    msgBox.exec();
 }
 
 void MainWindow::socketStateChanged(QAbstractSocket::SocketState state) {
@@ -325,15 +332,18 @@ void MainWindow::approximate(void)
     int resultT=approximationT.solve(Tpoints,TapproximationMethod,Tlog,paramsT);
     int resultF=approximationF.solve(Fpoints,FapproximationMethod,Flog,paramsF);
 
+    dilatometerData->setLog(QString("Temperature:\n")+Tlog+"\n\nFrequency:\n"+Flog);
 
     if (resultT==GSL_SUCCESS && resultF==GSL_SUCCESS) {
-        QMessageBox::information(this,tr("Information"),Tlog+"\n\n"+Flog);
+        QMessageBox::information(this,tr("Information"),dilatometerData->getLog());
     } else {
-        int result = QMessageBox::warning(this,tr("Warning"),Tlog+"\n\n"+Flog,QMessageBox::Ok,QMessageBox::Cancel);
+        int result = QMessageBox::warning(this,tr("Warning"),dilatometerData->getLog(),QMessageBox::Ok,QMessageBox::Cancel);
         if (result==QMessageBox::Cancel) {
             return;
         }
     }
+
+
 
 
     qDebug()<<"Creting interpolation curves";
@@ -439,3 +449,18 @@ void MainWindow::approximate(void)
     plot->addTemporaryCurve(dFCurveData,FCurve);
 }
 
+
+void MainWindow::showConfigurationDialog() {
+    BasicConfigurationDialog *dialog=new BasicConfigurationDialog(this);
+    dialog->exec();
+    delete dialog;
+}
+
+void MainWindow::showCalculationLog() {
+    if (dilatometerData->getLog().isEmpty()) {
+        QMessageBox::information(this,tr("No log available"),"No calculation log available");
+
+    } else {
+        QMessageBox::information(this,tr("Last calculation"),dilatometerData->getLog());
+    }
+}
