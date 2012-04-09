@@ -74,9 +74,6 @@ signals:
     void xValueSelected(double value);
     void message(QString message);
     void T0Selected(bool);
-    void zoomPlotMode();
-    void selectPointMode();
-
 
 private:
     const ExperimentData *experimentData;

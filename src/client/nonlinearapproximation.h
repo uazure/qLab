@@ -7,6 +7,8 @@
 #include "gsl/gsl_multifit_nlin.h"
 #include "gsl/gsl_blas.h"
 
+class QSettings;
+
 class NonLinearApproximation
 {
 public:
@@ -21,6 +23,7 @@ public:
     };
 
     NonLinearApproximation();
+    ~NonLinearApproximation();
 
     /** result - reference of vector<double>. It will be filled with
       0 - a
@@ -79,6 +82,7 @@ private:
     void print_state (size_t iter,gsl_multifit_fdfsolver * s);
     int interpolationSteps;
     QVector<QPointF> interpolation;
+    QSettings *settings;
 
 
 };

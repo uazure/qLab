@@ -1,12 +1,20 @@
 #include "nonlinearapproximation.h"
+#include <QSettings>
 
 NonLinearApproximation::NonLinearApproximation()
 {
     interpolationSteps=50;
+    settings = new QSettings();
+    settings->beginGroup("approximation");
+}
+
+NonLinearApproximation::~NonLinearApproximation() {
+    delete settings;
 }
 
 
 int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, QString &log, QVector<double> &results) {
+
     results.clear();
     interpolation.clear();
     QVector<QPointF> points(origPoint);
@@ -70,9 +78,9 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         p = 3;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,25000000); //a
-        gsl_vector_set(xvector,1,25000000); //b
-        gsl_vector_set(xvector,2,60); //c
+        gsl_vector_set(xvector,0,settings->value("Exp/a",QVariant(25000000)).toDouble()); //a
+        gsl_vector_set(xvector,1,settings->value("Exp/b",QVariant(25000000)).toDouble()); //b
+        gsl_vector_set(xvector,2,settings->value("Exp/c",QVariant(60)).toDouble()); //c
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::expb_f;
@@ -85,10 +93,10 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         p=4;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,25000000); //a
-        gsl_vector_set(xvector,1,25000000); //b
-        gsl_vector_set(xvector,2,60); //c //seconds
-        gsl_vector_set(xvector,3,0.5); //d
+        gsl_vector_set(xvector,0,settings->value("ExpLine/a",QVariant(25000000)).toDouble()); //a
+        gsl_vector_set(xvector,1,settings->value("ExpLine/b",QVariant(25000000)).toDouble()); //b
+        gsl_vector_set(xvector,2,settings->value("ExpLine/c",QVariant(60)).toDouble()); //c //seconds
+        gsl_vector_set(xvector,3,settings->value("ExpLine/d",QVariant(0.5)).toDouble()); //d
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::explineb_f;
@@ -101,12 +109,12 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         p=6;
         xvector=gsl_vector_alloc(p);
         //setting initial values for fitting a, b and c parameters
-        gsl_vector_set(xvector,0,25000000); //a
-        gsl_vector_set(xvector,1,25000000); //b
-        gsl_vector_set(xvector,2,60); //c
-        gsl_vector_set(xvector,3,60); //d
-        gsl_vector_set(xvector,4,25000000); //e
-        gsl_vector_set(xvector,5,0.5); //f
+        gsl_vector_set(xvector,0,settings->value("ExpExpLine/a",QVariant(25000000)).toDouble()); //a
+        gsl_vector_set(xvector,1,settings->value("ExpExpLine/b",QVariant(25000000)).toDouble()); //b
+        gsl_vector_set(xvector,2,settings->value("ExpExpLine/c",QVariant(60)).toDouble()); //c
+        gsl_vector_set(xvector,3,settings->value("ExpExpLine/d",QVariant(60)).toDouble()); //d
+        gsl_vector_set(xvector,4,settings->value("ExpExpLine/e",QVariant(25000000)).toDouble()); //e
+        gsl_vector_set(xvector,5,settings->value("ExpExpLine/a",QVariant(0.5)).toDouble()); //f
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::expexplineb_f;
