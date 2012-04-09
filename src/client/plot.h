@@ -35,7 +35,7 @@ class Plot : public QwtPlot
     //unidentified copy constructor
     Plot(const Plot&);
 public:
-    explicit Plot(QWidget *parent, ExperimentData* data);
+    explicit Plot(QWidget *parent);
     ~Plot();
     void addCurve(int yColumn, int xColumn=-1);
     double getMonitoringInterval(void) const;
@@ -48,6 +48,7 @@ public:
     bool issetT0() const;
     void addApproximationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
     void addTemporaryCurve(const QVector<QPointF> &points,const QwtPlotCurve *originalDataCurve=NULL);
+    void setExperimentData (ExperimentData *experimentData);
 
 
 public slots:

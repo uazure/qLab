@@ -14,9 +14,12 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     data=new ExperimentData(this);
     dilatometerData=new DilatometerData(this);
     experiment=new Experiment(&tcpClient,this);
-    plot=new Plot(this,data);
-    plot->setAxisTitle(QwtPlot::xBottom,tr("t, sec"));
 
+    dilatometerPlot=NULL;
+
+    plot=new Plot(this);
+    plot->setExperimentData(data);
+    plot->setAxisTitle(QwtPlot::xBottom,tr("t, sec"));
 
     ui->plotLayout->addWidget(plot);
 
@@ -43,6 +46,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionShow_approximations,SIGNAL(triggered(bool)),plot,SLOT(showApproximationCurves(bool)));
     connect(ui->actionConfiguration,SIGNAL(triggered()),SLOT(showConfigurationDialog()));
     connect(ui->actionLast_calculation,SIGNAL(triggered()),SLOT(showCalculationLog()));
+    connect(ui->actionDilatometry,SIGNAL(toggled(bool)),SLOT(showDilatometryPlot(bool)));
 
     ui->actionDraw_incremental->trigger();
 
@@ -99,8 +103,9 @@ MainWindow::~MainWindow()
 {
     plot->setVisible(false);
     delete plot;
+    delete dilatometerPlot;
+    //delete dilatometerData; - deleted by dilatometerPlot destructor
     delete data;
-    delete dilatometerData;
     delete appSettings;
     delete ui;
 
@@ -469,4 +474,28 @@ void MainWindow::showCalculationLog() {
     } else {
         QMessageBox::information(this,tr("Last calculation"),dilatometerData->getLog());
     }
+}
+
+
+void MainWindow::showDilatometryPlot(bool show) {
+
+
+    if (!dilatometerPlot) {
+       dilatometerPlot=new Plot(this);
+       dilatometerPlot->setTitle(tr("Dilatometry"));
+       dilatometerPlot->setAxisTitle(QwtPlot::xBottom,"T, K");
+       dilatometerPlot->setAxisTitle(QwtPlot::yLeft,"alpha, K<sup>-1</sup>");
+       ui->plotLayout->addWidget(dilatometerPlot);
+       QwtPlotCurve *curve=new QwtPlotCurve("alpha");
+       curve->setData(dilatometerData);
+       curve->setStyle(QwtPlotCurve::NoCurve);
+       curve->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::black),QPen(Qt::NoPen),QSize(10,10)));
+       curve->attach(dilatometerPlot);
+    }
+
+
+    plot->setVisible(!show);
+    dilatometerPlot->setVisible(show);
+    dilatometerPlot->replot();
+    plot->replot();
 }

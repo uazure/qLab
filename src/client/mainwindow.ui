@@ -56,6 +56,7 @@
     <addaction name="actionZoom_to_extents"/>
     <addaction name="separator"/>
     <addaction name="actionLast_calculation"/>
+    <addaction name="actionDilatometry"/>
    </widget>
    <widget class="QMenu" name="menuPlot">
     <property name="title">
@@ -287,6 +288,17 @@
   <action name="actionLast_calculation">
    <property name="text">
     <string>Last calculation</string>
+   </property>
+  </action>
+  <action name="actionDilatometry">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dilatometry</string>
+   </property>
+   <property name="statusTip">
+    <string>Show dilatometry results (if available)</string>
    </property>
   </action>
  </widget>

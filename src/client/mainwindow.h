@@ -41,6 +41,7 @@ public:
 private:
     Ui::MainWindow *ui;
     Plot *plot;
+    Plot *dilatometerPlot;
     ExperimentData *data;
     DilatometerData *dilatometerData;
     TcpClient tcpClient;
@@ -70,6 +71,7 @@ private slots:
     void approximate(void);
     void showConfigurationDialog(void);
     void showCalculationLog(void);
+    void showDilatometryPlot(bool show=true);
 
 
 };

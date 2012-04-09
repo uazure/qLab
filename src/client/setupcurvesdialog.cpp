@@ -67,12 +67,18 @@ void SetupCurvesDialog::curveSelected(int index)
     //get curve pointer
     QwtPlotCurve *curve=curveList[index];
     currentCurve=curve;
-    //get symbol color of currently selected curve
-    QColor color=curve->symbol()->brush().color();
-    //set this color to colorSelect box
-    colorSelect->setColor(color);
-    //set size (width) of symbol to spinbox
-    ui->sizeSpinBox->setValue(curve->symbol()->size().width());
+    if (curve->symbol()) {
+        //get symbol color of currently selected curve
+        QColor color=curve->symbol()->brush().color();
+        //set this color to colorSelect box
+        colorSelect->setColor(color);
+        //set size (width) of symbol to spinbox
+        ui->sizeSpinBox->setValue(curve->symbol()->size().width());
+    } else {
+        QColor color=curve->pen().color();
+        colorSelect->setColor(color);
+        ui->sizeSpinBox->setValue(0);
+    }
 
     ui->widthDoubleSpinBox->setValue(curve->pen().widthF());
 
@@ -99,6 +105,10 @@ void SetupCurvesDialog::setCurveColor()
     QColor color=colorSelect->color();
 
     QwtSymbol *symbol=const_cast<QwtSymbol *> (currentCurve->symbol());
+
+    //return if curve have no symbol
+    if (!symbol) return;
+
     symbol->setColor(color);
     currentCurve->setSymbol(symbol);
     QPen pen=const_cast<QPen&>(currentCurve->pen());
@@ -131,6 +141,10 @@ void SetupCurvesDialog::setCurveSymbolSize(int size)
     if (!currentCurve) return;
 
     QwtSymbol *symbol=const_cast<QwtSymbol *> (currentCurve->symbol());
+    if (!symbol) {
+        qDebug()<<"Curve has no symbol";
+        return;
+    }
     symbol->setSize(size);
     currentCurve->setSymbol(symbol);
 }

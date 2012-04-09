@@ -4,7 +4,7 @@
 
 int Plot::markerCount=0;
 
-Plot::Plot(QWidget *parent, ExperimentData *data) :
+Plot::Plot(QWidget *parent) :
         QwtPlot(parent)
 {
     //should be faster on platforms that support this (unix)
@@ -17,12 +17,13 @@ Plot::Plot(QWidget *parent, ExperimentData *data) :
     //set default monitoring time to 1 minute (60 seconds)
     setMonitoringInterval(60);
 
+    dataTable=NULL;
+    experimentData=NULL;
     xCol=-1;
     T0index=-1;
     selectedCurve=NULL; // set null pointer (i.e. no curve selected)
     selectedPoint=-1; //no point selected. 0 - means first point of the curve.
-    experimentData=data;
-    dataTable=data->getDataTable();
+
     setAutoDelete(true);
     setAutoReplot(false);
 
@@ -176,6 +177,8 @@ Plot::~Plot() {
 }
 
 void Plot::addCurve(int yColumn, int xColumn) {
+    if (!dataTable) return;
+
     if (xColumn<0) xColumn=0;
     if (yColumn>dataTable->size() || yColumn<0 || xColumn>dataTable->size()) {
         qWarning()<<"yColumn is"<<yColumn<<"and xColumn is"<<xColumn<<"and number of columns is"<<dataTable->size();
@@ -243,6 +246,7 @@ void Plot::initialize() {
     grid->setMajPen(QPen(Qt::darkBlue,0,Qt::SolidLine));
     grid->attach(this);
 
+    if (!dataTable) return;
 
     if (dataTable->size()<1) {
         qWarning()<<"dataTable is empty! Can not initialize";
@@ -290,7 +294,6 @@ void Plot::initialize() {
             }
         }
     }
-
 }
 
 void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
@@ -763,4 +766,10 @@ void Plot::clearTemporaryCurves() {
     }
     temporaryCurveList.clear();
     QwtPlot::replot();
+}
+
+
+void Plot::setExperimentData(ExperimentData *experimentData) {
+    this->experimentData=experimentData;
+    dataTable=experimentData->getDataTable();
 }
