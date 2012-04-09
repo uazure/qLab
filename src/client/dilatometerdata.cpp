@@ -10,7 +10,7 @@ DilatometerData::DilatometerData(QObject *parent) :
 {
     QSettings settings;
     bool ok;
-    L0=settings.value("dilatometer/L0",QVariant(1.0)).toDouble(&ok);
+    L0=settings.value("dilatometry/L0",QVariant(1.0)).toDouble(&ok);
     if (!ok) {
         qWarning("Failed read value of L0 from settings. L0=1; Change it manually and save");
         L0=1;
@@ -40,7 +40,8 @@ bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, doubl
 
 void DilatometerData::setL0(double L0) {
     this->L0=L0;
+    qDebug()<<"DilatometerData L0 set to"<<L0;
     QSettings settings;
-    settings.setValue("dilatometer/L0",QVariant(L0));
+    settings.setValue("dilatometry/L0",QVariant(L0));
     qDebug()<<"L0 set to"<<L0<<"and saved to file";
 }

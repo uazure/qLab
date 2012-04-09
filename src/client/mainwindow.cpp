@@ -453,6 +453,12 @@ void MainWindow::approximate(void)
 void MainWindow::showConfigurationDialog() {
     BasicConfigurationDialog *dialog=new BasicConfigurationDialog(this);
     dialog->exec();
+    bool ok;
+    dilatometerData->setL0(appSettings->value("dilatometry/L0",QVariant(1)).toDouble(&ok));
+    if (!ok) {
+        dilatometerData->setL0(1);
+    }
+
     delete dialog;
 }
 

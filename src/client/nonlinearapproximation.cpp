@@ -114,7 +114,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
         gsl_vector_set(xvector,2,settings->value("ExpExpLine/c",QVariant(60)).toDouble()); //c
         gsl_vector_set(xvector,3,settings->value("ExpExpLine/d",QVariant(60)).toDouble()); //d
         gsl_vector_set(xvector,4,settings->value("ExpExpLine/e",QVariant(25000000)).toDouble()); //e
-        gsl_vector_set(xvector,5,settings->value("ExpExpLine/a",QVariant(0.5)).toDouble()); //f
+        gsl_vector_set(xvector,5,settings->value("ExpExpLine/f",QVariant(0.5)).toDouble()); //f
 
         //initialize f, df and fdf for multifit function f
         f.f=&NonLinearApproximation::expexplineb_f;
