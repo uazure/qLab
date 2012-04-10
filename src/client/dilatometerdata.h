@@ -5,6 +5,7 @@
 #include "qwt_series_data.h"
 #include "thermalexpansionpoint.h"
 
+class QFile;
 
 class DilatometerData : public QObject, public QwtSeriesData<QPointF>
 {
@@ -25,6 +26,7 @@ public:
     void setLog(const QString& log) {calculationLog=log;}
     const QString& getLog(void) {return calculationLog;}
 
+    void saveToFile(QFile &file);
 
 
 signals:

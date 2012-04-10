@@ -3,6 +3,7 @@
 #include <QVariant>
 #include <QDebug>
 #include "thermalexpansionpoint.h"
+#include <QFile>
 
 
 DilatometerData::DilatometerData(QObject *parent) :
@@ -28,8 +29,8 @@ bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, doubl
         if (T1>T0) onHeat=true;
         else onHeat=false;
         double alpha=dL/dT*L0;
-        ThermalExpansionPoint p(alpha,Tavg,tau1,tau2,onHeat);
-        qDebug()<<"Adding new thermal expansion point to set: alpha ="<<alpha<<"T ="<<Tavg<<"tau1 ="<<tau1<<"tau2 ="<<tau2<<"onHeat ="<<onHeat;
+        ThermalExpansionPoint p(alpha,Tavg,dL,tau1,tau2,onHeat);
+        qDebug()<<"Adding new thermal expansion point to set: alpha ="<<alpha<<"T ="<<Tavg<<"dL ="<<dL<<"tau1 ="<<tau1<<"tau2 ="<<tau2<<"onHeat ="<<onHeat;
         thermalExpansionVector.append(p);
         return true;
     } catch (...) {
@@ -51,4 +52,28 @@ void DilatometerData::deletePoint(int index) {
         return;
     }
     thermalExpansionVector.remove(index);
+}
+
+void DilatometerData::saveToFile(QFile &file) {
+    if (!file.isOpen() || !file.isWritable()) {
+        qDebug()<<"Can not save dilatometry data to file.";
+        return;
+    }
+    if  (size()==0) {
+        qDebug()<<"No dilatometry data to save";
+        return;
+    }
+
+    QByteArray buf;
+    file.write("#Dilatometry data:\n");
+    file.write("#Temperature\tAlpha\tdeltaL\tonHeat\tTau1\tTau2\n");
+    for (int i=0;i<size();++i) {
+        buf=QByteArray::number(thermalExpansionVector.at(i).getT(),'g',9)+"\t"+
+            QByteArray::number(thermalExpansionVector.at(i).getAlpha(),'g',9)+"\t"+
+            QByteArray::number(thermalExpansionVector.at(i).getDeltaL(),'g',9)+"\t"+
+            QByteArray::number((int) thermalExpansionVector.at(i).isOnHeat())+"\t"+
+            QByteArray::number(thermalExpansionVector.at(i).getTau1(),'g',9)+"\t"+
+            QByteArray::number(thermalExpansionVector.at(i).getTau2(),'g',9)+"\n";
+        file.write(buf);
+    }
 }

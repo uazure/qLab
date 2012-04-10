@@ -1,4 +1,5 @@
 #include "experimentdata.h"
+#include "dilatometerdata.h"
 
 ExperimentData::ExperimentData(QObject *parent) :
     QAbstractTableModel(parent)
@@ -6,6 +7,7 @@ ExperimentData::ExperimentData(QObject *parent) :
 //set expect variable to none (for comment parsing)
     initialUtime=0.0;
     expect=expectNone;
+    dilatometerData=NULL;
 }
 
 QVariant ExperimentData::data(const QModelIndex &index, int role) const {
@@ -520,5 +522,16 @@ void ExperimentData::saveFile(QString &filename) {
         qDebug()<<"Writing to file line"<<i;
     }
 
+    if (dilatometerData) {
+        qDebug()<<"Writing dilatometer data to file";
+        dilatometerData->saveToFile(file);
+    }
+
     file.close();
+}
+
+
+void ExperimentData::setDilatometerData(DilatometerData *dilatometerData) {
+    this->dilatometerData=dilatometerData;
+
 }

@@ -8,6 +8,9 @@
 #include "qwt_plot.h"
 #include <QFile>
 
+
+class DilatometerData;
+
 class ExperimentData : public QAbstractTableModel
 {
 Q_OBJECT
@@ -60,6 +63,8 @@ public:
 
     void setControlCount(int controlNum);
 
+    void setDilatometerData(DilatometerData *dilatometerData);
+
 
 private:
     /// This is the DATA STORAGE for table of doubles
@@ -96,6 +101,7 @@ private:
 
     double initialUtime;
     int utimeColumn;
+    DilatometerData *dilatometerData;
 
 signals:
     /// Emitted when initial data arrives. It's possible to create curves when we have data and headers arrived and parsed.

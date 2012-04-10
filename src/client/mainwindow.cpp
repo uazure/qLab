@@ -13,6 +13,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
     data=new ExperimentData(this);
     dilatometerData=new DilatometerData(this);
+    data->setDilatometerData(dilatometerData);
+
     experiment=new Experiment(&tcpClient,this);
 
     dilatometerPlot=NULL;
