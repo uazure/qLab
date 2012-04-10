@@ -63,6 +63,7 @@
      <string>Plot</string>
     </property>
     <addaction name="actionSetup"/>
+    <addaction name="actionDelete_Point"/>
     <addaction name="actionSelect_points"/>
     <addaction name="actionReplot"/>
     <addaction name="actionClear_plot"/>
@@ -113,6 +114,9 @@
    </property>
    <property name="shortcut">
     <string>Alt+X</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
    </property>
   </action>
   <action name="actionAbout_Qt">
@@ -284,6 +288,9 @@
    <property name="text">
     <string>Configuration</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
+   </property>
   </action>
   <action name="actionLast_calculation">
    <property name="text">
@@ -299,6 +306,20 @@
    </property>
    <property name="statusTip">
     <string>Show dilatometry results (if available)</string>
+   </property>
+  </action>
+  <action name="actionDelete_Point">
+   <property name="text">
+    <string>Delete selected point(s)</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete selected point</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::ApplicationSpecificRole</enum>
    </property>
   </action>
  </widget>

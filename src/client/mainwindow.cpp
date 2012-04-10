@@ -23,6 +23,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
     ui->plotLayout->addWidget(plot);
 
+
     connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionConnect_to,SIGNAL(triggered()),this,SLOT(connectTo()));
@@ -449,9 +450,11 @@ void MainWindow::approximate(void)
     dFCurveData.append(QPointF(FCurve->sample(plot->getT0Index())));
     dFCurveData.append(QPointF(plot->getT0(),plot->getT0Value(FCurve)+dF));
 
+    plot->clearTemporaryCurves();
 
     plot->addTemporaryCurve(dTCurveData,TCurve);
     plot->addTemporaryCurve(dFCurveData,FCurve);
+    ui->actionSelect_points->setChecked(false);
 }
 
 
@@ -486,12 +489,30 @@ void MainWindow::showDilatometryPlot(bool show) {
        dilatometerPlot->setAxisTitle(QwtPlot::xBottom,"T, K");
        dilatometerPlot->setAxisTitle(QwtPlot::yLeft,"alpha, K<sup>-1</sup>");
        ui->plotLayout->addWidget(dilatometerPlot);
+
+       connect(ui->actionSelect_points,SIGNAL(toggled(bool)),dilatometerPlot,SLOT(selectPointsMode(bool)));
+       dilatometerPlot->selectPointsMode(ui->actionSelect_points->isChecked())
+               ;
+       connect(ui->actionZoom_to_extents,SIGNAL(triggered()),dilatometerPlot,SLOT(zoomExtents()));
+       connect(ui->actionDelete_Point,SIGNAL(triggered()),dilatometerPlot,SLOT(deleteSelectedPoints()));
+
        QwtPlotCurve *curve=new QwtPlotCurve("alpha");
        curve->setData(dilatometerData);
        curve->setStyle(QwtPlotCurve::NoCurve);
        curve->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::black),QPen(Qt::NoPen),QSize(10,10)));
        curve->attach(dilatometerPlot);
+
+
     }
+
+//    Plot *activePlot,*inactivePlot;
+//    if (show) {
+//        activePlot=dilatometerPlot;
+//        inactivePlot=plot;}
+//    else {
+//        activePlot=plot;
+//        inactivePlot=dilatometerPlot;
+//    }
 
 
     plot->setVisible(!show);

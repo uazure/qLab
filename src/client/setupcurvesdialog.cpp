@@ -171,11 +171,14 @@ void SetupCurvesDialog::deleteCurrentCurve() {
             break;
         }
     }
-    currentCurve->detach();
+    plot->detachCurve(currentCurve);
     delete currentCurve;
+    currentCurve=NULL;
 
     init();
     plot->replot();
+
+
 }
 
 void SetupCurvesDialog::addCurveDialog() {

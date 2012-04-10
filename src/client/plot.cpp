@@ -1,6 +1,6 @@
 #include "plot.h"
-//#include "abstractinterpolation.h"
 #include "selectcurvedialog.h"
+#include "dilatometerdata.h"
 
 int Plot::markerCount=0;
 
@@ -772,4 +772,70 @@ void Plot::clearTemporaryCurves() {
 void Plot::setExperimentData(ExperimentData *experimentData) {
     this->experimentData=experimentData;
     dataTable=experimentData->getDataTable();
+}
+
+void Plot::removeTemporaryCurves() {
+    for (int i=0;i<temporaryCurveList.size();++i) {
+        temporaryCurveList[i]->detach();
+        delete temporaryCurveList[i];
+    }
+    temporaryCurveList.clear();
+}
+
+void Plot::deleteSelectedPoints() {
+    if (!selectedCurve || selectedPoints.isEmpty()) {
+        qDebug()<<"No points or curve selected, nothing to delete";
+        return;
+    }
+    //selectedPoints;
+    QMap<int,QPointF>::iterator i;
+    for (i=selectedPoints.begin();i!=selectedPoints.end();++i) {
+        deletePoint(selectedCurve,i.key());
+    }
+    selectedCurve=NULL;
+    selectedPoints.clear();
+    selectedPoint=-1;
+    QwtPlot::replot();
+}
+
+void Plot::deletePoint(QwtPlotCurve *curve, int index) {
+    if (!curve || index<0 || index>=curve->dataSize()) {
+        return;
+    }
+
+    QwtSeriesData<QPointF> *data=curve->data();
+    DilatometerData *dilatometerData=dynamic_cast<DilatometerData *> (data);
+    if (!dilatometerData) {
+        qDebug()<<"Data set does not allow to delete items";
+        return;
+    }
+
+    qDebug()<<"Deleting point"<<index<<"from"<<dilatometerData;
+    dilatometerData->deletePoint(index);
+}
+
+
+void Plot::detachCurve(QwtPlotCurve *curve) {
+    if (temporaryCurveList.contains(curve)) {
+        temporaryCurveList.removeAll(curve);
+    }
+    if (approximationCurveList.contains(curve)) {
+        approximationCurveList.removeAll(curve);
+    }
+    if (markCurveMap.contains(curve)) {
+        markCurveMap.remove(curve);
+    }
+    QMap<QwtPlotCurve*,QwtPlotCurve*>::iterator it;
+    for (it=markCurveMap.begin();it!=markCurveMap.end();++it) {
+        if (it.value()==curve) {
+            markCurveMap.remove(it.key());
+            break;
+        }
+    }
+
+
+    bool autodel=autoDelete();
+    setAutoDelete(false);
+    curve->detach();
+    setAutoDelete(autodel);
 }

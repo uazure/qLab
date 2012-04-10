@@ -45,3 +45,10 @@ void DilatometerData::setL0(double L0) {
     settings.setValue("dilatometry/L0",QVariant(L0));
     qDebug()<<"L0 set to"<<L0<<"and saved to file";
 }
+
+void DilatometerData::deletePoint(int index) {
+    if (index<0 || index>=size()) {
+        return;
+    }
+    thermalExpansionVector.remove(index);
+}

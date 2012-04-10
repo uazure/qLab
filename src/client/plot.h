@@ -48,7 +48,9 @@ public:
     bool issetT0() const;
     void addApproximationCurve(const QVector<QPointF> &points,QwtPlotCurve *origianlDataCurve);
     void addTemporaryCurve(const QVector<QPointF> &points,const QwtPlotCurve *originalDataCurve=NULL);
+    void removeTemporaryCurves();
     void setExperimentData (ExperimentData *experimentData);
+    void detachCurve(QwtPlotCurve *curve);
 
 
 public slots:
@@ -67,6 +69,7 @@ public slots:
     void appendMarker(int rowIndex);
     void showApproximationCurves(bool show=true);
     void clearTemporaryCurves();
+    void deleteSelectedPoints();
 
 
 
@@ -140,6 +143,8 @@ private slots:
       of 50 and is drawn over all other curves.
 */
     void markSelectedPoints();
+
+    void deletePoint(QwtPlotCurve* curve,int index);
 
 
 
