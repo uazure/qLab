@@ -36,6 +36,8 @@ public:
     /// Enumeration of available expectations for parseComment() functions
     enum Expect {
         expectNone,
+        expectExperimentData,
+        expectDilatometryData,
         expectDevice,
         expectLabel,
         expectMin,
@@ -57,9 +59,9 @@ public:
     void setColumnAxis(int column, QByteArray &axis);
     QwtPlot::Axis getColumnAxis(int column=0) const;
 
-    void readFile(QString filename);
+    void readFile(const QString &filename);
 
-    void saveFile(QString &filename);
+    void saveFile(const QString &filename);
 
     void setControlCount(int controlNum);
 

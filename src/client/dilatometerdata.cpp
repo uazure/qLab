@@ -29,7 +29,7 @@ bool DilatometerData::setThermalExpansion(double T0, double T1, double dF, doubl
         if (T1>T0) onHeat=true;
         else onHeat=false;
         double alpha=dL/dT*L0;
-        ThermalExpansionPoint p(alpha,Tavg,dL,tau1,tau2,onHeat);
+        ThermalExpansionPoint p(Tavg,alpha,dL,tau1,tau2,onHeat);
         qDebug()<<"Adding new thermal expansion point to set: alpha ="<<alpha<<"T ="<<Tavg<<"dL ="<<dL<<"tau1 ="<<tau1<<"tau2 ="<<tau2<<"onHeat ="<<onHeat;
         thermalExpansionVector.append(p);
         return true;
@@ -65,15 +65,87 @@ void DilatometerData::saveToFile(QFile &file) {
     }
 
     QByteArray buf;
-    file.write("#Dilatometry data:\n");
-    file.write("#Temperature\tAlpha\tdeltaL\tonHeat\tTau1\tTau2\n");
+    file.write("\n#Dilatometry data:\n");
+    file.write("#Temperature\tAlpha\tdeltaL\tTau1\tTau2\tonHeat\n");
     for (int i=0;i<size();++i) {
         buf=QByteArray::number(thermalExpansionVector.at(i).getT(),'g',9)+"\t"+
             QByteArray::number(thermalExpansionVector.at(i).getAlpha(),'g',9)+"\t"+
             QByteArray::number(thermalExpansionVector.at(i).getDeltaL(),'g',9)+"\t"+
-            QByteArray::number((int) thermalExpansionVector.at(i).isOnHeat())+"\t"+
             QByteArray::number(thermalExpansionVector.at(i).getTau1(),'g',9)+"\t"+
-            QByteArray::number(thermalExpansionVector.at(i).getTau2(),'g',9)+"\n";
+            QByteArray::number(thermalExpansionVector.at(i).getTau2(),'g',9)+"\t"+
+            QByteArray::number((int) thermalExpansionVector.at(i).isOnHeat())+"\n";
         file.write(buf);
     }
 }
+
+/** reads data from &file.
+  */
+void DilatometerData::readFromFile(QFile &file) {
+    if(!file.isOpen() || !file.isReadable()) {
+        qDebug()<<"Can not read from file"<<file.fileName();
+        return;
+    }
+    qDebug()<<"Erasing old data before reading file";
+    thermalExpansionVector.clear();
+
+    QByteArray buf;
+    QList<QByteArray> array;
+    bool dilatometryDataExpected=false;
+    while (file.canReadLine()) {
+        buf=file.readLine();
+        if (buf.startsWith("#Dilatometry data")) {
+            dilatometryDataExpected=true;
+            continue;
+        }
+        if (!dilatometryDataExpected) {
+            continue;
+        }
+
+        //if dilatometry data is expected:
+        //stop processing file if empty string occured
+        if (buf.trimmed().isEmpty()) {
+            break;
+        }
+
+        array=buf.split('\t');
+        if (array.size()<6) {
+            qWarning()<<"Expected 6 columns for dilatometry data, got"<<array.size()<<"skipping";
+            continue;
+        }
+
+        bool onHeat=false;
+        if (array.at(5).toInt()) onHeat=true;
+
+        ThermalExpansionPoint p(array.at(0).toDouble(),
+                                array.at(1).toDouble(),
+                                array.at(2).toDouble(),
+                                array.at(3).toDouble(),
+                                array.at(4).toDouble(),
+                                onHeat);
+        qDebug()<<"Appended thermal expansion point"<<p;
+        thermalExpansionVector.append(p);
+    }
+}
+
+void DilatometerData::parseLine (const QByteArray &line) {
+    if (line.startsWith("#")) return;
+    QList<QByteArray> array;
+    array=line.split('\t');
+    if (array.size()<6) {
+        qWarning()<<"Expected 6 columns for dilatometry data, got"<<array.size()<<"skipping";
+        return;
+    }
+
+    bool onHeat=false;
+    if (array.at(5).toInt()) onHeat=true;
+
+    ThermalExpansionPoint p(array.at(0).toDouble(),
+                            array.at(1).toDouble(),
+                            array.at(2).toDouble(),
+                            array.at(3).toDouble(),
+                            array.at(4).toDouble(),
+                            onHeat);
+    qDebug()<<"Appended thermal expansion point"<<p;
+    thermalExpansionVector.append(p);
+}
+

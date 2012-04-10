@@ -85,7 +85,16 @@ void ExperimentData::parseLine(QByteArray &line) {
                line.startsWith('8') ||
                line.startsWith('9')) {
         qDebug()<<"Parsing data\n"<<line;
-        parseData(line);
+        if (getExpect()==expectDilatometryData) {
+            if (dilatometerData) {
+                dilatometerData->parseLine(line);
+            }
+            return;
+        }
+
+        if (getExpect()==expectExperimentData || getExpect()==expectNone) {
+            parseData(line);
+        }
     }
     else {
         qWarning()<<"Failed to parse line"<<line;
@@ -222,6 +231,11 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
 
     if (commentLine.startsWith("#Axis hint:")) {
         setExpect(expectAxisHint);
+        return;
+    }
+
+    if (commentLine.startsWith("#Dilatometry data")) {
+        setExpect(expectDilatometryData);
         return;
     }
 
@@ -464,7 +478,7 @@ QwtPlot::Axis ExperimentData::toAxisId(const QByteArray &axis) {
     return QwtPlot::xTop;
 }
 
-void ExperimentData::readFile(QString filename) {
+void ExperimentData::readFile(const QString &filename) {
     if (filename.isEmpty()) {
         qWarning()<<"Tried to read empty file"<<filename;
         return;
@@ -498,7 +512,7 @@ void ExperimentData::readFile(QString filename) {
     file.close();
 }
 
-void ExperimentData::saveFile(QString &filename) {
+void ExperimentData::saveFile(const QString &filename) {
     if (filename.isEmpty()) {
         qWarning("File for save is not selected");
         return;

@@ -27,6 +27,9 @@ public:
     const QString& getLog(void) {return calculationLog;}
 
     void saveToFile(QFile &file);
+    void parseLine(const QByteArray &line);
+
+    void readFromFile(QFile &file);
 
 
 signals:

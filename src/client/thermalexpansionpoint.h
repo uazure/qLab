@@ -12,7 +12,7 @@ class ThermalExpansionPoint:public QPointF
 {
 public:
     ThermalExpansionPoint();
-    ThermalExpansionPoint(double alpha, double T, double deltaL=0,double tau1=0, double tau2=0,bool onHeat=true);
+    ThermalExpansionPoint(double T, double alpha, double deltaL=0,double tau1=0, double tau2=0,bool onHeat=true);
 
     inline double getT() const {return this->x();}
     inline double getAlpha() const {return this->y();}
