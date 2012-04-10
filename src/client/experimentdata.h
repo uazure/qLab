@@ -10,6 +10,7 @@
 
 
 class DilatometerData;
+class Plot;
 
 class ExperimentData : public QAbstractTableModel
 {
@@ -38,6 +39,8 @@ public:
         expectNone,
         expectExperimentData,
         expectDilatometryData,
+        expectApproximationCurveData,
+        expectCalculatedResultCurveData,
         expectDevice,
         expectLabel,
         expectMin,
@@ -66,6 +69,8 @@ public:
     void setControlCount(int controlNum);
 
     void setDilatometerData(DilatometerData *dilatometerData);
+
+    void setPlot(Plot *plot) {this->plot=plot;}
 
 
 private:
@@ -104,6 +109,7 @@ private:
     double initialUtime;
     int utimeColumn;
     DilatometerData *dilatometerData;
+    const Plot *plot;
 
 signals:
     /// Emitted when initial data arrives. It's possible to create curves when we have data and headers arrived and parsed.

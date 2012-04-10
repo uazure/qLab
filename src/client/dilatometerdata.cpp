@@ -78,54 +78,6 @@ void DilatometerData::saveToFile(QFile &file) {
     }
 }
 
-/** reads data from &file.
-  */
-void DilatometerData::readFromFile(QFile &file) {
-    if(!file.isOpen() || !file.isReadable()) {
-        qDebug()<<"Can not read from file"<<file.fileName();
-        return;
-    }
-    qDebug()<<"Erasing old data before reading file";
-    thermalExpansionVector.clear();
-
-    QByteArray buf;
-    QList<QByteArray> array;
-    bool dilatometryDataExpected=false;
-    while (file.canReadLine()) {
-        buf=file.readLine();
-        if (buf.startsWith("#Dilatometry data")) {
-            dilatometryDataExpected=true;
-            continue;
-        }
-        if (!dilatometryDataExpected) {
-            continue;
-        }
-
-        //if dilatometry data is expected:
-        //stop processing file if empty string occured
-        if (buf.trimmed().isEmpty()) {
-            break;
-        }
-
-        array=buf.split('\t');
-        if (array.size()<6) {
-            qWarning()<<"Expected 6 columns for dilatometry data, got"<<array.size()<<"skipping";
-            continue;
-        }
-
-        bool onHeat=false;
-        if (array.at(5).toInt()) onHeat=true;
-
-        ThermalExpansionPoint p(array.at(0).toDouble(),
-                                array.at(1).toDouble(),
-                                array.at(2).toDouble(),
-                                array.at(3).toDouble(),
-                                array.at(4).toDouble(),
-                                onHeat);
-        qDebug()<<"Appended thermal expansion point"<<p;
-        thermalExpansionVector.append(p);
-    }
-}
 
 void DilatometerData::parseLine (const QByteArray &line) {
     if (line.startsWith("#")) return;

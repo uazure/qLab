@@ -51,6 +51,8 @@ public:
     void removeTemporaryCurves();
     void setExperimentData (ExperimentData *experimentData);
     void detachCurve(QwtPlotCurve *curve);
+    const QList<const QwtPlotCurve *> getApproximationCurves() const;
+    const QList<const QwtPlotCurve *> getTemporaryCurves() const;
 
 
 public slots:

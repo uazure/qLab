@@ -1,5 +1,7 @@
 #include "experimentdata.h"
 #include "dilatometerdata.h"
+#include "plot.h"
+#include <QPointF>
 
 ExperimentData::ExperimentData(QObject *parent) :
     QAbstractTableModel(parent)
@@ -8,6 +10,7 @@ ExperimentData::ExperimentData(QObject *parent) :
     initialUtime=0.0;
     expect=expectNone;
     dilatometerData=NULL;
+    plot=NULL;
 }
 
 QVariant ExperimentData::data(const QModelIndex &index, int role) const {
@@ -71,6 +74,18 @@ QVariant ExperimentData::headerData ( int section, Qt::Orientation orientation, 
 
 
 void ExperimentData::parseLine(QByteArray &line) {
+
+    if (line.isEmpty()) {
+        setExpect(expectNone);
+    }
+
+
+    if (getExpect()==expectDilatometryData) {
+        if (dilatometerData) {
+            dilatometerData->parseLine(line);
+        }
+        return;
+    }
     if (line.startsWith('#') || line.startsWith('*') || line.startsWith("//")) {
         qDebug()<<"Parsing comment\n"<<line;
         parseComment(line);
@@ -85,12 +100,6 @@ void ExperimentData::parseLine(QByteArray &line) {
                line.startsWith('8') ||
                line.startsWith('9')) {
         qDebug()<<"Parsing data\n"<<line;
-        if (getExpect()==expectDilatometryData) {
-            if (dilatometerData) {
-                dilatometerData->parseLine(line);
-            }
-            return;
-        }
 
         if (getExpect()==expectExperimentData || getExpect()==expectNone) {
             parseData(line);
@@ -541,11 +550,30 @@ void ExperimentData::saveFile(const QString &filename) {
         dilatometerData->saveToFile(file);
     }
 
-    file.close();
+    QList<const QwtPlotCurve *> approximationCurveList=plot->getApproximationCurves();
+    for (int i=0;i<approximationCurveList.size();++i) {
+        const QwtPlotCurve *curve=approximationCurveList.at(i);
+        buf="\n#Approximation curve:\n";
+        buf+="#Axis hint:\n#xBottom\t";
+        if (curve->yAxis()==QwtPlot::yLeft) {
+            buf+="yLeft\n";
+        } else {
+            buf+="yRight\n";
+        }
+        file.write(buf);
+        for (int n=0;n<curve->dataSize();++n) {
+            buf=QByteArray::number(curve->sample(n).x(),'g',9);
+            buf+="\t"+QByteArray::number(curve->sample(n).y(),'g',9)+"\n";
+            qDebug()<<"Writing data line of approximation curve to file";
+            file.write(buf);
+        }
+        file.write("\n");
+    }
+
+  file.close();
 }
 
 
 void ExperimentData::setDilatometerData(DilatometerData *dilatometerData) {
     this->dilatometerData=dilatometerData;
-
 }

@@ -772,6 +772,7 @@ void Plot::clearTemporaryCurves() {
 void Plot::setExperimentData(ExperimentData *experimentData) {
     this->experimentData=experimentData;
     dataTable=experimentData->getDataTable();
+    experimentData->setPlot(this);
 }
 
 void Plot::removeTemporaryCurves() {
@@ -838,4 +839,21 @@ void Plot::detachCurve(QwtPlotCurve *curve) {
     setAutoDelete(false);
     curve->detach();
     setAutoDelete(autodel);
+}
+
+
+const QList<const QwtPlotCurve *> Plot::getApproximationCurves() const {
+    QList<const QwtPlotCurve *> curveList;
+    for (int i=0;i<approximationCurveList.size();++i) {
+        curveList.append(approximationCurveList.at(i));
+    }
+    return curveList;
+}
+
+const QList<const QwtPlotCurve *> Plot::getTemporaryCurves() const {
+    QList<const QwtPlotCurve *> curveList;
+    for (int i=0;i<temporaryCurveList.size();++i) {
+        curveList.append(temporaryCurveList.at(i));
+    }
+    return curveList;
 }
