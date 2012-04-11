@@ -77,6 +77,9 @@ public slots:
     void stopParse();
     void startParse();
 
+    void zoomYAxisExtents(Axis axis=yLeft);
+    inline void zoomYRightAxisExtents() {zoomYAxisExtents(yRight);}
+
 
 
 signals:
@@ -157,6 +160,9 @@ private slots:
     void markSelectedPoints();
 
     void deletePoint(QwtPlotCurve* curve,int index);
+
+
+
 
 
 

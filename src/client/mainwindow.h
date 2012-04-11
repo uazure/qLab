@@ -72,6 +72,7 @@ private slots:
     void showConfigurationDialog(void);
     void showCalculationLog(void);
     void showDilatometryPlot(bool show=true);
+    void zoomYLeftToExtents(void);
 
 
 };

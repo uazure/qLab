@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     approximationdialog.cpp \
     thermalexpansionpoint.cpp \
     dilatometerdata.cpp \
-    basicconfigurationdialog.cpp
+    basicconfigurationdialog.cpp \
+    doubleclickeventfilter.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -48,7 +49,8 @@ HEADERS += mainwindow.h \
     approximationdialog.h \
     thermalexpansionpoint.h \
     dilatometerdata.h \
-    basicconfigurationdialog.h
+    basicconfigurationdialog.h \
+    doubleclickeventfilter.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \

@@ -50,6 +50,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionConfiguration,SIGNAL(triggered()),SLOT(showConfigurationDialog()));
     connect(ui->actionLast_calculation,SIGNAL(triggered()),SLOT(showCalculationLog()));
     connect(ui->actionDilatometry,SIGNAL(toggled(bool)),SLOT(showDilatometryPlot(bool)));
+    connect(ui->actionZoom_yLeft_to_extents,SIGNAL(triggered()),SLOT(zoomYLeftToExtents()));
 
     ui->actionDraw_incremental->trigger();
 
@@ -521,4 +522,9 @@ void MainWindow::showDilatometryPlot(bool show) {
     dilatometerPlot->setVisible(show);
     dilatometerPlot->replot();
     plot->replot();
+}
+
+void MainWindow::zoomYLeftToExtents(void)
+{
+    plot->zoomYAxisExtents(QwtPlot::yLeft);
 }

@@ -1,6 +1,7 @@
 #include "plot.h"
 #include "selectcurvedialog.h"
 #include "dilatometerdata.h"
+#include "doubleclickeventfilter.h"
 
 int Plot::markerCount=0;
 
@@ -167,6 +168,20 @@ Plot::Plot(QWidget *parent) :
     yRightPanner->setMouseButton(Qt::RightButton);
     axisWidget(yRight)->installEventFilter(yRightPanner);
     canvas()->removeEventFilter(yRightPanner);
+
+    //call zoom to extens on axis on double click on axis title
+    QwtScaleWidget *yLeftScaleWidget=axisWidget(yLeft);
+    QwtScaleWidget *yRightScaleWidget=axisWidget(yRight);
+    if (yLeftScaleWidget) {
+        DoubleClickEventFilter *yLeftDoubleClickEventFilter=new DoubleClickEventFilter(yLeftScaleWidget);
+        yLeftScaleWidget->installEventFilter(yLeftDoubleClickEventFilter);
+        connect(yLeftDoubleClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYAxisExtents()));
+    }
+    if (yRightScaleWidget) {
+        DoubleClickEventFilter *yRightDoublClickEventFilter=new DoubleClickEventFilter(yRightScaleWidget);
+        yRightScaleWidget->installEventFilter(yRightDoublClickEventFilter);
+        connect(yRightDoublClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYRightAxisExtents()));
+    }
 
 
     //it's safe to call initialize even without data. It will reset plot to default state, add grids, etc.
@@ -922,4 +937,37 @@ void Plot::stopParse() {
 void Plot::startParse() {
     parseLineAxisList.clear();
     parseLinePointVector.clear();
+}
+
+void Plot::zoomYAxisExtents(Axis axis) {
+    //FIXME: this should perform some other action :\
+    if (!axisEnabled(axis)) return;
+    //get interval for xBottom axis
+    QwtInterval xInterval=axisInterval(xBottom);
+    double ymin=10e200,ymax=-10e200;
+    QwtPlotCurve *curve;
+    //iterate over all yRight bound curves to find ymin and ymax
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //find first curve that is on legend
+    for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        curve=(QwtPlotCurve*)(*it);
+        if (!curve->testItemAttribute(QwtPlotItem::Legend) || curve->yAxis()!=axis) {
+            continue;
+        }
+        //for each curve assigned to yAxis = axis search for ymin and ymax;
+        for (size_t i=0;i<curve->dataSize();++i) {
+            if (xInterval.contains(curve->sample(i).x())) {
+                if (curve->sample(i).y()>ymax) {
+                    ymax=curve->sample(i).y();
+                }
+                if (curve->sample(i).y()<ymin) {
+                    ymin=curve->sample(i).y();
+                }
+            }
+        }
+
+    }
+
+    setAxisScale(axis,ymin,ymax);
+    replot();
 }

@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>606</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -69,6 +69,7 @@
     <addaction name="actionClear_plot"/>
     <addaction name="actionMonitoring_interval"/>
     <addaction name="actionInitialize"/>
+    <addaction name="actionZoom_yLeft_to_extents"/>
    </widget>
    <widget class="QMenu" name="menuExperiment">
     <property name="enabled">
@@ -320,6 +321,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::ApplicationSpecificRole</enum>
+   </property>
+  </action>
+  <action name="actionZoom_yLeft_to_extents">
+   <property name="text">
+    <string>Zoom yLeft to extents</string>
    </property>
   </action>
  </widget>
