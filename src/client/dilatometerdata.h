@@ -28,6 +28,7 @@ public:
 
     void saveToFile(QFile &file);
     void parseLine(const QByteArray &line);
+    void clear();
 
 
 

@@ -72,6 +72,10 @@ public:
 
     void setPlot(Plot *plot) {this->plot=plot;}
 
+    static QwtPlot::Axis toAxisId(const QByteArray &axis);
+
+    Expect getExpect(void) const;
+
 
 private:
     /// This is the DATA STORAGE for table of doubles
@@ -102,14 +106,13 @@ private:
 
     /// Access functions to expect variable
     inline void setExpect(Expect expectation);
-    inline Expect getExpect(void) const;
 
-    static QwtPlot::Axis toAxisId(const QByteArray &axis);
+
 
     double initialUtime;
     int utimeColumn;
     DilatometerData *dilatometerData;
-    const Plot *plot;
+    Plot *plot;
 
 signals:
     /// Emitted when initial data arrives. It's possible to create curves when we have data and headers arrived and parsed.

@@ -76,6 +76,9 @@ QVariant ExperimentData::headerData ( int section, Qt::Orientation orientation, 
 void ExperimentData::parseLine(QByteArray &line) {
 
     if (line.isEmpty()) {
+        if (getExpect()==expectApproximationCurveData && plot) {
+            plot->stopParse();
+        }
         setExpect(expectNone);
     }
 
@@ -84,6 +87,11 @@ void ExperimentData::parseLine(QByteArray &line) {
         if (dilatometerData) {
             dilatometerData->parseLine(line);
         }
+        return;
+    }
+
+    if (getExpect()==expectApproximationCurveData && plot) {
+        plot->parseLine(line);
         return;
     }
     if (line.startsWith('#') || line.startsWith('*') || line.startsWith("//")) {
@@ -179,8 +187,8 @@ void ExperimentData::parseData(QByteArray &dataLine) {
 }
 
 void ExperimentData::parseComment(QByteArray &commentLine) {
-    commentLine=commentLine.trimmed();
-    asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
+
+
 
     if (getExpect()==expectDevice ||
         getExpect()==expectLabel ||
@@ -189,6 +197,7 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
         getExpect()==expectMax ||
         getExpect()==expectAxisHint) {
 
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         //trim the first symbol ('#')
         commentLine=commentLine.right(commentLine.size()-1);
         QList<QByteArray> arr;
@@ -215,30 +224,36 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
 
 
     if (commentLine.startsWith("#Device:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectDevice);
         return;
     }
     if (commentLine.startsWith("#Label:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectLabel);
         return;
     }
 
     if (commentLine.startsWith("#Min:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectMin);
         return;
     }
 
     if (commentLine.startsWith("#Max:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectMax);
         return;
     }
 
     if (commentLine.startsWith("#Unit:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectUnit);
         return;
     }
 
     if (commentLine.startsWith("#Axis hint:")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         setExpect(expectAxisHint);
         return;
     }
@@ -248,7 +263,16 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
         return;
     }
 
+    if (commentLine.startsWith("#Approximation curve")) {
+        if (plot) {
+            plot->startParse();
+        }
+        setExpect(expectApproximationCurveData);
+        return;
+    }
+
     if (commentLine.startsWith("*")) {
+        asciiTable.append(QString::fromUtf8(commentLine.data(),commentLine.size()));
         //trim the first symbol ('*')
         commentLine=commentLine.right(commentLine.size()-1);
         //extract values separated with tab
@@ -306,6 +330,7 @@ void ExperimentData::resetData() {
     columnMin.clear();
     columnUnit.clear();
     columnAxis.clear();
+    dilatometerData->clear();
 }
 
 const QStringList & ExperimentData::getAscii() const

@@ -72,6 +72,10 @@ public slots:
     void showApproximationCurves(bool show=true);
     void clearTemporaryCurves();
     void deleteSelectedPoints();
+    void parseLine(const QByteArray &line);
+
+    void stopParse();
+    void startParse();
 
 
 
@@ -106,6 +110,12 @@ private:
     ScalePlotPanner *xBottomPanner;
     QList<QwtPlotCurve *> approximationCurveList;
     QList<QwtPlotCurve *> temporaryCurveList;
+    //used by parseLine to read lines from file
+    ExperimentData::Expect expect;
+    //temporary pointer to curve used by parse line
+    //QwtPlotCurve *parseLineCurve;
+    QList<QwtPlot::Axis> parseLineAxisList;
+    QVector<QPointF> parseLinePointVector;
 
 
     //QMap<QString,QwtPlotCurve *> approximationCurveMap;

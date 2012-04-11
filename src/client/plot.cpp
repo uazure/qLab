@@ -16,6 +16,7 @@ Plot::Plot(QWidget *parent) :
     showInterpolation=true;
     //set default monitoring time to 1 minute (60 seconds)
     setMonitoringInterval(60);
+    expect=ExperimentData::expectNone;
 
     dataTable=NULL;
     experimentData=NULL;
@@ -856,4 +857,69 @@ const QList<const QwtPlotCurve *> Plot::getTemporaryCurves() const {
         curveList.append(temporaryCurveList.at(i));
     }
     return curveList;
+}
+
+void Plot::parseLine(const QByteArray &line)
+{
+    if (line.startsWith("#")) {
+        if (line.startsWith("#Axis hint:")) {
+            expect=ExperimentData::expectAxisHint;
+            return;
+        }
+
+        if (expect==ExperimentData::expectAxisHint) {
+            expect=ExperimentData::expectNone;
+            QByteArray str=line.right(line.size()-1);
+            QList<QByteArray> val=str.split('\t');
+            if (val.size()<2) {
+                qDebug()<<"Not enough columns to read from";
+                return;
+            }
+            parseLineAxisList.clear();
+            for (int i=0;i<val.size();++i) {
+                parseLineAxisList.append(ExperimentData::toAxisId(val.at(i)));
+            }
+            return;
+        }
+    }
+
+    if (line.trimmed().isEmpty()) {
+        expect=ExperimentData::expectNone;
+    }
+    QList<QByteArray> str=line.split('\t');
+    double x=0,y=0;
+    if (str.size()!=2) {
+        qWarning()<<"There's"<<str.size()<<"columns of data. Can not parse";
+        return;
+    }
+
+    x=str.at(0).toDouble();
+    y=str.at(1).toDouble();
+    qDebug()<<"Added point"<<x<<y<<"to parseLinePointVector";
+    parseLinePointVector.append(QPointF(x,y));
+
+}
+
+void Plot::stopParse() {
+    if (parseLinePointVector.isEmpty()) {
+        qWarning()<<"No points to add to plot";
+        return;
+    }
+
+    QwtPlotCurve *curve = new QwtPlotCurve();
+    curve->setItemAttribute(QwtPlotItem::Legend,false);
+    curve->setSamples(parseLinePointVector);
+    if (parseLineAxisList.contains(QwtPlot::yRight)) {
+        curve->setYAxis(QwtPlot::yRight);
+    }
+    curve->attach(this);
+    if (experimentData->getExpect()==ExperimentData::expectApproximationCurveData) {
+        approximationCurveList.append(curve);
+    }
+
+}
+
+void Plot::startParse() {
+    parseLineAxisList.clear();
+    parseLinePointVector.clear();
 }

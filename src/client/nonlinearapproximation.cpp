@@ -191,7 +191,7 @@ int NonLinearApproximation::solve(const QVector<QPointF> &origPoint,int method, 
     //generate approximation curve points
 
     for (int i=0;i<interpolationSteps;++i) {
-        double x=xStart+(xEnd-xStart)*i/interpolationSteps;
+        double x=xStart+(xEnd-xStart)*i/(interpolationSteps-1);
         double a,b,c,d,e,f,y;
 
         switch (method) {

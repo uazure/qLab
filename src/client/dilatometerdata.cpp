@@ -101,3 +101,8 @@ void DilatometerData::parseLine (const QByteArray &line) {
     thermalExpansionVector.append(p);
 }
 
+void DilatometerData::clear()
+{
+    thermalExpansionVector.clear();
+}
+
