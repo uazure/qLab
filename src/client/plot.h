@@ -61,7 +61,7 @@ public slots:
     void selectPointsMode(bool select=true);
     void selectT0(bool on=true);
     void setT0(QwtPlotCurve* curve, int index);
-    void drawLastPoint(int size);
+    void drawLastPoint();
     void clear(void);
     void zoomExtents(void);
     void initialize(void);

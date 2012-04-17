@@ -543,21 +543,25 @@ void Plot::selectPointsMode(bool select) {
     }
 }
 
-void Plot::drawLastPoint(int size) {
+void Plot::drawLastPoint() {
     if (!incrementalDraw) return;
-    int lastPoint=--size;
+
     double maxXValue=0.0;
     double tmp;
     const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
     //iterate over all plot items of type PlotCurve
     for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         QwtPlotCurve *curve=(QwtPlotCurve*)(*it);
+        if (!curve->testItemAttribute(QwtPlotItem::Legend) ||
+            !curve->isVisible()) {
+            continue;
+        }
         tmp=curve->boundingRect().right();
         if (tmp>maxXValue) {
             maxXValue=tmp;
         }
     }
-    qDebug()<<"Max X values is"<<tmp;
+    qDebug()<<"Max X value is"<<tmp;
     setAxisScale(xBottom,maxXValue-monitoringInterval,maxXValue);
     QwtPlot::replot();
 }
@@ -829,6 +833,7 @@ void Plot::deletePoint(QwtPlotCurve *curve, int index) {
 
     qDebug()<<"Deleting point"<<index<<"from"<<dilatometerData;
     dilatometerData->deletePoint(index);
+    QwtPlot::replot();
 }
 
 
@@ -849,7 +854,6 @@ void Plot::detachCurve(QwtPlotCurve *curve) {
             break;
         }
     }
-
 
     bool autodel=autoDelete();
     setAutoDelete(false);
@@ -940,7 +944,6 @@ void Plot::startParse() {
 }
 
 void Plot::zoomYAxisExtents(Axis axis) {
-    //FIXME: this should perform some other action :\
     if (!axisEnabled(axis)) return;
     //get interval for xBottom axis
     QwtInterval xInterval=axisInterval(xBottom);

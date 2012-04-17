@@ -21,7 +21,7 @@ private:
     const QVector<QVector<double> > *dataTable;
     int xCol;
     int yCol;
-
+    mutable int lastBoundSize;
 
 };
 
