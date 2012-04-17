@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>606</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -44,6 +44,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -326,6 +327,11 @@
   <action name="actionZoom_yLeft_to_extents">
    <property name="text">
     <string>Zoom yLeft to extents</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

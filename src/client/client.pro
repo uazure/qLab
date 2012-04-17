@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     thermalexpansionpoint.cpp \
     dilatometerdata.cpp \
     basicconfigurationdialog.cpp \
-    doubleclickeventfilter.cpp
+    doubleclickeventfilter.cpp \
+    aboutdialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -50,14 +51,16 @@ HEADERS += mainwindow.h \
     thermalexpansionpoint.h \
     dilatometerdata.h \
     basicconfigurationdialog.h \
-    doubleclickeventfilter.h
+    doubleclickeventfilter.h \
+    aboutdialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
     experimentcontroldialog.ui \
     selectcurvedialog.ui \
     approximationdialog.ui \
-    basicconfigurationdialog.ui
+    basicconfigurationdialog.ui \
+    aboutdialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src

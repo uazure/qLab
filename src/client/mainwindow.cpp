@@ -2,12 +2,14 @@
 #include "ui_mainwindow.h"
 #include "nonlinearapproximation.h"
 #include "basicconfigurationdialog.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle(QApplication::applicationName()+" "+ QApplication::applicationVersion());
 
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
 
@@ -51,6 +53,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionLast_calculation,SIGNAL(triggered()),SLOT(showCalculationLog()));
     connect(ui->actionDilatometry,SIGNAL(toggled(bool)),SLOT(showDilatometryPlot(bool)));
     connect(ui->actionZoom_yLeft_to_extents,SIGNAL(triggered()),SLOT(zoomYLeftToExtents()));
+    connect(ui->actionAbout_Qt,SIGNAL(triggered()),QApplication::instance(),SLOT(aboutQt()));
+    connect(ui->actionAbout,SIGNAL(triggered()),SLOT(showAbout()));
 
     ui->actionDraw_incremental->trigger();
 
@@ -508,16 +512,6 @@ void MainWindow::showDilatometryPlot(bool show) {
 
     }
 
-//    Plot *activePlot,*inactivePlot;
-//    if (show) {
-//        activePlot=dilatometerPlot;
-//        inactivePlot=plot;}
-//    else {
-//        activePlot=plot;
-//        inactivePlot=dilatometerPlot;
-//    }
-
-
     plot->setVisible(!show);
     dilatometerPlot->setVisible(show);
     dilatometerPlot->replot();
@@ -527,4 +521,10 @@ void MainWindow::showDilatometryPlot(bool show) {
 void MainWindow::zoomYLeftToExtents(void)
 {
     plot->zoomYAxisExtents(QwtPlot::yLeft);
+}
+
+void MainWindow::showAbout() {
+    AboutDialog *dialog=new AboutDialog(this);
+    dialog->exec();
+    delete dialog;
 }
