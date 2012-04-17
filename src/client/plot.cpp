@@ -816,7 +816,7 @@ void Plot::deleteSelectedPoints() {
     selectedCurve=NULL;
     selectedPoints.clear();
     selectedPoint=-1;
-    QwtPlot::replot();
+    replot();
 }
 
 void Plot::deletePoint(QwtPlotCurve *curve, int index) {
@@ -833,7 +833,6 @@ void Plot::deletePoint(QwtPlotCurve *curve, int index) {
 
     qDebug()<<"Deleting point"<<index<<"from"<<dilatometerData;
     dilatometerData->deletePoint(index);
-    QwtPlot::replot();
 }
 
 
