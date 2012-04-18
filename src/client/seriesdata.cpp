@@ -15,7 +15,10 @@ SeriesData::~SeriesData() {
 
 size_t SeriesData::size() const {
     if (dataTable->size()==0) return 0;
-    return dataTable->at(0).size();
+    if (lastSize!=dataTable->at(0).size()) {
+        lastSize=dataTable->at(0).size();
+    }
+    return lastSize;
 }
 
 QPointF SeriesData::sample(size_t i) const {
@@ -75,7 +78,4 @@ QRectF SeriesData::boundingRect() const {
     d_boundingRect=qwtBoundingRect(*this);
     return d_boundingRect;
 }
-
-
-
 

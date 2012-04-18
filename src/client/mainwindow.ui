@@ -64,6 +64,7 @@
      <string>Plot</string>
     </property>
     <addaction name="actionSetup"/>
+    <addaction name="separator"/>
     <addaction name="actionDelete_Point"/>
     <addaction name="actionSelect_points"/>
     <addaction name="actionReplot"/>
@@ -71,6 +72,10 @@
     <addaction name="actionMonitoring_interval"/>
     <addaction name="actionInitialize"/>
     <addaction name="actionZoom_yLeft_to_extents"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_tolerance_alarm"/>
+    <addaction name="actionView_tolerance"/>
+    <addaction name="actionRemove_tolerance_alarm"/>
    </widget>
    <widget class="QMenu" name="menuExperiment">
     <property name="enabled">
@@ -332,6 +337,24 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionSet_tolerance_alarm">
+   <property name="text">
+    <string>Set tolerance alarm</string>
+   </property>
+  </action>
+  <action name="actionRemove_tolerance_alarm">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove tolerance alarm</string>
+   </property>
+  </action>
+  <action name="actionView_tolerance">
+   <property name="text">
+    <string>View tolerance</string>
    </property>
   </action>
  </widget>

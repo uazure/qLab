@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     dilatometerdata.cpp \
     basicconfigurationdialog.cpp \
     doubleclickeventfilter.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    tolerancealarm.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -52,7 +53,8 @@ HEADERS += mainwindow.h \
     dilatometerdata.h \
     basicconfigurationdialog.h \
     doubleclickeventfilter.h \
-    aboutdialog.h
+    aboutdialog.h \
+    tolerancealarm.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \

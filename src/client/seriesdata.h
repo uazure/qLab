@@ -2,10 +2,11 @@
 #define SERIESDATA_H
 #include "qwt_series_data.h"
 #include <QPointF>
+#include <QObject>
 
 class SeriesData : public QwtSeriesData<QPointF>
 {
-   //unidentified copy constructor
+    //unidentified copy constructor
     SeriesData(const SeriesData&);
 
 public:
@@ -16,12 +17,12 @@ public:
     QPointF sample(size_t i) const;
     QRectF boundingRect() const;
 
-
 private:
     const QVector<QVector<double> > *dataTable;
     int xCol;
     int yCol;
     mutable int lastBoundSize;
+    mutable size_t lastSize;
 
 };
 

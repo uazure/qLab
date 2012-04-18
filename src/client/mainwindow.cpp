@@ -3,6 +3,7 @@
 #include "nonlinearapproximation.h"
 #include "basicconfigurationdialog.h"
 #include "aboutdialog.h"
+#include "tolerancealarm.h"
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -55,6 +56,10 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionZoom_yLeft_to_extents,SIGNAL(triggered()),SLOT(zoomYLeftToExtents()));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),QApplication::instance(),SLOT(aboutQt()));
     connect(ui->actionAbout,SIGNAL(triggered()),SLOT(showAbout()));
+    connect(ui->actionSet_tolerance_alarm,SIGNAL(triggered()),plot,SLOT(setToleranceAlarm()));
+    connect(ui->actionRemove_tolerance_alarm,SIGNAL(triggered()),plot,SLOT(removeToleranceAlarm()));
+    connect(ui->actionView_tolerance,SIGNAL(triggered()),SLOT(showToleranceAlarmState()));
+
 
     ui->actionDraw_incremental->trigger();
 
@@ -62,6 +67,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSelectT0,SIGNAL(toggled(bool)),plot,SLOT(selectT0(bool)));
     connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelectT0,SLOT(trigger()));
     connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelect_points,SLOT(setChecked(bool)));
+    connect(plot,SIGNAL(toleranceAlarmSet(bool)),SLOT(toleranceAlarmStatusChange(bool)));
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
@@ -527,4 +533,18 @@ void MainWindow::showAbout() {
     AboutDialog *dialog=new AboutDialog(this);
     dialog->exec();
     delete dialog;
+}
+
+void MainWindow::toleranceAlarmStatusChange(bool status) {
+    ui->actionRemove_tolerance_alarm->setEnabled(status);
+}
+
+void MainWindow::showToleranceAlarmState() {
+    const ToleranceAlarm *alarm=plot->getToleranceAlarm();
+    if (!alarm) {
+        QMessageBox::information(this,tr("No tolerance alarm"),tr("No tolerance alarm specified"));
+        return;
+    }
+
+    QMessageBox::information(this,tr("Tolerance"),tr("Curve: %1\nValue: %2\nTolerance: %3").arg(plot->getToleranceAlarmCurveName(),QString::number(alarm->target()),QString::number(alarm->tolerance())));
 }

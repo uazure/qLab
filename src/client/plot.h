@@ -29,6 +29,8 @@
 #include <QElapsedTimer>
 #endif
 
+class ToleranceAlarm;
+
 class Plot : public QwtPlot
 {
     Q_OBJECT
@@ -53,6 +55,8 @@ public:
     void detachCurve(QwtPlotCurve *curve);
     const QList<const QwtPlotCurve *> getApproximationCurves() const;
     const QList<const QwtPlotCurve *> getTemporaryCurves() const;
+    const ToleranceAlarm * getToleranceAlarm() const {return toleranceAlarm;}
+    QString getToleranceAlarmCurveName() const;
 
 
 public slots:
@@ -72,8 +76,10 @@ public slots:
     void showApproximationCurves(bool show=true);
     void clearTemporaryCurves();
     void deleteSelectedPoints();
-    void parseLine(const QByteArray &line);
+    void setToleranceAlarm();
+    void removeToleranceAlarm();
 
+    void parseLine(const QByteArray &line);
     void stopParse();
     void startParse();
 
@@ -82,11 +88,13 @@ public slots:
 
 
 
+
 signals:
     void curvePointClicked(QwtPlotCurve *curve,int index);
     void xValueSelected(double value);
     void message(QString message);
     void T0Selected(bool);
+    void toleranceAlarmSet(bool);
 
 private:
     const ExperimentData *experimentData;
@@ -128,6 +136,8 @@ private:
     double monitoringInterval;
     static int markerCount;
     int T0index;
+    ToleranceAlarm *toleranceAlarm;
+    const QwtPlotCurve *toleranceAlarmCurve;
 
 
 private slots:
