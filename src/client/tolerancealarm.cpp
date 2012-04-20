@@ -21,7 +21,6 @@ bool ToleranceAlarm::testCurrentValue(double value) {
     if (fabs(value-targetValue)>toleranceValue) {
         qWarning()<<"Value exceeds tolerance";
         return false;
-        //
     }
     return true;
 }

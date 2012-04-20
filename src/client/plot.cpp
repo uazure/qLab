@@ -552,8 +552,13 @@ void Plot::drawLastPoint() {
     if (!incrementalDraw) return;
 
     if (toleranceAlarmCurve && toleranceAlarm) {
-        if (toleranceAlarm->testCurrentValue(toleranceAlarmCurve->sample(toleranceAlarmCurve->dataSize()-1).y())) {
+        if (!toleranceAlarm->testCurrentValue(toleranceAlarmCurve->sample(toleranceAlarmCurve->dataSize()-1).y())) {
+            //FIXME: More attractive method of notification must be implemented
             QMessageBox::critical(this,tr("Value exceeds tolerance"),tr("Value exceeds tolerance"));
+            //removing tolerance alarm when it's triggered.
+            delete toleranceAlarm;
+            toleranceAlarm=NULL;
+            toleranceAlarmCurve=NULL;
         }
     }
     double maxXValue=0.0;
@@ -997,6 +1002,7 @@ void Plot::setToleranceAlarm() {
     if (!ok) {
         return;
     }
+    QMessageBox::information(this,"Tolerance set","Tolerance set to"+QString::number(tolerance));
     removeToleranceAlarm();
     qDebug()<<"Adding tolerance alarm";
     toleranceAlarm=new ToleranceAlarm(value,tolerance,this);
