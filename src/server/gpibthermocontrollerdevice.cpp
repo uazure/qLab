@@ -60,6 +60,8 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Ex
 }
 
 bool GpibThermocontrollerDevice::setTargetValue(QString value, int loopIndex) {
+    //FIXME: arg() not works ok if %1 is not specified on the string
+    //this causes error for lakeshore330 because no %1 in set target
     QString command=setControlTarget.arg(loopName.at(loopIndex),value).toAscii();
     qDebug()<<shortname<<"issue command"<<command;
     if (set(command.toAscii())) {

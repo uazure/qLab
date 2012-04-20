@@ -249,7 +249,7 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
             //qDebug()<<"No factor for"<<shortname;
         } else {
             qDebug()<<"Factor for"<<shortName()<<getFactor();
-            returnValue=QByteArray::number(returnValue.toDouble()*getFactor());
+            returnValue=QByteArray::number(returnValue.toDouble()*getFactor(),'g',9);
         }
 
         lastValue=returnValue;

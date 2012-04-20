@@ -13,6 +13,7 @@ void ControllableDeviceList::clear()
 void ControllableDeviceList::appendControl(QString &name, AbstractThermocontrollerDevice *device, int loopIndex)
 {
     if (loopIndex<0 || device==NULL) {
+        qDebug()<<"Failed to append control for"<<name<<"device"<<device;
         return;
     }
     deviceList.append(device);
