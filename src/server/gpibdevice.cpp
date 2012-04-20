@@ -59,7 +59,27 @@ GpibDevice::GpibDevice(QByteArray &DeviceShortName, Experiment *exp) :
     //next step is to identify read and channel commands
     readCommand=deviceSettings->value(shortname+"/command/read").toString();
     if (readCommand.isEmpty()) {
-        qWarning()<<"Device"<<shortname<<"read command is empty";
+        qWarning()<<"Device"<<shortname<<"read command is empty. Trying to set channel-specific read commands";
+
+        //read channel list from device settings
+        QList<QByteArray> channelList=deviceSettings->value(shortname+"/channels").toByteArray().split(',');
+        if (channelList.isEmpty()) {
+            qWarning()<<"Device"<<shortname<<"No read commands specified, channel list is empty. Can't init.";
+            return;
+        }
+        //trim channel names and add them
+        for (int i=0;i<channelList.size();++i) {
+            channelList[i]=channelList.at(i).trimmed();
+            qDebug()<<"Searching for specific read command for channel"<<channelList.at(i);
+            QByteArray chReadCom=deviceSettings->value(shortname+"/command/read/"+channelList.at(i)).toByteArray();
+            if (!chReadCom.isEmpty()) {
+                qDebug()<<"Specific read command for channel"<<channelList.at(i)<<":"<<chReadCom;
+                channelReadCommandMap.insert(channelList.at(i),chReadCom);
+            } else {
+                qWarning()<<"Failed to find specific read command for channel"<<channelList.at(i);
+                return;
+            }
+        }
     } else {
         qDebug()<<"Device"<<shortname<<"read command is"<<readCommand;
     }
@@ -190,6 +210,11 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
     qDebug()<<"Trying to read value from device"<<shortName();
     bool success=false;
     //if there's no arguments for the device then just use readCommand
+    if (readCommand.isEmpty() && !channelReadCommandMap.isEmpty() && parametersList.size()==1) {
+        qDebug()<<"Using specific read command for channel"<<parametersList.first();
+        success=ask(channelReadCommandMap.value(parametersList.first().toAscii()),returnValue);
+    } else
+
     if (parametersList.isEmpty()) {
         success=ask(readCommand.toAscii(),returnValue);
     } else // if there's argument but no channelCommand specified - substitute %1 in readCommand with supplied parameter

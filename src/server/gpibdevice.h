@@ -11,6 +11,7 @@
 #include <QStringList>
 #include <QSettings>
 #include <QApplication>
+#include <QMap>
 
 class GpibDevice : public AbstractDevice
 {
@@ -59,6 +60,8 @@ private:
       \sa currentChannel
       */
     QString channelCommand;
+
+    QMap<QByteArray,QByteArray> channelReadCommandMap;
 
 
 

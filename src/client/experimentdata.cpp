@@ -310,7 +310,7 @@ void ExperimentData::parseComment(QByteArray &commentLine) {
     }
 }
 
-void ExperimentData::setControlCount(int controlNum) {
+void ExperimentData::setControlCount(int ) {
 
 }
 
@@ -586,7 +586,7 @@ void ExperimentData::saveFile(const QString &filename) {
             buf+="yRight\n";
         }
         file.write(buf);
-        for (int n=0;n<curve->dataSize();++n) {
+        for (size_t n=0;n<curve->dataSize();++n) {
             buf=QByteArray::number(curve->sample(n).x(),'g',9);
             buf+="\t"+QByteArray::number(curve->sample(n).y(),'g',9)+"\n";
             qDebug()<<"Writing data line of approximation curve to file";

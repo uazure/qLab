@@ -117,6 +117,10 @@ void Experiment::initControllers() {
         qDebug()<<"Converting AbstractDevice"<<deviceName<<"to AbstractThermocontrollerDevice";
         AbstractThermocontrollerDevice *tcdevice =
                 dynamic_cast<AbstractThermocontrollerDevice *> (device);
+        if (!tcdevice) {
+            qWarning()<<"Failed to convert device to AbstractThermocontrollerDevice";
+            return;
+        }
 
         int loopIndex=tcdevice->getLoopIndex(loopName);
         if (loopIndex<0) {

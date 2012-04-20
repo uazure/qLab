@@ -2,6 +2,9 @@
 #include "selectcurvedialog.h"
 #include "dilatometerdata.h"
 #include "doubleclickeventfilter.h"
+#include "tolerancealarm.h"
+#include <QMessageBox>
+#include <QInputDialog>
 
 int Plot::markerCount=0;
 
@@ -18,6 +21,8 @@ Plot::Plot(QWidget *parent) :
     //set default monitoring time to 1 minute (60 seconds)
     setMonitoringInterval(60);
     expect=ExperimentData::expectNone;
+    toleranceAlarm=NULL;
+    toleranceAlarmCurve=NULL;
 
     dataTable=NULL;
     experimentData=NULL;
@@ -546,6 +551,11 @@ void Plot::selectPointsMode(bool select) {
 void Plot::drawLastPoint() {
     if (!incrementalDraw) return;
 
+    if (toleranceAlarmCurve && toleranceAlarm) {
+        if (toleranceAlarm->testCurrentValue(toleranceAlarmCurve->sample(toleranceAlarmCurve->dataSize()-1).y())) {
+            QMessageBox::critical(this,tr("Value exceeds tolerance"),tr("Value exceeds tolerance"));
+        }
+    }
     double maxXValue=0.0;
     double tmp;
     const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
@@ -816,11 +826,11 @@ void Plot::deleteSelectedPoints() {
     selectedCurve=NULL;
     selectedPoints.clear();
     selectedPoint=-1;
-    QwtPlot::replot();
+    replot();
 }
 
 void Plot::deletePoint(QwtPlotCurve *curve, int index) {
-    if (!curve || index<0 || index>=curve->dataSize()) {
+    if (!curve || index<0 || index>=(int) curve->dataSize()) {
         return;
     }
 
@@ -833,7 +843,6 @@ void Plot::deletePoint(QwtPlotCurve *curve, int index) {
 
     qDebug()<<"Deleting point"<<index<<"from"<<dilatometerData;
     dilatometerData->deletePoint(index);
-    QwtPlot::replot();
 }
 
 
@@ -973,4 +982,41 @@ void Plot::zoomYAxisExtents(Axis axis) {
 
     setAxisScale(axis,ymin,ymax);
     replot();
+}
+
+void Plot::setToleranceAlarm() {
+    if (!selectedCurve) {
+        QMessageBox::warning(this,tr("Select curve"),tr("Please, select curve to attach tolerace alarm to"));
+        return;
+    }
+
+    double value=selectedCurve->sample(selectedCurve->dataSize()-1).y();
+    double suggestedTolerance=value*0.05;
+    bool ok;
+    double tolerance=QInputDialog::getDouble(this,tr("Tolerance for selected curve"),tr("Tolerance for selected curve.\nCurrent value: %1").arg(QString::number(value)),suggestedTolerance,-1e-100,1e+100,3,&ok);
+    if (!ok) {
+        return;
+    }
+    removeToleranceAlarm();
+    qDebug()<<"Adding tolerance alarm";
+    toleranceAlarm=new ToleranceAlarm(value,tolerance,this);
+    toleranceAlarmCurve=selectedCurve;
+    emit toleranceAlarmSet(true);
+}
+
+void Plot::removeToleranceAlarm() {
+    if (toleranceAlarm) {
+        qDebug()<<"Removing tolerance alarm";
+        delete toleranceAlarm;
+        toleranceAlarm=NULL;
+        toleranceAlarmCurve=NULL;
+        emit toleranceAlarmSet(false);
+    }
+}
+
+QString Plot::getToleranceAlarmCurveName() const {
+    if (!toleranceAlarmCurve) {
+        return QString();
+    }
+    return toleranceAlarmCurve->title().text();
 }
