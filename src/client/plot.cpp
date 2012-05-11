@@ -1026,3 +1026,18 @@ QString Plot::getToleranceAlarmCurveName() const {
     }
     return toleranceAlarmCurve->title().text();
 }
+
+QList <QwtPlotCurve *> Plot::getVisibleCurveList() const {
+    QwtPlotCurve *curve;
+    QList<QwtPlotCurve *> curveList;
+    const QwtPlotItemList& itmList = itemList(QwtPlotItem::Rtti_PlotCurve);
+    //find first curve that is on legend
+    for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
+        curve=(QwtPlotCurve*)(*it);
+        if (!curve->testItemAttribute(QwtPlotItem::Legend) || !curve->isVisible()) {
+            continue;
+        }
+    curveList.append(curve);
+    }
+    return curveList;
+}

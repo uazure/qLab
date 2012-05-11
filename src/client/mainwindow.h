@@ -23,6 +23,7 @@
 #include "experiment.h"
 #include "experimentcontroldialog.h"
 #include "approximationdialog.h"
+#include "doubleclickeventfilter.h"
 
 namespace Ui {
     class MainWindow;
@@ -52,6 +53,8 @@ private:
     QLabel bytesReadLabel;
     QSettings *appSettings;
     Experiment *experiment;
+    QList<QLabel *> lastValueLabelList;
+    DoubleClickEventFilter *lastValueDoubleClick;
 
 
 private slots:
@@ -76,6 +79,9 @@ private slots:
     void showAbout(void);
     void toleranceAlarmStatusChange(bool status);
     void showToleranceAlarmState();
+    void clearLastValues();
+    void initLastValues();
+    void updateLastValues();
 
 
 };

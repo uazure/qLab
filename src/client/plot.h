@@ -57,6 +57,7 @@ public:
     const QList<const QwtPlotCurve *> getTemporaryCurves() const;
     const ToleranceAlarm * getToleranceAlarm() const {return toleranceAlarm;}
     QString getToleranceAlarmCurveName() const;
+    QList<QwtPlotCurve *> getVisibleCurveList() const;
 
 
 public slots:

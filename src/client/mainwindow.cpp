@@ -5,12 +5,20 @@
 #include "aboutdialog.h"
 #include "tolerancealarm.h"
 
+
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationName()+" "+ QApplication::applicationVersion());
+    //ui->lastValuesBox->hide();
+
+
+    lastValueDoubleClick=new DoubleClickEventFilter(this);
+    ui->lastValuesBox->installEventFilter(lastValueDoubleClick);
+    connect (lastValueDoubleClick,SIGNAL(doubleClicked()),this,SLOT(clearLastValues()));
+    connect (lastValueDoubleClick,SIGNAL(doubleClicked()),this,SLOT(initLastValues()));
 
     appSettings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),QApplication::applicationName(),this);
 
@@ -84,11 +92,13 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
 
     connect(data,SIGNAL(initialized()),plot,SLOT(initialize()));
+    connect(data,SIGNAL(initialized()),this,SLOT(initLastValues()));
     connect(data,SIGNAL(pointCount(int)),&pointCountLabel,SLOT(setNum(int)));
     connect(data,SIGNAL(pointCount(int)),plot,SLOT(drawLastPoint()));
     /** This connection will cause to plot VLine markers*/
     //connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
     connect(data,SIGNAL(marker(int)),plot,SLOT(appendMarker(int)));
+    connect(data,SIGNAL(pointCount(int)),this,SLOT(updateLastValues()));
 
 
 
@@ -115,6 +125,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete lastValueDoubleClick;
     plot->setVisible(false);
     delete plot;
     delete dilatometerPlot;
@@ -547,4 +558,48 @@ void MainWindow::showToleranceAlarmState() {
     }
 
     QMessageBox::information(this,tr("Tolerance"),tr("Curve: %1\nValue: %2\nTolerance: %3").arg(plot->getToleranceAlarmCurveName(),QString::number(alarm->target()),QString::number(alarm->tolerance())));
+}
+
+
+void MainWindow::clearLastValues() {
+    qDebug()<<"Clearing last values";
+    for (int i=0;i<lastValueLabelList.size();++i) {
+        lastValueLabelList[i]->deleteLater();
+    }
+    lastValueLabelList.clear();
+}
+
+void MainWindow::initLastValues() {
+    qDebug()<<"Init last values";
+    QList<QwtPlotCurve *> curveList=plot->getVisibleCurveList();
+    for (int i=0;i<curveList.size();++i) {
+        qDebug()<<"Creating new label";
+        QLabel *label=new QLabel(ui->lastValuesBox);
+        QPalette pal=label->palette();
+        pal.setColor(QPalette::WindowText,curveList.at(i)->symbol()->brush().color());
+        label->setPalette(pal);
+        QFont font=QWidget::font();
+        //enlarge font for 30%
+        font.setPointSizeF(font.pointSizeF()*1.3);
+        font.setBold(true);
+
+        label->setFont(font);
+        ui->lastValuesBox->layout()->addWidget(label);
+        lastValueLabelList.append(label);
+        label->setToolTip(curveList.at(i)->title().text());
+        label->setNum(curveList.at(i)->sample(curveList.at(i)->dataSize()-1).y());
+    }
+
+}
+
+void MainWindow::updateLastValues() {
+    if (lastValueLabelList.isEmpty()) {
+        return;
+    }
+
+    QList<QwtPlotCurve *> curveList=plot->getVisibleCurveList();
+    for (int i=0;i<curveList.size() && i< lastValueLabelList.size();++i) {
+        lastValueLabelList[i]->setToolTip(curveList.at(i)->title().text());
+        lastValueLabelList[i]->setNum(curveList.at(i)->sample(curveList.at(i)->dataSize()-1).y());
+    }
 }
