@@ -4,6 +4,7 @@
 #include "basicconfigurationdialog.h"
 #include "aboutdialog.h"
 #include "tolerancealarm.h"
+#include <QClipboard>
 
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
@@ -81,6 +82,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelectT0,SLOT(trigger()));
     connect(plot,SIGNAL(T0Selected(bool)),ui->actionSelect_points,SLOT(setChecked(bool)));
     connect(plot,SIGNAL(toleranceAlarmSet(bool)),SLOT(toleranceAlarmStatusChange(bool)));
+    connect(plot,SIGNAL(curvePointClicked(QwtPlotCurve*,int)),this,SLOT(updateSelectedValue(QwtPlotCurve*,int)));
 
     connect(&tcpClient,SIGNAL(connected()),this,SLOT(socketConnectedToServer()));
     connect(&tcpClient,SIGNAL(disconnected()),this,SLOT(socketDisconnectedFromServer()));
@@ -607,4 +609,13 @@ void MainWindow::updateLastValues() {
         lastValueLabelList[i]->setToolTip(curveList.at(i)->title().text());
         lastValueLabelList[i]->setNum(curveList.at(i)->sample(curveList.at(i)->dataSize()-1).y());
     }
+}
+
+
+void MainWindow::updateSelectedValue(QwtPlotCurve *curve, int index) {
+    QClipboard *clipboard=QApplication::clipboard();
+    QString value=QString::number(curve->sample(index).y());
+    clipboard->setText(value);
+    ui->selectedValueLabel->setText(value);
+    ui->selectedValueLabel->setToolTip(QString::number(curve->sample(index).x()));
 }

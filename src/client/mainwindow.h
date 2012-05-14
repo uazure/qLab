@@ -82,6 +82,7 @@ private slots:
     void clearLastValues();
     void initLastValues();
     void updateLastValues();
+    void updateSelectedValue(QwtPlotCurve *curve, int index);
 
 
 };
