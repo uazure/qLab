@@ -10,6 +10,7 @@
 #include "qwt_symbol.h"
 #include "ColorBox.h"
 #include "experimentdata.h"
+#include "stringlistselectdialog.h"
 
 
 
