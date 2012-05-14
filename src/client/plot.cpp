@@ -592,13 +592,11 @@ void Plot::drawLastPoint() {
     }
     qDebug()<<"Max X value is"<<tmp;
     setAxisScale(xBottom,maxXValue-monitoringInterval,maxXValue);
+    QwtPlot::replot();
     if (autoZoom) {
-        if (axisEnabled(yLeft)) zoomYAxisExtents(yLeft);
-        if (axisEnabled(yRight)) zoomYAxisExtents(yRight);
-    } else {
-        QwtPlot::replot();
+        if (axisEnabled(yLeft)) zoomYAxisExtents();
+        if (axisEnabled(yRight)) zoomYRightAxisExtents();
     }
-
 }
 
 void Plot::zoomExtents(void)
