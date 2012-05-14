@@ -188,14 +188,20 @@ void SetupCurvesDialog::addCurveDialog() {
         list.append(data->headerData(i,Qt::Horizontal,Qt::DisplayRole).toString());
     }
 
+    //create new dialog to select item from stringlist
     StringListSelectDialog *dialog = new StringListSelectDialog(tr("Select data column"),tr("Select data column to add as new curve data"),list,this);
+    //show dialog in modal mode
     int result=dialog->exec();
+
     if (result==QDialog::Rejected) {
         qDebug()<<"Dialog rejected";
     } else {
+        //if dialog was accepted then call addCurve(index)
         qDebug()<<"Adding curve assigned to col"<<dialog->getSelectedIndex();
         plot->addCurve(dialog->getSelectedIndex());
+        //re-init dialog with new curves
         init();
+        //replot
         plot->replot();
     }
     delete dialog;

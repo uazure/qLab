@@ -37,6 +37,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     ui->plotLayout->addWidget(plot);
 
 
+
+
     connect(ui->actionFullscreen,SIGNAL(triggered(bool)),this,SLOT(setFullscreen(bool)));
     connect(ui->actionExit,SIGNAL(triggered()),this,SLOT(close()));
     connect(ui->actionConnect_to,SIGNAL(triggered()),this,SLOT(connectTo()));
@@ -67,6 +69,9 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionSet_tolerance_alarm,SIGNAL(triggered()),plot,SLOT(setToleranceAlarm()));
     connect(ui->actionRemove_tolerance_alarm,SIGNAL(triggered()),plot,SLOT(removeToleranceAlarm()));
     connect(ui->actionView_tolerance,SIGNAL(triggered()),SLOT(showToleranceAlarmState()));
+
+    plot->enableAutoZoom(ui->actionAuto_zoom->isChecked());
+    connect(ui->actionAuto_zoom,SIGNAL(triggered(bool)),plot,SLOT(enableAutoZoom(bool)));
 
 
     ui->actionDraw_incremental->trigger();

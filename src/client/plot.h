@@ -86,6 +86,8 @@ public slots:
 
     void zoomYAxisExtents(Axis axis=yLeft);
     inline void zoomYRightAxisExtents() {zoomYAxisExtents(yRight);}
+    void enableAutoZoom(bool enable);
+    bool isAutoZoomEnabled() const;
 
 
 
@@ -128,6 +130,7 @@ private:
     //QwtPlotCurve *parseLineCurve;
     QList<QwtPlot::Axis> parseLineAxisList;
     QVector<QPointF> parseLinePointVector;
+    bool autoZoom;
 
 
     //QMap<QString,QwtPlotCurve *> approximationCurveMap;

@@ -17,6 +17,7 @@ Plot::Plot(QWidget *parent) :
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
 #endif
     incrementalDraw=false;
+    autoZoom=false;
     showInterpolation=true;
     //set default monitoring time to 1 minute (60 seconds)
     setMonitoringInterval(60);
@@ -177,15 +178,28 @@ Plot::Plot(QWidget *parent) :
     //call zoom to extens on axis on double click on axis title
     QwtScaleWidget *yLeftScaleWidget=axisWidget(yLeft);
     QwtScaleWidget *yRightScaleWidget=axisWidget(yRight);
+    QwtScaleWidget *xBottomScaleWidget=axisWidget(xBottom);
+
+    //zoom yLeft axis to extents on doubleclick if yLeft is present
     if (yLeftScaleWidget) {
         DoubleClickEventFilter *yLeftDoubleClickEventFilter=new DoubleClickEventFilter(yLeftScaleWidget);
         yLeftScaleWidget->installEventFilter(yLeftDoubleClickEventFilter);
         connect(yLeftDoubleClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYAxisExtents()));
     }
+
+    //zoom yRight axis to extents on doubleclick if yRight is present
     if (yRightScaleWidget) {
         DoubleClickEventFilter *yRightDoublClickEventFilter=new DoubleClickEventFilter(yRightScaleWidget);
         yRightScaleWidget->installEventFilter(yRightDoublClickEventFilter);
         connect(yRightDoublClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYRightAxisExtents()));
+    }
+
+    //zoom yLeft AND yRight axes to extents on doubleclick if xBottom is present
+    if (xBottomScaleWidget) {
+        DoubleClickEventFilter *xBottomDoubleClickEventFilter = new DoubleClickEventFilter (xBottomScaleWidget);
+        xBottomScaleWidget->installEventFilter(xBottomDoubleClickEventFilter);
+        connect(xBottomDoubleClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYAxisExtents()));
+        connect(xBottomDoubleClickEventFilter,SIGNAL(doubleClicked()),SLOT(zoomYRightAxisExtents()));
     }
 
 
@@ -578,7 +592,13 @@ void Plot::drawLastPoint() {
     }
     qDebug()<<"Max X value is"<<tmp;
     setAxisScale(xBottom,maxXValue-monitoringInterval,maxXValue);
-    QwtPlot::replot();
+    if (autoZoom) {
+        if (axisEnabled(yLeft)) zoomYAxisExtents(yLeft);
+        if (axisEnabled(yRight)) zoomYAxisExtents(yRight);
+    } else {
+        QwtPlot::replot();
+    }
+
 }
 
 void Plot::zoomExtents(void)
@@ -968,7 +988,7 @@ void Plot::zoomYAxisExtents(Axis axis) {
     //find first curve that is on legend
     for (QwtPlotItemIterator it = itmList.begin(); it != itmList.end(); ++it ) {
         curve=(QwtPlotCurve*)(*it);
-        if (!curve->testItemAttribute(QwtPlotItem::Legend) || curve->yAxis()!=axis) {
+        if (!curve->testItemAttribute(QwtPlotItem::Legend) || curve->yAxis()!=axis || !curve->isVisible()) {
             continue;
         }
         //for each curve assigned to yAxis = axis search for ymin and ymax;
@@ -1040,4 +1060,12 @@ QList <QwtPlotCurve *> Plot::getVisibleCurveList() const {
     curveList.append(curve);
     }
     return curveList;
+}
+
+void Plot::enableAutoZoom(bool enable) {
+    autoZoom=enable;
+}
+
+bool Plot::isAutoZoomEnabled() const {
+    return autoZoom;
 }
