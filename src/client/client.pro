@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     basicconfigurationdialog.cpp \
     doubleclickeventfilter.cpp \
     aboutdialog.cpp \
-    tolerancealarm.cpp
+    tolerancealarm.cpp \
+    stringlistselectdialog.cpp
 HEADERS += mainwindow.h \
     plot.h \
     tcpclient.h \
@@ -54,7 +55,8 @@ HEADERS += mainwindow.h \
     basicconfigurationdialog.h \
     doubleclickeventfilter.h \
     aboutdialog.h \
-    tolerancealarm.h
+    tolerancealarm.h \
+    stringlistselectdialog.h
 FORMS += mainwindow.ui \
     dataviewwindow.ui \
     setupcurvesdialog.ui \
@@ -62,14 +64,15 @@ FORMS += mainwindow.ui \
     selectcurvedialog.ui \
     approximationdialog.ui \
     basicconfigurationdialog.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    stringlistselectdialog.ui
 INCLUDEPATH += ../qwt6
 
 # INCLUDEPATH += ../../../qwt/src
 # qwt 6.0.1 need to be compiled and installed to system path
-#LIBS += -L../../../qwt/lib
+# LIBS += -L../../../qwt/lib
 LIBS += -L../../lib
-INCLUDEPATH +="c:/Program Files/GnuWin32/include"
+INCLUDEPATH += "c:/Program Files/GnuWin32/include"
 LIBS += -lgsl \
     -lgslcblas
 

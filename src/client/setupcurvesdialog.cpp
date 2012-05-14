@@ -182,16 +182,28 @@ void SetupCurvesDialog::deleteCurrentCurve() {
 }
 
 void SetupCurvesDialog::addCurveDialog() {
-    int maxColumn=data->columnCount(QModelIndex())-1;
-    bool ok;
-    int yCol = QInputDialog::getInt (this, tr("Select column to show"), tr("Select column"), 0, 0, maxColumn, 1, &ok);
-    if (ok) {
-        qDebug()<<"Adding curve assigned to col"<<yCol;
-        plot->addCurve(yCol);
-        init();
-        plot->replot();
-    } else {
-        qWarning()<<"Would not add curve, column not selected";
+    QStringList list;
+    //populate stringlist with data headers for columns (Qt::Horizontal orientation, Qt::Display role
+    for (int i=0;i<data->columnCount(QModelIndex());++i) {
+        list.append(data->headerData(i,Qt::Horizontal,Qt::DisplayRole).toString());
     }
+
+    //create new dialog to select item from stringlist
+    StringListSelectDialog *dialog = new StringListSelectDialog(tr("Select data column"),tr("Select data column to add as new curve data"),list,this);
+    //show dialog in modal mode
+    int result=dialog->exec();
+
+    if (result==QDialog::Rejected) {
+        qDebug()<<"Dialog rejected";
+    } else {
+        //if dialog was accepted then call addCurve(index)
+        qDebug()<<"Adding curve assigned to col"<<dialog->getSelectedIndex();
+        plot->addCurve(dialog->getSelectedIndex());
+        //re-init dialog with new curves
+        init();
+        //replot
+        plot->replot();
+    }
+    delete dialog;
 }
 

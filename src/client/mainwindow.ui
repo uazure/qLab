@@ -86,6 +86,7 @@
     <addaction name="actionFullscreen"/>
     <addaction name="actionViewData"/>
     <addaction name="actionDraw_incremental"/>
+    <addaction name="actionAuto_zoom"/>
     <addaction name="actionZoom_to_extents"/>
     <addaction name="separator"/>
     <addaction name="actionLast_calculation"/>
@@ -103,7 +104,6 @@
     <addaction name="actionClear_plot"/>
     <addaction name="actionMonitoring_interval"/>
     <addaction name="actionInitialize"/>
-    <addaction name="actionZoom_yLeft_to_extents"/>
     <addaction name="separator"/>
     <addaction name="actionSet_tolerance_alarm"/>
     <addaction name="actionView_tolerance"/>
@@ -387,6 +387,17 @@
   <action name="actionView_tolerance">
    <property name="text">
     <string>View tolerance</string>
+   </property>
+  </action>
+  <action name="actionAuto_zoom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto zoom</string>
    </property>
   </action>
  </widget>
