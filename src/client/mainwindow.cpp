@@ -14,7 +14,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationName()+" "+ QApplication::applicationVersion());
     //ui->lastValuesBox->hide();
-
+    bytesRead=0;
+    bytesWritten=0;
 
     lastValueDoubleClick=new DoubleClickEventFilter(this);
     ui->lastValuesBox->installEventFilter(lastValueDoubleClick);
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionAuto_zoom,SIGNAL(triggered(bool)),plot,SLOT(enableAutoZoom(bool)));
 
 
-    ui->actionDraw_incremental->trigger();
+    //ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
     connect(ui->actionSelectT0,SIGNAL(toggled(bool)),plot,SLOT(selectT0(bool)));
@@ -93,8 +94,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(&tcpClient,SIGNAL(serverStatus(bool)),ui->actionStart,SLOT(setChecked(bool)));
 
 //FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
-    connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
-    connect(&tcpClient,SIGNAL(bytesRead(int)),&bytesReadLabel,SLOT(setNum(int)));
+    connect(&tcpClient,SIGNAL(bytesWritten(int)),this,SLOT(appendBytesWritten(int)));
+    connect(&tcpClient,SIGNAL(bytesRead(int)),this,SLOT(appendBytesRead(int)));
     connect(&tcpClient,SIGNAL(serverInterval(int)),experiment,SLOT(setInterval(int)));
 
 
@@ -186,6 +187,10 @@ void MainWindow::socketConnectedToServer() {
     ui->actionDisconnect->setDisabled(false);
     ui->menuExperiment->setEnabled(true);
     connectionLabel.setStyleSheet("QLabel {color:green;font-weight:bold;}");
+    bytesRead=0;
+    bytesWritten=0;
+    bytesReadLabel.setNum(0);
+    bytesWrittenLabel.setNum(0);
 }
 
 void MainWindow::socketDisconnectedFromServer() {
@@ -313,7 +318,7 @@ void MainWindow::setInterval() {
     double currentValue=experiment->getInterval();
     currentValue=currentValue/1000;
 
-    double interval=QInputDialog::getDouble(this,tr("Input experiment measure interval in sec"),tr("Measure interval, sec"),currentValue,0.1,3600,2,&ok);
+        double interval=QInputDialog::getDouble(this,tr("Input experiment measure interval in sec"),tr("Measure interval, sec"),currentValue,0.1,3600,2,&ok);
     if (!ok) {
         return;
     }
@@ -586,8 +591,8 @@ void MainWindow::initLastValues() {
         pal.setColor(QPalette::WindowText,curveList.at(i)->symbol()->brush().color());
         label->setPalette(pal);
         QFont font=QWidget::font();
-        //enlarge font for 30%
-        font.setPointSizeF(font.pointSizeF()*1.3);
+        //enlarge font for 50%
+        font.setPointSizeF(font.pointSizeF()*1.5);
         font.setBold(true);
 
         label->setFont(font);
@@ -605,6 +610,12 @@ void MainWindow::updateLastValues() {
     }
 
     QList<QwtPlotCurve *> curveList=plot->getVisibleCurveList();
+
+    if (lastValueLabelList.size()!=curveList.size()) {
+        clearLastValues();
+        initLastValues();
+    }
+
     for (int i=0;i<curveList.size() && i< lastValueLabelList.size();++i) {
         lastValueLabelList[i]->setToolTip(curveList.at(i)->title().text());
         lastValueLabelList[i]->setNum(curveList.at(i)->sample(curveList.at(i)->dataSize()-1).y());
@@ -613,9 +624,62 @@ void MainWindow::updateLastValues() {
 
 
 void MainWindow::updateSelectedValue(QwtPlotCurve *curve, int index) {
+
+    if (!curve || index <0) {
+        for (int i=0;i<selectedValueLabelList.size();++i) {
+            selectedValueLabelList[i]->setText("");
+        }
+        return;
+    }
+
     QClipboard *clipboard=QApplication::clipboard();
     QString value=QString::number(curve->sample(index).y());
+    //setting clipboard text to selected value
     clipboard->setText(value);
-    ui->selectedValueLabel->setText(value);
-    ui->selectedValueLabel->setToolTip(QString::number(curve->sample(index).x()));
+    QList<QwtPlotCurve *> curveList=plot->getVisibleCurveList();
+
+    if (selectedValueLabelList.size()!=curveList.size()) {
+        for (int i=0;i<selectedValueLabelList.size();++i) {
+            selectedValueLabelList[i]->deleteLater();
+        }
+        selectedValueLabelList.clear();
+        for (int i=0;i<curveList.size();++i) {
+            QLabel *label=new QLabel(ui->selectedValuesBox);
+            QFont font=QWidget::font();
+            //enlarge font for 50%
+            font.setPointSizeF(font.pointSizeF()*1.5);
+            if (i==0) font.setBold(true);
+            label->setFont(font);
+            ui->selectedValuesBox->layout()->addWidget(label);
+            selectedValueLabelList.append(label);
+        }
+    }
+
+    //first - set selected value
+    selectedValueLabelList[0]->setText(value);
+    selectedValueLabelList[0]->setToolTip(curve->title().text()+"\nx: "+QString::number(curve->sample(index).x()));
+    QPalette pal=selectedValueLabelList[0]->palette();
+    pal.setColor(QPalette::WindowText,curve->symbol()->brush().color());
+    selectedValueLabelList[0]->setPalette(pal);
+
+    //then go thru all curves (except *curve) and update labels with text and color
+    //remove currently selected curve from visible curveList
+    curveList.removeAll(curve);
+    //go thru all remaining curves in curveList
+    for (int i=0;i<curveList.size() && i<selectedValueLabelList.size()+1;++i) {
+        pal.setColor(QPalette::WindowText,curveList.at(i)->symbol()->brush().color());
+        selectedValueLabelList[i+1]->setPalette(pal);
+        selectedValueLabelList[i+1]->setNum(curveList.at(i)->sample(index).y());
+        selectedValueLabelList[i+1]->setToolTip(curveList.at(i)->title().text());
+    }
+}
+
+void MainWindow::appendBytesRead(int bytes) {
+    bytesRead+=bytes;
+    bytesReadLabel.setNum(bytesRead);
+}
+
+void MainWindow::appendBytesWritten(int bytes) {
+    bytesWritten+=bytes;
+    bytesWrittenLabel.setNum(bytesWritten);
 }
