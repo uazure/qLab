@@ -56,6 +56,8 @@ private:
     QList<QLabel *> lastValueLabelList;
     QList<QLabel *> selectedValueLabelList;
     DoubleClickEventFilter *lastValueDoubleClick;
+    int bytesRead;
+    int bytesWritten;
 
 
 private slots:
@@ -84,6 +86,8 @@ private slots:
     void initLastValues();
     void updateLastValues();
     void updateSelectedValue(QwtPlotCurve *curve, int index);
+    void appendBytesRead(int bytes);
+    void appendBytesWritten(int bytes);
 
 
 };

@@ -14,7 +14,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     ui->setupUi(this);
     setWindowTitle(QApplication::applicationName()+" "+ QApplication::applicationVersion());
     //ui->lastValuesBox->hide();
-
+    bytesRead=0;
+    bytesWritten=0;
 
     lastValueDoubleClick=new DoubleClickEventFilter(this);
     ui->lastValuesBox->installEventFilter(lastValueDoubleClick);
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(ui->actionAuto_zoom,SIGNAL(triggered(bool)),plot,SLOT(enableAutoZoom(bool)));
 
 
-    ui->actionDraw_incremental->trigger();
+    //ui->actionDraw_incremental->trigger();
 
     connect(plot,SIGNAL(message(QString)),statusBar(),SLOT(showMessage(QString)));
     connect(ui->actionSelectT0,SIGNAL(toggled(bool)),plot,SLOT(selectT0(bool)));
@@ -93,8 +94,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(&tcpClient,SIGNAL(serverStatus(bool)),ui->actionStart,SLOT(setChecked(bool)));
 
 //FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
-    connect(&tcpClient,SIGNAL(bytesWritten(int)),&bytesWrittenLabel,SLOT(setNum(int)));
-    connect(&tcpClient,SIGNAL(bytesRead(int)),&bytesReadLabel,SLOT(setNum(int)));
+    connect(&tcpClient,SIGNAL(bytesWritten(int)),this,SLOT(appendBytesWritten(int)));
+    connect(&tcpClient,SIGNAL(bytesRead(int)),this,SLOT(appendBytesRead(int)));
     connect(&tcpClient,SIGNAL(serverInterval(int)),experiment,SLOT(setInterval(int)));
 
 
@@ -186,6 +187,10 @@ void MainWindow::socketConnectedToServer() {
     ui->actionDisconnect->setDisabled(false);
     ui->menuExperiment->setEnabled(true);
     connectionLabel.setStyleSheet("QLabel {color:green;font-weight:bold;}");
+    bytesRead=0;
+    bytesWritten=0;
+    bytesReadLabel.setNum(0);
+    bytesWrittenLabel.setNum(0);
 }
 
 void MainWindow::socketDisconnectedFromServer() {
@@ -667,4 +672,14 @@ void MainWindow::updateSelectedValue(QwtPlotCurve *curve, int index) {
         selectedValueLabelList[i+1]->setNum(curveList.at(i)->sample(index).y());
         selectedValueLabelList[i+1]->setToolTip(curveList.at(i)->title().text());
     }
+}
+
+void MainWindow::appendBytesRead(int bytes) {
+    bytesRead+=bytes;
+    bytesReadLabel.setNum(bytesRead);
+}
+
+void MainWindow::appendBytesWritten(int bytes) {
+    bytesWritten+=bytes;
+    bytesWrittenLabel.setNum(bytesWritten);
 }
