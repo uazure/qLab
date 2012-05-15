@@ -538,6 +538,7 @@ bool Plot::getCurvePoint(const QPoint &point, QwtPlotCurve *curve)
         emit xValueSelected(curve->sample(index).x());
         return true;
     } else {
+        emit curvePointClicked(NULL,-1);
         return false;
     }
 }

@@ -54,6 +54,7 @@ private:
     QSettings *appSettings;
     Experiment *experiment;
     QList<QLabel *> lastValueLabelList;
+    QList<QLabel *> selectedValueLabelList;
     DoubleClickEventFilter *lastValueDoubleClick;
 
 
