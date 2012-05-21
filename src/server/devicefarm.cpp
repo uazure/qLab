@@ -16,7 +16,15 @@ DeviceFarm::DeviceFarm()
     }
 
     if (shortname.startsWith("cross")) {
-        return new CrossDevice(exp);
+        AbstractDevice * dev=new CrossDevice(exp);
+        dev->setShortName(shortname);
+        return dev;
+    }
+
+    if (shortname.startsWith("test")) {
+        AbstractDevice * dev=new TestDevice(exp);
+        dev->setShortName(shortname);
+        return dev;
     }
 
     QSettings *settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,QApplication::organizationName(),"devices");

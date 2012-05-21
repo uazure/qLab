@@ -140,9 +140,12 @@ void Experiment::initControllers() {
 
 AbstractDevice * Experiment::findDevice(QString deviceName) const {
     for (int i=0;i<deviceList.size();++i) {
-        if (deviceList.at(i)->shortName()==deviceName) {
+        qDebug()<<"Is"<<deviceName<<"matches"<<deviceList.at(i)->shortName()<<"?";
+        if (deviceList.at(i)->shortName()==deviceName.toAscii()) {
+            qDebug()<<"Yes! Device found!";
             return deviceList.at(i);
         }
+        qDebug()<<"No match";
     }
     qWarning()<<"Failed to find device"<<deviceName;
     return NULL;
@@ -190,12 +193,48 @@ void Experiment::initDevices() {
 //        }
 
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
-        deviceList[i]->setFactor(settings->value(deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble());
+        bool contains=false;
+        contains=settings->contains(deviceNameWithParameters+"/factor");
+        double factor=settings->value(deviceNameWithParameters+"/factor",deviceList.at(i)->getFactor()).toDouble();
+        if (contains) qDebug()<<"Factor for device"<<deviceList.at(i)->shortName()<<"set to"<< factor;
+        else qDebug()<<"Factor for device"<<deviceList.at(i)->shortName()<<"set to default value of"<<factor;
+        deviceList[i]->setFactor(factor);
+
         deviceList[i]->setMinValue(settings->value(deviceNameWithParameters+"/min_value",deviceList.at(i)->getMinValue()).toDouble());
         deviceList[i]->setMaxValue(settings->value(deviceNameWithParameters+"/max_value",deviceList.at(i)->getMaxValue()).toDouble());
         deviceList[i]->setScaleHint(settings->value(deviceNameWithParameters+"/scale_hint",deviceList.at(i)->getScaleHint()).toDouble());
-        deviceList[i]->setUnit(settings->value(deviceNameWithParameters+"/unit",deviceList.at(i)->getUnit()).toString());
-        deviceList[i]->setLabel(settings->value(deviceNameWithParameters+"/label",deviceList.at(i)->getLabel()).toString());
+
+        //unit
+        //trying to read unit setting for device name without parameters
+        contains=settings->contains(deviceName+"/unit");
+        QString unit=settings->value(deviceName+"/unit",deviceList.at(i)->getUnit()).toString();
+        if (contains) qDebug()<<"Unit for device"<<deviceList.at(i)->shortName()<<"set to"<< unit;
+        else qDebug()<<"Unit for device"<<deviceList.at(i)->shortName()<<"set to default value of"<<unit;
+        deviceList[i]->setUnit(unit);
+
+        contains=settings->contains(deviceNameWithParameters+"/unit");
+        unit=settings->value(deviceNameWithParameters+"/unit",deviceList.at(i)->getUnit()).toString();
+
+        if (contains) qDebug()<<"Unit for device"<<deviceNameWithParameters<<"set to"<< unit;
+        else qDebug()<<"Unit for device"<<deviceNameWithParameters<<"set to default value of"<<unit;
+        deviceList[i]->setUnit(unit);
+
+        //label
+        //first try to set label for device name without parameters
+        contains=settings->contains(deviceName+"/label");
+        QString label=settings->value(deviceName+"/label",deviceList.at(i)->getLabel()).toString();
+        if (contains) qDebug()<<"Label for device"<<deviceName<<"set to"<< label;
+        else qDebug()<<"Label for device"<<deviceName<<"set to default value of"<<label;
+
+        deviceList[i]->setLabel(label);
+
+
+        contains=settings->contains(deviceNameWithParameters+"/label");
+        label=settings->value(deviceNameWithParameters+"/label",deviceList.at(i)->getLabel()).toString();
+        if (contains) qDebug()<<"Label for device"<<deviceNameWithParameters<<"set to"<< label;
+        else qDebug()<<"Label for device"<<deviceNameWithParameters<<"set to default value of"<<label;
+
+        deviceList[i]->setLabel(label);
     }
 }
 

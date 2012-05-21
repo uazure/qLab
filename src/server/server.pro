@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     clickablelabel.cpp \
     experimenthistory.cpp \
     viewdatadialog.cpp \
-    crossdevice.cpp
+    crossdevice.cpp \
+    testdevice.cpp
 INCLUDEPATH += ../../lib/
 win32:LIBS += 'd:/develop/qLab/lib/gpib-32.obj'
 win32:DEFINES += WIN32
@@ -46,7 +47,8 @@ HEADERS += mainwindow.h \
     clickablelabel.h \
     experimenthistory.h \
     viewdatadialog.h \
-    crossdevice.h
+    crossdevice.h \
+    testdevice.h
 FORMS += mainwindow.ui \
     experimentconfigurationselectdialog.ui \
     controlmanagementdialog.ui \
