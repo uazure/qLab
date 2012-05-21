@@ -6,6 +6,7 @@
 #include "timedevice.h"
 #include "utimedevice.h"
 #include "crossdevice.h"
+#include "testdevice.h"
 #include <QByteArray>
 #include <QSettings>
 #include <QApplication>

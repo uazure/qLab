@@ -55,6 +55,7 @@ public:
 
     /// Shortcut for the device. It's used in .ini file to set up device properties
     //const QString shortName(void) const;
+    void setShortName(const QByteArray &shortname);
     const QByteArray shortName(void) const;
 
     double getFactor(void) const;

@@ -42,6 +42,10 @@ const QByteArray AbstractDevice::shortName() const {
     return shortname;
 }
 
+void AbstractDevice::setShortName(const QByteArray &name) {
+    shortname=name;
+}
+
 double AbstractDevice::getFactor() const {
     return factor;
 }
