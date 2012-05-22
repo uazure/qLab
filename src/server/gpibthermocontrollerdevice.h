@@ -17,6 +17,7 @@ public:
     virtual bool setTargetValue(QString value, int loopIndex=0);
     virtual bool setControlChannel(QString channel, int loopIndex=0);
     virtual QString getControlChannel(int loopIndex=0);
+    virtual QString getControlPower(int controlLoop=0);
     virtual bool setCurrentControlTypeIndex(int typeIndex, int loopIndex);
 
 private:
@@ -36,8 +37,10 @@ private:
     setPControlCommand,
     setIControlCommand,
     setDControlCommand,
-    getControlTarget,
-    setControlTarget;
+    getControlTargetCommand,
+    setControlTargetCommand,
+    getControlPowerCommand,
+    getControlPowerRangeCommand;
 
     QString getTargetValue(int controlLoop);
 

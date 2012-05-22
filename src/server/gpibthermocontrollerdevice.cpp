@@ -42,8 +42,8 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Ex
     controlTypeList=controlTypes.split(",");
     offControlCommand=deviceSettings->value("control/type-off").toString();
     pidControlCommand=deviceSettings->value("control/type-pid").toString();
-    getControlTarget=deviceSettings->value("control/target").toString();
-    setControlTarget=deviceSettings->value("control-set/target").toString();
+    getControlTargetCommand=deviceSettings->value("control/target").toString();
+    setControlTargetCommand=deviceSettings->value("control-set/target").toString();
     getPControlCommand=deviceSettings->value("control/P").toString();
     getIControlCommand=deviceSettings->value("control/I").toString();
     getDControlCommand=deviceSettings->value("control/D").toString();
@@ -52,6 +52,9 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Ex
     setDControlCommand=deviceSettings->value("control-set/D").toString();
     getControlChannelCommand=deviceSettings->value("control/channel").toString();
     setControlChannelCommand=deviceSettings->value("control-set/channel").toString();
+    getControlPowerCommand=deviceSettings->value("control/power").toString();
+    getControlPowerRangeCommand=deviceSettings->value("control/power-range").toString();
+
 
 //    QStringList expControls=experimentSettings->value("controls").toString().split(",",QString::SkipEmptyParts);
 
@@ -62,7 +65,7 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Ex
 bool GpibThermocontrollerDevice::setTargetValue(QString value, int loopIndex) {
     //FIXME: arg() not works ok if %1 is not specified on the string
     //this causes error for lakeshore330 because no %1 in set target
-    QString command=setControlTarget.arg(loopName.at(loopIndex),value).toAscii();
+    QString command=setControlTargetCommand.arg(loopName.at(loopIndex),value).toAscii();
     qDebug()<<shortname<<"issue command"<<command;
     if (set(command.toAscii())) {
         qDebug()<<shortname<<"target for loop"<<loopName.at(loopIndex)<<"set"<<value;
@@ -124,10 +127,26 @@ QString GpibThermocontrollerDevice::getTargetValue(int controlLoop) {
     }
     QString loopName=getLoopName(controlLoop);
     QByteArray reply;
-    if (ask(getControlTarget.arg(loopName).toAscii(),reply)) {
+    if (ask(getControlTargetCommand.arg(loopName).toAscii(),reply)) {
         return QString(reply);
     } else {
         qWarning()<<"Failed to get target value of loop"<<loopName;
     }
     return "Error";
+}
+
+QString GpibThermocontrollerDevice::getControlPower(int) {
+    if (getControlPowerCommand.isEmpty()) {
+        qWarning()<<"No control/power command specified for the device. Returning -0.000";
+        return "-0.000";
+    }
+    QByteArray reply;
+    if (ask(getControlPowerCommand.toAscii(),reply)) {
+        qDebug()<<"Control power is"<<reply;
+        //FIXME: reply string probably needs to remove % sign
+        return QString(reply);
+    } else {
+        qWarning()<<"Failed to read control power with command"<<getControlPowerCommand;
+        return "-0.000";
+    }
 }

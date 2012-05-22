@@ -1,4 +1,5 @@
 #include "gpibdevice.h"
+#include "gpibthermocontrollerdevice.h"
 
 GpibDevice::GpibDevice(QByteArray &DeviceShortName, Experiment *exp) :
         AbstractDevice (exp)
@@ -209,6 +210,18 @@ currentChannel will be set to parameterList.at(0) on successful channel switch.
 bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) {
     qDebug()<<"Trying to read value from device"<<shortName();
     bool success=false;
+
+    if (!parametersList.isEmpty() && parametersList.first()=="power") {
+        GpibThermocontrollerDevice *tcdevice=dynamic_cast<GpibThermocontrollerDevice*> (this);
+        if (tcdevice) {
+            qDebug()<<"Reading power from ThermoController device";
+            returnValue=tcdevice->getControlPower().toAscii();
+            return true;
+        } else {
+            qWarning()<<"Can't read power from device - not a thermocontroller. Trying to read 'power' as channel";
+        }
+    }
+
     //if there's no arguments for the device then just use readCommand
     if (readCommand.isEmpty() && !channelReadCommandMap.isEmpty() && parametersList.size()==1) {
         qDebug()<<"Using specific read command for channel"<<parametersList.first();

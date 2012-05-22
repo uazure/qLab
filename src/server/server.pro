@@ -55,4 +55,6 @@ FORMS += mainwindow.ui \
     viewdatadialog.ui
 OTHER_FILES += ../../README.txt \
     ../../lib/gpib-32.dll \
-    ../../lib/gpib-32.obj
+    ../../lib/gpib-32.obj \
+    ../../config/devices.ini \
+    ../../config/experiment.ini

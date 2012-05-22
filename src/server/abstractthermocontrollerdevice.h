@@ -34,6 +34,8 @@ public:
 
     virtual QString getControlChannel(int controlLoop=0)=0;
 
+    virtual QString getControlPower(int controlLoop=0)=0;
+
     /** \brief Reports if control loop is engaged.
 
       Thermocontroller can act just like a measuring device without
