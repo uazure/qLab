@@ -102,6 +102,7 @@ private:
     QStringList columnUnit;
     /// Enumeration of axes
     QList<QwtPlot::Axis> columnAxis;
+    int heaterPowerColumn;
 
 
     /// Access functions to expect variable
@@ -129,6 +130,9 @@ signals:
 
     /// Inform plot that we have new marker (telling that we have just rowIndex for data)
     void marker(int rowIndex);
+
+    /// Inform heaterPower bar about current heater power
+    void heaterPower(int powerPercentage);
 
 
 

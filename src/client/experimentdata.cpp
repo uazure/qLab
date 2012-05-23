@@ -11,6 +11,7 @@ ExperimentData::ExperimentData(QObject *parent) :
     expect=expectNone;
     dilatometerData=NULL;
     plot=NULL;
+    heaterPowerColumn=-1;
 }
 
 QVariant ExperimentData::data(const QModelIndex &index, int role) const {
@@ -168,6 +169,11 @@ void ExperimentData::parseData(QByteArray &dataLine) {
                 }
             }
             dataTable[i].append(tmpdouble);
+            //inform about latest heaterPower value
+            if (i==heaterPowerColumn) {
+                emit heaterPower((int) tmpdouble);
+            }
+
             if (!ok) {
                 qWarning()<<"column"<<i<<"is NaN in"<<dataLine<<". Used 0 value";
             }
@@ -438,6 +444,9 @@ void ExperimentData::setColumnMax(int column, double max) {
 
 void ExperimentData::setColumnAxis(int column, QByteArray &axis) {
     if (column<0) return;
+    if (axis.startsWith("powerBar")) {
+        heaterPowerColumn=column;
+    }
 
     //if column index can be accessed in columnLabel
         if (column<columnAxis.size()-1) {

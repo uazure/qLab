@@ -107,6 +107,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     //connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
     connect(data,SIGNAL(marker(int)),plot,SLOT(appendMarker(int)));
     connect(data,SIGNAL(pointCount(int)),this,SLOT(updateLastValues()));
+    connect(data,SIGNAL(heaterPower(int)),ui->heaterPowerBar,SLOT(setValue(int)));
 
 
 
