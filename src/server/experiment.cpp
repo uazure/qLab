@@ -187,10 +187,6 @@ void Experiment::initDevices() {
             deviceList.append(DeviceFarm::getDeviceObject(deviceName,this));
             qDebug()<<"Device"<<deviceName<<"not found in deviceList. Created new instance";
         }
-//        if (deviceList[i]->capable("thermocontroller")) {
-//            //FIXME: controlList should ask for controlled channels from device
-//            appendControl(dynamic_cast <AbstractThermocontrollerDevice *> (deviceList[i]),0);
-//        }
 
         qDebug()<<"Initialized device"<<deviceList.at(i)->shortName();
         bool contains=false;
