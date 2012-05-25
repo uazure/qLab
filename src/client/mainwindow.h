@@ -88,6 +88,7 @@ private slots:
     void updateSelectedValue(QwtPlotCurve *curve, int index);
     void appendBytesRead(int bytes);
     void appendBytesWritten(int bytes);
+    void setHeaterPower(int percent);
 
 
 };

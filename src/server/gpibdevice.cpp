@@ -211,7 +211,7 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
     qDebug()<<"Trying to read value from device"<<shortName();
     bool success=false;
 
-    if (!parametersList.isEmpty() && parametersList.first()=="power") {
+    if (!parametersList.isEmpty() && parametersList.first().startsWith("power")) {
         GpibThermocontrollerDevice *tcdevice=dynamic_cast<GpibThermocontrollerDevice*> (this);
         if (tcdevice) {
             qDebug()<<"Reading power from ThermoController device";

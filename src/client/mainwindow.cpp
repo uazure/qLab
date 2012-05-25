@@ -107,8 +107,7 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     //connect(data,SIGNAL(marker(QPointF,int)),plot,SLOT(appendMarker(QPointF,int)));
     connect(data,SIGNAL(marker(int)),plot,SLOT(appendMarker(int)));
     connect(data,SIGNAL(pointCount(int)),this,SLOT(updateLastValues()));
-    connect(data,SIGNAL(heaterPower(int)),ui->heaterPowerBar,SLOT(setValue(int)));
-
+    connect(data,SIGNAL(heaterPower(int)),this,SLOT(setHeaterPower(int)));
 
 
     connectionLabel.setText("*");
@@ -120,6 +119,8 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     bytesWrittenLabel.setToolTip("Bytes written to network");
     bytesReadLabel.setText("0");
     bytesReadLabel.setToolTip("Bytes read from network");
+
+    ui->heaterPowerBar->setStyleSheet("QProgressBar::chunk {margin: 0px; width: 1px;}");
 
     ui->statusBar->addPermanentWidget(&bytesReadLabel);
     ui->statusBar->addPermanentWidget(&bytesWrittenLabel);
@@ -683,4 +684,10 @@ void MainWindow::appendBytesRead(int bytes) {
 void MainWindow::appendBytesWritten(int bytes) {
     bytesWritten+=bytes;
     bytesWrittenLabel.setNum(bytesWritten);
+}
+
+void MainWindow::setHeaterPower(int percent) {
+    QString text=QString::number(percent)+"%";
+    ui->heaterPowerBar->setValue(percent);
+    ui->heaterPowerLabel->setText(text);
 }

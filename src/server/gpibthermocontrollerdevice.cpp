@@ -135,14 +135,19 @@ QString GpibThermocontrollerDevice::getTargetValue(int controlLoop) {
     return "Error";
 }
 
-QString GpibThermocontrollerDevice::getControlPower(int) {
+QString GpibThermocontrollerDevice::getControlPower(int loopIndex) {
     if (getControlPowerCommand.isEmpty()) {
         qWarning()<<"No control/power command specified for the device. Returning -0.000";
         return "-0.000";
     }
+    QString loopName=getLoopName(loopIndex);
+
     QByteArray reply;
-    if (ask(getControlPowerCommand.toAscii(),reply)) {
+    if (ask(getControlPowerCommand.arg(loopName).toAscii(),reply)) {
         qDebug()<<"Control power is"<<reply;
+        if (reply.contains("%")) {
+            reply.replace("%","");
+        }
         //FIXME: reply string probably needs to remove % sign
         return QString(reply);
     } else {

@@ -665,6 +665,7 @@ void Plot::appendMarker(int rowIndex) {
 
         marker->setSymbol(symbol);
         marker->setValue(curve->sample(rowIndex));
+        marker->setYAxis(curve->yAxis());
         marker->attach(this);
         ++markerCount;
         qDebug()<<"Marker appended. Total:"<<markerCount;
