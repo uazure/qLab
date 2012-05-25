@@ -93,7 +93,6 @@ MainWindow::MainWindow(QString filename, QWidget *parent) :
     connect(&tcpClient,SIGNAL(initialData()),data,SLOT(resetData()));
     connect(&tcpClient,SIGNAL(serverStatus(bool)),ui->actionStart,SLOT(setChecked(bool)));
 
-//FIXME: al least bytesRead indicates not the total number of bytes that was read from network. signalled value should be added to current number of bytes read
     connect(&tcpClient,SIGNAL(bytesWritten(int)),this,SLOT(appendBytesWritten(int)));
     connect(&tcpClient,SIGNAL(bytesRead(int)),this,SLOT(appendBytesRead(int)));
     connect(&tcpClient,SIGNAL(serverInterval(int)),experiment,SLOT(setInterval(int)));

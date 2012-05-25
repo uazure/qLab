@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setOrganizationName("qLab");
     a.setApplicationName("qlab-client");
-    a.setApplicationVersion("0.0.2");
+    a.setApplicationVersion("0.0.3");
     QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QStringList arguments=a.arguments();
