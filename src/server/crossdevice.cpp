@@ -48,13 +48,13 @@ bool CrossDevice::readValue(QByteArray &returnValue, QStringList parameters) {
         return false;
     }
 
-    if (abs(val2-val1)>abs(end-start)) {
-        qWarning()<<"Values of crossfade parameters differs more than start and end. Calculated value will be incorrect. Returning val1";
-        returnValue=dev1->getLastValue();
-        return false;
-    }
+//    if (abs(val2-val1)>abs(end-start)) {
+//        qWarning()<<"Values of crossfade parameters differs more than start and end. Calculated value will be incorrect. Returning val1";
+//        returnValue=dev1->getLastValue();
+//        return false;
+//    }
 
-    double result;
+    double result=-0.000;
     if (val1<start) {
         result=val1;
     } else if (val2>end) {
