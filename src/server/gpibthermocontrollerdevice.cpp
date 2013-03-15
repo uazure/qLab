@@ -65,9 +65,9 @@ GpibThermocontrollerDevice::GpibThermocontrollerDevice(QByteArray &shortName, Ex
 bool GpibThermocontrollerDevice::setTargetValue(QString value, int loopIndex) {
     //FIXME: arg() not works ok if %1 is not specified on the string
     //this causes error for lakeshore330 because no %1 in set target
-    QString command=setControlTargetCommand.arg(loopName.at(loopIndex),value).toAscii();
+    QString command=setControlTargetCommand.arg(loopName.at(loopIndex),value).toLatin1();
     qDebug()<<shortname<<"issue command"<<command;
-    if (set(command.toAscii())) {
+    if (set(command.toLatin1())) {
         qDebug()<<shortname<<"target for loop"<<loopName.at(loopIndex)<<"set"<<value;
         targetValue[loopIndex]=value;
         return true;
@@ -80,7 +80,7 @@ bool GpibThermocontrollerDevice::setTargetValue(QString value, int loopIndex) {
 bool GpibThermocontrollerDevice::setControlChannel(QString channel, int loopIndex) {
     QString command=setControlChannelCommand.arg(loopName.at(loopIndex),channel);
     qDebug()<<shortname<<"issue command"<<command;
-    if (set(command.toAscii())) {
+    if (set(command.toLatin1())) {
         qDebug()<<shortname<<"channel for loop"<<loopName.at(loopIndex)<<"set"<<channel;
         controlChannel[loopIndex]=channel;
         return true;
@@ -110,7 +110,7 @@ bool GpibThermocontrollerDevice::setCurrentControlTypeIndex(int typeIndex, int l
 
     QString command=setTypeControlCommand.arg(loopName.at(loopIndex),getControlTypesList().at(typeIndex));
     qDebug()<<shortname<<"issue command"<<command;
-    if (set(command.toAscii())) {
+    if (set(command.toLatin1())) {
         qDebug()<<shortname<<"control type for loop"<<loopName.at(loopIndex)<<"set"<<typeIndex;
         currentControlType[loopIndex]=typeIndex;
         return true;
@@ -127,7 +127,7 @@ QString GpibThermocontrollerDevice::getTargetValue(int controlLoop) {
     }
     QString loopName=getLoopName(controlLoop);
     QByteArray reply;
-    if (ask(getControlTargetCommand.arg(loopName).toAscii(),reply)) {
+    if (ask(getControlTargetCommand.arg(loopName).toLatin1(),reply)) {
         return QString(reply);
     } else {
         qWarning()<<"Failed to get target value of loop"<<loopName;
@@ -143,7 +143,7 @@ QString GpibThermocontrollerDevice::getControlPower(int loopIndex) {
     QString loopName=getLoopName(loopIndex);
 
     QByteArray reply;
-    if (ask(getControlPowerCommand.arg(loopName).toAscii(),reply)) {
+    if (ask(getControlPowerCommand.arg(loopName).toLatin1(),reply)) {
         qDebug()<<"Control power is"<<reply;
         if (reply.contains("%")) {
             reply.replace("%","");

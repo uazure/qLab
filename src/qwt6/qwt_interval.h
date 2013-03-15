@@ -11,6 +11,8 @@
 #define QWT_INTERVAL_H
 
 #include "qwt_global.h"
+#include <qmetatype.h>
+
 #ifndef QT_NO_DEBUG_STREAM
 #include <qdebug.h>
 #endif
@@ -199,6 +201,19 @@ inline double QwtInterval::maxValue() const
 }
 
 /*!
+   A interval is valid when minValue() <= maxValue().
+   In case of QwtInterval::ExcludeBorders it is true
+   when minValue() < maxValue()
+*/
+inline bool QwtInterval::isValid() const
+{
+    if ( ( d_borderFlags & ExcludeBorders ) == 0 )
+        return d_minValue <= d_maxValue;
+    else
+        return d_minValue < d_maxValue;
+}
+
+/*!
    Return the width of an interval
    The width of invalid intervals is 0.0, otherwise the result is
    maxValue() - minValue().
@@ -263,19 +278,6 @@ inline bool QwtInterval::isNull() const
 }
 
 /*!
-   A interval is valid when minValue() <= maxValue().
-   In case of QwtInterval::ExcludeBorders it is true
-   when minValue() < maxValue()
-*/
-inline bool QwtInterval::isValid() const
-{
-    if ( ( d_borderFlags & ExcludeBorders ) == 0 )
-        return d_minValue <= d_maxValue;
-    else
-        return d_minValue < d_maxValue;
-}
-
-/*!
   Invalidate the interval
 
   The limits are set to interval [0.0, -1.0]
@@ -288,6 +290,7 @@ inline void QwtInterval::invalidate()
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( QwtInterval::BorderFlags )
+Q_DECLARE_METATYPE( QwtInterval )
 
 #ifndef QT_NO_DEBUG_STREAM
 QWT_EXPORT QDebug operator<<( QDebug, const QwtInterval & );

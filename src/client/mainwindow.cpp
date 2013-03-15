@@ -5,7 +5,7 @@
 #include "aboutdialog.h"
 #include "tolerancealarm.h"
 #include <QClipboard>
-
+const double dsizefont=1.8;//constant for font sizing in main window
 
 MainWindow::MainWindow(QString filename, QWidget *parent) :
     QMainWindow(parent),
@@ -593,7 +593,7 @@ void MainWindow::initLastValues() {
         label->setPalette(pal);
         QFont font=QWidget::font();
         //enlarge font for 50%
-        font.setPointSizeF(font.pointSizeF()*1.5);
+        font.setPointSizeF(font.pointSizeF()*dsizefont);
         font.setBold(true);
 
         label->setFont(font);
@@ -644,12 +644,12 @@ void MainWindow::updateSelectedValue(QwtPlotCurve *curve, int index) {
             selectedValueLabelList[i]->deleteLater();
         }
         selectedValueLabelList.clear();
-        for (int i=0;i<curveList.size();++i) {
+        for (int i=0;i<curveList.size()+1;++i) {
             QLabel *label=new QLabel(ui->selectedValuesBox);
             QFont font=QWidget::font();
             //enlarge font for 50%
-            font.setPointSizeF(font.pointSizeF()*1.5);
-            if (i==0) font.setBold(true);
+            font.setPointSizeF(font.pointSizeF()*dsizefont);
+            if (i==0||i==1) font.setBold(true);
             label->setFont(font);
             ui->selectedValuesBox->layout()->addWidget(label);
             selectedValueLabelList.append(label);
@@ -667,11 +667,15 @@ void MainWindow::updateSelectedValue(QwtPlotCurve *curve, int index) {
     //remove currently selected curve from visible curveList
     curveList.removeAll(curve);
     //go thru all remaining curves in curveList
+    // Show X value
+    pal.setColor(QPalette::WindowText,curveList.at(0)->symbol()->brush().color());
+    selectedValueLabelList[1]->setPalette(pal);
+    selectedValueLabelList[1]->setNum(curveList.at(0)->sample(index).x());
     for (int i=0;i<curveList.size() && i<selectedValueLabelList.size()+1;++i) {
         pal.setColor(QPalette::WindowText,curveList.at(i)->symbol()->brush().color());
-        selectedValueLabelList[i+1]->setPalette(pal);
-        selectedValueLabelList[i+1]->setNum(curveList.at(i)->sample(index).y());
-        selectedValueLabelList[i+1]->setToolTip(curveList.at(i)->title().text());
+        selectedValueLabelList[i+2]->setPalette(pal);
+        selectedValueLabelList[i+2]->setNum(curveList.at(i)->sample(index).y());
+        selectedValueLabelList[i+2]->setToolTip(curveList.at(i)->title().text());
     }
 }
 

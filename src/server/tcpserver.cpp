@@ -203,7 +203,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         buf.remove(0,11).trimmed().toDouble(&ok);
         if (ok) {
             QString target=buf.remove(0,11).trimmed();
-            ok=experiment->setTarget(target.toAscii());
+            ok=experiment->setTarget(target.toLatin1());
             if (!ok) {
                 qWarning()<<"Failed to set target for control 0";
                 socket->write("\n500 Failed to set target\n");
@@ -259,7 +259,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         buf=buf.remove(0,12);
         buf=buf.trimmed();
         QByteArray reply="200 History:\n";
-        reply.append(experiment->getHistory().join("\n").toAscii()).append("\n\n");
+        reply.append(experiment->getHistory().join("\n").toLatin1()).append("\n\n");
         socket->write(reply);
         return;
     }
@@ -281,7 +281,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
         QString target="200 Target of control:\n";
         target.append(QString::number(index)).append("\t");
         target.append(experiment->getTarget(index).append("\n\n"));
-        socket->write(target.toAscii());
+        socket->write(target.toLatin1());
         return;
     }
 
@@ -291,7 +291,7 @@ void TcpServer::protocolParser(QByteArray &buf, QTcpSocket *socket) {
 
     if (buf=="get controls") {
         socket->write("\n200 Controls:\n");
-        socket->write(experiment->getControlList().join("\n").toAscii().append("\n\n"));
+        socket->write(experiment->getControlList().join("\n").toLatin1().append("\n\n"));
         return;
     }
 

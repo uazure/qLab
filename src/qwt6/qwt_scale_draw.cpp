@@ -16,6 +16,11 @@
 #include <qpainter.h>
 #include <qmath.h>
 
+#if QT_VERSION < 0x040601
+#define qFastSin(x) qSin(x)
+#define qFastCos(x) qCos(x)
+#endif
+
 class QwtScaleDraw::PrivateData
 {
 public:
@@ -188,7 +193,7 @@ int QwtScaleDraw::minLabelDist( const QFont &font ) const
         return 0;
 
     const QList<double> &ticks = scaleDiv().ticks( QwtScaleDiv::MajorTick );
-    if ( ticks.count() == 0 )
+    if ( ticks.isEmpty() )
         return 0;
 
     const QFontMetrics fm( font );
@@ -199,9 +204,10 @@ int QwtScaleDraw::minLabelDist( const QFont &font ) const
     QRectF bRect2 = labelRect( font, ticks[0] );
     if ( vertical )
     {
-        bRect2.setRect( -bRect2.bottom(), 0, bRect2.height(), bRect2.width() );
+        bRect2.setRect( -bRect2.bottom(), 0.0, bRect2.height(), bRect2.width() );
     }
-    int maxDist = 0;
+
+    double maxDist = 0.0;
 
     for ( int i = 1; i < ticks.count(); i++ )
     {
@@ -209,11 +215,11 @@ int QwtScaleDraw::minLabelDist( const QFont &font ) const
         bRect2 = labelRect( font, ticks[i] );
         if ( vertical )
         {
-            bRect2.setRect( -bRect2.bottom(), 0,
+            bRect2.setRect( -bRect2.bottom(), 0.0,
                 bRect2.height(), bRect2.width() );
         }
 
-        int dist = fm.leading(); // space between the labels
+        double dist = fm.leading(); // space between the labels
         if ( bRect1.right() > 0 )
             dist += bRect1.right();
         if ( bRect2.left() < 0 )
@@ -223,25 +229,23 @@ int QwtScaleDraw::minLabelDist( const QFont &font ) const
             maxDist = dist;
     }
 
-    double angle = labelRotation() / 180.0 * M_PI;
+    double angle = qwtRadians( labelRotation() ); 
     if ( vertical )
         angle += M_PI / 2;
 
-    if ( qSin( angle ) == 0.0 )
-        return maxDist;
+    const double sinA = qFastSin( angle ); // qreal -> double
+    if ( qFuzzyCompare( sinA + 1.0, 1.0 ) )
+        return qCeil( maxDist );
 
     const int fmHeight = fm.ascent() - 2;
 
     // The distance we need until there is
     // the height of the label font. This height is needed
-    // for the neighbour labal.
+    // for the neighbored label.
 
-    int labelDist = qFloor( fmHeight / qSin( angle ) * qCos( angle ) );
+    double labelDist = fmHeight / qFastSin( angle ) * qFastCos( angle );
     if ( labelDist < 0 )
         labelDist = -labelDist;
-
-    // The cast above floored labelDist. We want to ceil.
-    labelDist++;
 
     // For text orientations close to the scale orientation
 
@@ -254,7 +258,7 @@ int QwtScaleDraw::minLabelDist( const QFont &font ) const
     if ( labelDist < fmHeight )
         labelDist = fmHeight;
 
-    return labelDist;
+    return qCeil( labelDist );
 }
 
 /*!
@@ -291,7 +295,7 @@ double QwtScaleDraw::extent( const QFont &font ) const
 
     if ( hasComponent( QwtAbstractScaleDraw::Backbone ) )
     {
-        const double pw = qMax( 1, penWidth() );  // penwidth can be zero
+        const double pw = qMax( 1, penWidth() );  // pen width can be zero
         d += pw;
     }
 
@@ -336,8 +340,8 @@ int QwtScaleDraw::minLength( const QFont &font ) const
 /*!
    Find the position, where to paint a label
 
-   The position has a distance of majTickLength() + spacing() + 1
-   from the backbone. The direction depends on the alignment()
+   The position has a distance that depends on the length of the ticks 
+   in direction of the alignment().
 
    \param value Value
 */
@@ -390,7 +394,7 @@ QPointF QwtScaleDraw::labelPosition( double value ) const
 
    \param painter Painter
    \param value Value of the tick
-   \param len Lenght of the tick
+   \param len Length of the tick
 
    \sa drawBackbone(), drawLabel()
 */
@@ -600,10 +604,16 @@ QPointF QwtScaleDraw::pos() const
 */
 void QwtScaleDraw::setLength( double length )
 {
+#if 1
     if ( length >= 0 && length < 10 )
         length = 10;
+
+    // why should we accept negative lengths ???
     if ( length < 0 && length > -10 )
         length = -10;
+#else
+    length = qMax( length, 10 );
+#endif
 
     d_data->len = length;
     updateMap();
@@ -647,8 +657,9 @@ void QwtScaleDraw::drawLabel( QPainter *painter, double value ) const
 }
 
 /*!
-  Find the bounding rect for the label. The coordinates of
-  the rect are absolute coordinates ( calculated from pos() ).
+  \brief Find the bounding rectangle for the label.
+
+  The coordinates of the rectangle are absolute ( calculated from pos() ).
   in direction of the tick.
 
   \param font Font used for painting
@@ -739,8 +750,8 @@ QTransform QwtScaleDraw::labelTransformation(
 }
 
 /*!
-  Find the bounding rect for the label. The coordinates of
-  the rect are relative to spacing + ticklength from the backbone
+  Find the bounding rectangle for the label. The coordinates of
+  the rectangle are relative to spacing + tick length from the backbone
   in direction of the tick.
 
   \param font Font used for painting
@@ -804,7 +815,7 @@ double QwtScaleDraw::labelRotation() const
 /*!
   \brief Change the label flags
 
-  Labels are aligned to the point ticklength + spacing away from the backbone.
+  Labels are aligned to the point tick length + spacing away from the backbone.
 
   The alignment is relative to the orientation of the label text.
   In case of an flags of 0 the label will be aligned
@@ -823,7 +834,7 @@ double QwtScaleDraw::labelRotation() const
   \warning The various alignments might be confusing.
            The alignment of the label is not the alignment
            of the scale and is not the alignment of the flags
-           (QwtText::flags()) returned from QwtAbstractScaleDraw::label().
+           ( QwtText::flags() ) returned from QwtAbstractScaleDraw::label().
 */
 
 void QwtScaleDraw::setLabelAlignment( Qt::Alignment alignment )
@@ -846,7 +857,7 @@ Qt::Alignment QwtScaleDraw::labelAlignment() const
 */
 int QwtScaleDraw::maxLabelWidth( const QFont &font ) const
 {
-    int maxWidth = 0;
+    double maxWidth = 0.0;
 
     const QList<double> &ticks = scaleDiv().ticks( QwtScaleDiv::MajorTick );
     for ( int i = 0; i < ticks.count(); i++ )
@@ -854,13 +865,13 @@ int QwtScaleDraw::maxLabelWidth( const QFont &font ) const
         const double v = ticks[i];
         if ( scaleDiv().contains( v ) )
         {
-            const int w = labelSize( font, ticks[i] ).width();
+            const double w = labelSize( font, ticks[i] ).width();
             if ( w > maxWidth )
                 maxWidth = w;
         }
     }
 
-    return maxWidth;
+    return qCeil( maxWidth );
 }
 
 /*!
@@ -869,7 +880,7 @@ int QwtScaleDraw::maxLabelWidth( const QFont &font ) const
 */
 int QwtScaleDraw::maxLabelHeight( const QFont &font ) const
 {
-    int maxHeight = 0;
+    double maxHeight = 0.0;
 
     const QList<double> &ticks = scaleDiv().ticks( QwtScaleDiv::MajorTick );
     for ( int i = 0; i < ticks.count(); i++ )
@@ -877,13 +888,13 @@ int QwtScaleDraw::maxLabelHeight( const QFont &font ) const
         const double v = ticks[i];
         if ( scaleDiv().contains( v ) )
         {
-            const int h = labelSize( font, ticks[i] ).height();
+            const double h = labelSize( font, ticks[i] ).height();
             if ( h > maxHeight )
                 maxHeight = h;
         }
     }
 
-    return maxHeight;
+    return qCeil( maxHeight );
 }
 
 void QwtScaleDraw::updateMap()

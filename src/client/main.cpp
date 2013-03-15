@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -14,9 +14,9 @@ int main(int argc, char *argv[])
     if (arguments.size()>1)
         filename=arguments.at(1);
 
+    MainWindow *window = new MainWindow(filename);
 
-    MainWindow w(filename);
-    w.show();
+    window->show();
 
     return a.exec();
 }

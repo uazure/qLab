@@ -156,7 +156,7 @@ void TcpClient::query(QueryRequest q,QString param1) {
         if (param1.isEmpty()) {
             param1="0";
         }
-        write("get target "+param1.toAscii()+"\n");
+        write("get target "+param1.toLatin1()+"\n");
         break;
     case queryStatus:
         write("status\n");
@@ -184,7 +184,7 @@ void TcpClient::setControlTarget(int controlIndex, QString target)
 {
     QByteArray request("set target ");
     request.append(QByteArray::number(controlIndex)).append("=");
-    request.append(target.toAscii()).append("\n");
+    request.append(target.toLatin1()).append("\n");
     write(request);
 }
 

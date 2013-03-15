@@ -11,7 +11,7 @@ TimeDevice::TimeDevice(Experiment *exp) :
 }
 
 bool TimeDevice::readValue(QByteArray &returnValue, QStringList) {
-    returnValue=QTime::currentTime().toString("H:mm:ss").toAscii();
+    returnValue=QTime::currentTime().toString("H:mm:ss").toLatin1();
     lastValue=returnValue;
     return true;
 }

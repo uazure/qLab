@@ -215,7 +215,7 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
         GpibThermocontrollerDevice *tcdevice=dynamic_cast<GpibThermocontrollerDevice*> (this);
         if (tcdevice) {
             qDebug()<<"Reading power from ThermoController device";
-            returnValue=tcdevice->getControlPower().toAscii();
+            returnValue=tcdevice->getControlPower().toLatin1();
             return true;
         } else {
             qWarning()<<"Can't read power from device - not a thermocontroller. Trying to read 'power' as channel";
@@ -225,20 +225,20 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
     //if there's no arguments for the device then just use readCommand
     if (readCommand.isEmpty() && !channelReadCommandMap.isEmpty() && parametersList.size()==1) {
         qDebug()<<"Using specific read command for channel"<<parametersList.first();
-        success=ask(channelReadCommandMap.value(parametersList.first().toAscii()),returnValue);
+        success=ask(channelReadCommandMap.value(parametersList.first().toLatin1()),returnValue);
     } else
 
     if (parametersList.isEmpty()) {
-        success=ask(readCommand.toAscii(),returnValue);
+        success=ask(readCommand.toLatin1(),returnValue);
     } else // if there's argument but no channelCommand specified - substitute %1 in readCommand with supplied parameter
         if (parametersList.size()==1 && channelCommand.isEmpty()) {
             qDebug()<<shortName()<<"Reading data with argument. Request:"<<readCommand.arg(parametersList.at(0));
-            success=ask(readCommand.arg(parametersList.at(0)).toAscii(),returnValue);
+            success=ask(readCommand.arg(parametersList.at(0)).toLatin1(),returnValue);
         } else // if there's parameter and channelCommand specified
             if (parametersList.size()==1 && !channelCommand.isEmpty()) {
                 if (currentChannel!=parametersList.at(0)) {
                     QByteArray tmpanswer;
-                    bool channelSwitchSuccess=ask(channelCommand.arg(parametersList.at(0)).toAscii(),tmpanswer);
+                    bool channelSwitchSuccess=ask(channelCommand.arg(parametersList.at(0)).toLatin1(),tmpanswer);
                     if (channelSwitchSuccess) {
                         qDebug()<<"Switched channel of device"<<shortName()<<"to"<<parametersList.at(0)<<
                                   "with"<<channelCommand.arg(parametersList.at(0))<<". Answer:"<<tmpanswer;
@@ -250,7 +250,7 @@ bool GpibDevice::readValue(QByteArray &returnValue, QStringList parametersList) 
 
                 }
                 //channel is switched or doesn't required switching. now we can read data
-                success=ask(readCommand.toAscii(),returnValue);
+                success=ask(readCommand.toLatin1(),returnValue);
             }
 
 

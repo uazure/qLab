@@ -10,7 +10,7 @@ bool TestDevice::readValue(QByteArray &returnValue, QStringList parameters) {
     if (parameters.isEmpty()) {
         returnValue="0.000";
     } else {
-        returnValue=parameters.at(0).toAscii();
+        returnValue=parameters.at(0).toLatin1();
     }
     lastValue=returnValue;
     return true;

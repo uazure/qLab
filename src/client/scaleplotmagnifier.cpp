@@ -92,8 +92,8 @@ void ScalePlotMagnifier::rescale( double factor )
 
     for ( int axisId = 0; axisId < QwtPlot::axisCnt; axisId++ )
     {
-        const QwtScaleDiv *scaleDiv = plt->axisScaleDiv( axisId );
-        if ( isAxisEnabled( axisId ) && scaleDiv->isValid() )
+        const QwtScaleDiv *scaleDiv = &plt->axisScaleDiv( axisId );
+        if ( isAxisEnabled( axisId ) /*&& scaleDiv->isValid()*/ )
         {
             const double center =
                 scaleDiv->lowerBound() + scaleDiv->range() / 2;

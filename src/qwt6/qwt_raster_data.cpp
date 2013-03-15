@@ -93,7 +93,7 @@ inline bool QwtRasterData::ContourPlane::intersect(
             break;
         case 6:
             // e(-1,1,0), e(1,0,-1)
-            line[0] = vertex[1].toPoint();
+            line[0] = vertex[2].toPoint();
             line[1] = intersection( vertex[0], vertex[1] );
             break;
         case 7:
@@ -180,11 +180,11 @@ void QwtRasterData::setInterval( Qt::Axis axis, const QwtInterval &interval )
 /*!
   \brief Initialize a raster
 
-  Before the composition of an image QwtPlotSpectrogram calls initRaster,
+  Before the composition of an image QwtPlotSpectrogram calls initRaster(),
   announcing the area and its resolution that will be requested.
 
   The default implementation does nothing, but for data sets that
-  are stored in files, it might be good idea to reimplement initRaster,
+  are stored in files, it might be good idea to reimplement initRaster(),
   where the data is resampled and loaded into memory.
 
   \param area Area of the raster
@@ -220,7 +220,7 @@ void QwtRasterData::discardRaster()
    representing the data. 
    
    Width and height of the hint need to be the horizontal  
-   and vertical distances between 2 neighboured points. 
+   and vertical distances between 2 neighbored points. 
    The center of the hint has to be the position of any point 
    ( it doesn't matter which one ).
 

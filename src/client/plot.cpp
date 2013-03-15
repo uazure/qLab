@@ -5,6 +5,8 @@
 #include "tolerancealarm.h"
 #include <QMessageBox>
 #include <QInputDialog>
+#include <qwt_legend.h>
+#include <qwt_legend_data.h>
 
 int Plot::markerCount=0;
 
@@ -38,7 +40,9 @@ Plot::Plot(QWidget *parent) :
     //legend
     QwtLegend *legend = new QwtLegend(this);
     //legend->setFrameStyle(QFrame::Box|QFrame::Sunken);
-    legend->setItemMode(QwtLegend::CheckableItem);
+    //legend->setItemMode(QwtLegend::CheckableItem);
+    legend->setDefaultItemMode(QwtLegendData::Checkable);
+
     insertLegend(legend, QwtPlot::BottomLegend);
 
     //click on legend item allows to hide items from the plot
@@ -52,13 +56,13 @@ Plot::Plot(QWidget *parent) :
 //Picker for selecting range of points (Shift+LMB)
     selectRangePicker=new QwtPicker(canvas());
     selectRangePicker->setStateMachine(new QwtPickerClickPointMachine);
-    selectRangePicker->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::SHIFT);
+    selectRangePicker->setMousePattern(QwtEventPattern::MouseSelect1,Qt::LeftButton,Qt::ShiftModifier);
     connect(selectRangePicker,SIGNAL(appended(QPoint)),SLOT(selectRange(QPoint)));
 
 //Picker for append/remove additional points to/from selection (Ctrl+LMB)
     appendPointPicker=new QwtPicker(canvas());
     appendPointPicker->setStateMachine(new QwtPickerClickPointMachine);
-    appendPointPicker->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::CTRL);
+    appendPointPicker->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::ControlModifier);
     connect(appendPointPicker,SIGNAL(appended(QPoint)),SLOT(appendPoint(QPoint)));
 
 /** \brief zoomers are used to zoom by selecting rectangle on canvas
@@ -100,15 +104,15 @@ Plot::Plot(QWidget *parent) :
 
     //initialization of exclusive yLeft and yRight zoomers
     zoomerExclusiveLeft= new QwtPlotZoomer(xBottom,yLeft,canvas());
-    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::CTRL);
+    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::ControlModifier);
     zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
-    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::CTRL);
+    zoomerExclusiveLeft->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::ControlModifier);
     zoomerExclusiveLeft->setTrackerMode(QwtPicker::AlwaysOff);
 
     zoomerExclusiveRight= new QwtPlotZoomer(xBottom,yRight,canvas());
-    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::SHIFT);
+    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect1,Qt::LeftButton,Qt::ShiftModifier);
     zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect2,Qt::NoButton);
-    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::SHIFT);
+    zoomerExclusiveRight->setMousePattern(QwtPicker::MouseSelect3,Qt::MidButton,Qt::ShiftModifier);
     zoomerExclusiveRight->setTrackerMode(QwtPicker::AlwaysOff);
 
 
@@ -130,28 +134,28 @@ Plot::Plot(QWidget *parent) :
       and that are activated with mouse over selected axis widget
       */
 
-    yLeftMagnifier=new ScalePlotMagnifier(canvas());
+    yLeftMagnifier=new ScalePlotMagnifier(dynamic_cast<QwtPlotCanvas *> (canvas()));
     yLeftMagnifier->setAxisEnabled(xBottom,false);
     yLeftMagnifier->setAxisEnabled(xTop,false);
     yLeftMagnifier->setAxisEnabled(yRight,false);
     axisWidget(yLeft)->installEventFilter(yLeftMagnifier);
     canvas()->removeEventFilter(yLeftMagnifier);
 
-    yRightMagnifier=new ScalePlotMagnifier(canvas());
+    yRightMagnifier=new ScalePlotMagnifier(dynamic_cast<QwtPlotCanvas *> (canvas()));
     yRightMagnifier->setAxisEnabled(xBottom,false);
     yRightMagnifier->setAxisEnabled(xTop,false);
     yRightMagnifier->setAxisEnabled(yLeft,false);
     axisWidget(yRight)->installEventFilter(yRightMagnifier);
     canvas()->removeEventFilter(yRightMagnifier);
 
-    xBottomMagnifier=new ScalePlotMagnifier(canvas());
+    xBottomMagnifier=new ScalePlotMagnifier(dynamic_cast<QwtPlotCanvas *> (canvas()));
     xBottomMagnifier->setAxisEnabled(yRight,false);
     xBottomMagnifier->setAxisEnabled(xTop,false);
     xBottomMagnifier->setAxisEnabled(yLeft,false);
     axisWidget(xBottom)->installEventFilter(xBottomMagnifier);
     canvas()->removeEventFilter(xBottomMagnifier);
 
-    xBottomPanner=new ScalePlotPanner(canvas());
+    xBottomPanner=new ScalePlotPanner(dynamic_cast<QwtPlotCanvas *> (canvas()));
     xBottomPanner->setAxisEnabled(QwtPlot::yLeft,false);
     xBottomPanner->setAxisEnabled(QwtPlot::yRight,false);
     xBottomPanner->setAxisEnabled(QwtPlot::xTop,false);
@@ -159,7 +163,7 @@ Plot::Plot(QWidget *parent) :
     axisWidget(xBottom)->installEventFilter(xBottomPanner);
     canvas()->removeEventFilter(xBottomPanner);
 
-    yLeftPanner=new ScalePlotPanner(canvas());
+    yLeftPanner=new ScalePlotPanner(dynamic_cast<QwtPlotCanvas *> (canvas()));
     yLeftPanner->setAxisEnabled(QwtPlot::xBottom,false);
     yLeftPanner->setAxisEnabled(QwtPlot::yRight,false);
     yLeftPanner->setAxisEnabled(QwtPlot::xTop,false);
@@ -167,7 +171,7 @@ Plot::Plot(QWidget *parent) :
     axisWidget(yLeft)->installEventFilter(yLeftPanner);
     canvas()->removeEventFilter(yLeftPanner);
 
-    yRightPanner=new ScalePlotPanner(canvas());
+    yRightPanner=new ScalePlotPanner(dynamic_cast<QwtPlotCanvas *> (canvas()));
     yRightPanner->setAxisEnabled(QwtPlot::xBottom,false);
     yRightPanner->setAxisEnabled(QwtPlot::yLeft,false);
     yRightPanner->setAxisEnabled(QwtPlot::xTop,false);
@@ -278,7 +282,7 @@ void Plot::initialize() {
     clear();
     // re-create plot grids
     QwtPlotGrid *grid=new QwtPlotGrid;
-    grid->setMajPen(QPen(Qt::darkBlue,0,Qt::SolidLine));
+    grid->setMajorPen(QPen(Qt::darkBlue,0,Qt::SolidLine));
     grid->attach(this);
 
     if (!dataTable) return;
@@ -310,7 +314,7 @@ void Plot::initialize() {
             // create grid for yRight if we have at least one curve at yRight axis
             if (axis==yRight && !rightGridEnabled) {
                 QwtPlotGrid *grid=new QwtPlotGrid;
-                grid->setMajPen(QPen(Qt::darkRed,0,Qt::SolidLine));
+                grid->setMajorPen(QPen(Qt::darkRed,0,Qt::SolidLine));
                 // disable grid for X axis, because vertical grid will be painted using grid attached to xLeft axis
                 grid->enableX(false);
                 grid->setYAxis(yRight);
@@ -374,7 +378,13 @@ void Plot::markSelectedPoints()
                 QwtPlotCurve *newCurve=new QwtPlotCurve();
                 newCurve->setItemAttribute(QwtPlotItem::Legend,false);
                 newCurve->setStyle(QwtPlotCurve::NoCurve);
-                QwtSymbol *symbol=new QwtSymbol(*c->symbol());
+                //2013.03.15 Copy constructor has been disabled in qwt 6.1
+                //QwtSymbol *symbol=new QwtSymbol(*c->symbol());
+                QwtSymbol *symbol=new QwtSymbol();
+                symbol->setStyle(c->symbol()->style());
+                symbol->setBrush(c->symbol()->brush());
+
+
                 symbol->setSize((symbol->size())*1.5);
                 //newCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(c->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
                 newCurve->setSymbol(symbol);
@@ -427,9 +437,9 @@ void Plot::replot()
     QElapsedTimer timer;
     timer.start();
 #endif
-    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
+    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, true);
     QwtPlot::replot();
-    canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
+    //canvas()->setPaintAttribute( QwtPlotCanvas::ImmediatePaint, false);
 
 #if QT_VERSION >= 0x040700
     qDebug()<<"Replot took"<<timer.restart()<<"msecs";
@@ -657,7 +667,11 @@ void Plot::appendMarker(int rowIndex) {
         //marker->setLineStyle(QwtPlotMarker::NoLine);
         QColor color(Qt::red);
         QBrush redbrush(Qt::red);
-        QwtSymbol *symbol=new QwtSymbol(*curve->symbol());
+        //2013.03.15 - qwt-6.1 does not allow to use copy constructor
+        //QwtSymbol *symbol=new QwtSymbol(*curve->symbol());
+        QwtSymbol *symbol=new QwtSymbol();
+        symbol->setBrush(curve->symbol()->brush());
+        symbol->setStyle(curve->symbol()->style());
         QPen pen(Qt::SolidLine);
         pen.setColor(QColor(Qt::white));
         pen.setWidth(2);

@@ -141,7 +141,7 @@ void Experiment::initControllers() {
 AbstractDevice * Experiment::findDevice(QString deviceName) const {
     for (int i=0;i<deviceList.size();++i) {
         qDebug()<<"Is"<<deviceName<<"matches"<<deviceList.at(i)->shortName()<<"?";
-        if (deviceList.at(i)->shortName()==deviceName.toAscii()) {
+        if (deviceList.at(i)->shortName()==deviceName.toLatin1()) {
             qDebug()<<"Yes! Device found!";
             return deviceList.at(i);
         }
