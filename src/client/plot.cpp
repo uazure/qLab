@@ -384,8 +384,7 @@ void Plot::markSelectedPoints()
                 symbol->setStyle(c->symbol()->style());
                 symbol->setBrush(c->symbol()->brush());
 
-
-                symbol->setSize((symbol->size())*1.5);
+                symbol->setSize((c->symbol()->size())*1.5);
                 //newCurve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse,QBrush(c->symbol()->brush()),QPen(Qt::NoPen),QSize(9,9)));
                 newCurve->setSymbol(symbol);
                 newCurve->setZ(50);
@@ -672,6 +671,7 @@ void Plot::appendMarker(int rowIndex) {
         QwtSymbol *symbol=new QwtSymbol();
         symbol->setBrush(curve->symbol()->brush());
         symbol->setStyle(curve->symbol()->style());
+        symbol->setSize(curve->symbol()->size());
         QPen pen(Qt::SolidLine);
         pen.setColor(QColor(Qt::white));
         pen.setWidth(2);

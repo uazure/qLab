@@ -29,6 +29,7 @@ SOURCES += main.cpp \
     testdevice.cpp
 INCLUDEPATH += ../../lib/
 win32:LIBS += 'd:\User\Dolbin_Aleksander\C++\QT\QLab_Dev\lib\gpib-32.obj'
+win32:LIBS += '../../lib/gpib-32.obj'
 win32:DEFINES += WIN32
 HEADERS += mainwindow.h \
     gpib-32.h \

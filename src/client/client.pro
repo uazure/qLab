@@ -73,9 +73,14 @@ INCLUDEPATH += ../qwt6
 # qwt 6.0.1 need to be compiled and installed to system path
 # LIBS += -L../../../qwt/lib
 LIBS += -L../../lib
-INCLUDEPATH += "c:/Program Files/GnuWin32/include"
+INCLUDEPATH += C:/Qt/GSL-1.15/include
+INCLUDEPATH += C:/Qt/Qwt-6.1.0-rc3/include
+INCLUDEPATH += C:/Program\ Files/GnuWin32/include
+INCLUDEPATH += ../../lib/include
 LIBS += -lgsl \
     -lgslcblas
 
 # release mode and unix
-LIBS += -lqwt
+#LIBS += -lqwt
+LIBS += -LC:/Qt/Qwt-6.1.0-rc3/lib -lqwtd
+

@@ -15,8 +15,10 @@ SeriesData::~SeriesData() {
 
 size_t SeriesData::size() const {
     if (dataTable->size()==0) return 0;
-    if (lastSize!=dataTable->at(0).size()) {
-        lastSize=dataTable->at(0).size();
+    //first column CAN contain more elements then last when updated
+    //so assuming that last column size is minimal
+    if (lastSize!=dataTable->at(dataTable->size()-1).size()) {
+        lastSize=dataTable->at(dataTable->size()-1).size();
     }
     return lastSize;
 }
