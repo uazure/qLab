@@ -46,7 +46,7 @@ Plot::Plot(QWidget *parent) :
     insertLegend(legend, QwtPlot::BottomLegend);
 
     //click on legend item allows to hide items from the plot
-    connect(this,SIGNAL(legendChecked(QwtPlotItem*,bool)),this, SLOT(hidePlotItem(QwtPlotItem*,bool)));
+    connect(legend,SIGNAL(checked(QVariant,bool,int)), this, SLOT(handleLegendChecked(QVariant,bool,int)));
 
 //Picker with click point machine to provide point selection
     selectPointPicker=new QwtPicker(canvas());
@@ -334,14 +334,6 @@ void Plot::initialize() {
         }
     }
 }
-
-void Plot::hidePlotItem(QwtPlotItem *plotItem, bool hide)
-{
-    qDebug()<<"Hiding item"<<hide;
-    plotItem->setVisible(!hide);
-    replot();
-}
-
 
 void Plot::markSelectedPoints()
 {
@@ -1082,4 +1074,10 @@ void Plot::enableAutoZoom(bool enable) {
 
 bool Plot::isAutoZoomEnabled() const {
     return autoZoom;
+}
+
+void Plot::handleLegendChecked(const QVariant &itemInfo, bool on, int) {
+    QwtPlotItem *plotItem = itemInfo.value<QwtPlotItem *>();
+    plotItem->setVisible(!on);
+    replot();
 }

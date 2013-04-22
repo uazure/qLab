@@ -145,7 +145,6 @@ private:
 
 
 private slots:
-    void hidePlotItem(QwtPlotItem *plotItem, bool hide);
 
     /** Receives point coordinates of plot canvas and selects nearest point of all curves that are on the plot */
 
@@ -175,10 +174,12 @@ private slots:
 
     void deletePoint(QwtPlotCurve* curve,int index);
 
-
-
-
-
+    /**
+     * @brief handleLegendChecked
+     * handles clicks on legend items. designed to be called from
+     * signal checked() of the QwtLegend
+     */
+    void handleLegendChecked(const QVariant & item, bool is_checked, int index);
 
 };
 
